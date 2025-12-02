@@ -118,12 +118,7 @@
           </small>
 
           <div class="community-card__footer">
-            {% if comunidade.owner_id != current_user.id %}
-            <a href="{{ url_for('comunidade.comunidade_users', community_id=comunidade.id) }}"
-              class="btn btn-primary btn-sm community-card__cta">
-              <i class="fas fa-sign-in-alt me-1"></i> Entrar na comunidade
-            </a>
-            {% else %}
+            {% if comunidade.owner_id == current_user.id %}
             <span class="badge bg-success">Você é membro</span>
             {% endif %}
             <div class="community-card__actions text-muted small">

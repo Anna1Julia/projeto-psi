@@ -1,14 +1,26 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user, logout_user
-from ..models import Usuario, db, Rating, CommunityPost, CommunityPostComment, CommunityPostLike, Community, CommunityBlock
+import os
+from ..models import (Usuario, db, Rating, CommunityPost, CommunityPostComment, 
+                     CommunityPostLike, Community, CommunityBlock, Content, Comment, 
+                     Like, WatchHistory, ContentCategory)
 
 users_bp = Blueprint('users', __name__, url_prefix='/users')
+
+# Email do administrador autorizado a deletar outros usuários
+ADMIN_EMAIL = 'memoriavivaoficial@gmail.com'
+
+def can_delete_users():
+    """Verifica se o usuário atual pode deletar outros usuários"""
+    return (current_user.is_authenticated and 
+            current_user.email == ADMIN_EMAIL)
 
 @users_bp.route('/list')
 def list_users():
     """Lista todos os usuários cadastrados"""
     usuarios = Usuario.query.all()
-    return render_template('users/list.html', usuarios=usuarios, usuario=current_user)
+    can_delete = can_delete_users() if current_user.is_authenticated else False
+    return render_template('users/list.html', usuarios=usuarios, usuario=current_user, can_delete_users=can_delete)
 
 @users_bp.route('/profile/<int:user_id>')
 def profile(user_id):
@@ -106,7 +118,8 @@ def profile(user_id):
     # Limitar a 10 atividades mais recentes
     activities = activities[:10]
     
-    return render_template('users/profile.html', usuario=usuario, activities=activities)
+    can_delete = can_delete_users() if current_user.is_authenticated else False
+    return render_template('users/profile.html', usuario=usuario, activities=activities, can_delete_users=can_delete)
 
 @users_bp.route('/edit/<int:user_id>', methods=['GET', 'POST'])
 @login_required
@@ -137,7 +150,7 @@ def edit_user(user_id):
 @users_bp.route('/delete', methods=['POST'])
 @login_required
 def delete_user():
-    """Deleta a conta do usuário atual"""
+    """Deleta a conta do usuário atual (própria conta)"""
     try:
         user_id = current_user.id  # Salva o ID do usuário atual
         user_name = current_user.nome  # Salva o nome para a mensagem
@@ -151,7 +164,40 @@ def delete_user():
         # Deletar dados relacionados em cascata
         print(f"🗑️ Deletando dados do usuário {user_name} (ID: {user_id})...")
         
-        # 1. Deletar avaliações do usuário
+        # 0. Deletar conteúdos criados pelo usuário (e todos os dados relacionados)
+        contents_to_delete = Content.query.filter_by(user_id=user_id).all()
+        for content in contents_to_delete:
+            # Deletar arquivos físicos se existirem
+            if content.file_path:
+                file_full_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static', content.file_path)
+                if os.path.exists(file_full_path):
+                    try:
+                        os.remove(file_full_path)
+                        print(f"  ✓ Arquivo deletado: {content.file_path}")
+                    except Exception as e:
+                        print(f"  ⚠️ Erro ao deletar arquivo {content.file_path}: {e}")
+            
+            if content.thumbnail and content.thumbnail.startswith('uploads/'):
+                thumb_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static', content.thumbnail)
+                if os.path.exists(thumb_path):
+                    try:
+                        os.remove(thumb_path)
+                        print(f"  ✓ Thumbnail deletado: {content.thumbnail}")
+                    except Exception as e:
+                        print(f"  ⚠️ Erro ao deletar thumbnail {content.thumbnail}: {e}")
+            
+            # Deletar dados relacionados ao conteúdo (cascade já faz isso, mas vamos garantir)
+            Comment.query.filter_by(content_id=content.id).delete()
+            Like.query.filter_by(content_id=content.id).delete()
+            WatchHistory.query.filter_by(content_id=content.id).delete()
+            Rating.query.filter_by(content_id=content.id).delete()
+            ContentCategory.query.filter_by(content_id=content.id).delete()
+            
+            # Deletar o conteúdo
+            db.session.delete(content)
+        print(f"✓ {len(contents_to_delete)} conteúdos deletados")
+        
+        # 1. Deletar avaliações restantes do usuário (caso haja alguma)
         Rating.query.filter_by(user_id=user_id).delete()
         print("✓ Avaliações deletadas")
         
@@ -189,6 +235,12 @@ def delete_user():
         CommunityBlock.query.filter_by(user_id=user_id).delete()
         print("✓ Bloqueios deletados")
         
+        # 7. Deletar comentários e likes em conteúdos de outros usuários
+        Comment.query.filter_by(user_id=user_id).delete()
+        Like.query.filter_by(user_id=user_id).delete()
+        WatchHistory.query.filter_by(user_id=user_id).delete()
+        print("✓ Comentários, likes e histórico em conteúdos deletados")
+        
         # Deslogar o usuário antes de deletar
         logout_user()
         
@@ -209,3 +261,119 @@ def delete_user():
             return redirect(url_for('users.profile', user_id=current_user.id))
         else:
             return redirect(url_for('main.index'))
+
+@users_bp.route('/delete/<int:user_id>', methods=['POST'])
+@login_required
+def delete_other_user(user_id):
+    """Deleta a conta de outro usuário (apenas para memoriavivaoficial@gmail.com)"""
+    # Verificar se o usuário atual tem permissão para deletar outros usuários
+    if not can_delete_users():
+        flash('Acesso negado. Apenas o administrador autorizado pode deletar contas de outros usuários.', 'danger')
+        return redirect(url_for('users.list_users'))
+    
+    # Não permitir que o admin delete a própria conta por esta rota
+    if user_id == current_user.id:
+        flash('Use a opção "Deletar Conta" no seu próprio perfil para deletar sua conta.', 'warning')
+        return redirect(url_for('users.profile', user_id=user_id))
+    
+    try:
+        # Buscar o usuário a ser deletado
+        usuario = Usuario.query.get(user_id)
+        if not usuario:
+            flash('Usuário não encontrado.', 'danger')
+            return redirect(url_for('users.list_users'))
+        
+        user_name = usuario.nome
+        
+        # Deletar dados relacionados em cascata
+        print(f"🗑️ Deletando dados do usuário {user_name} (ID: {user_id})...")
+        
+        # 0. Deletar conteúdos criados pelo usuário (e todos os dados relacionados)
+        contents_to_delete = Content.query.filter_by(user_id=user_id).all()
+        for content in contents_to_delete:
+            # Deletar arquivos físicos se existirem
+            if content.file_path:
+                file_full_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static', content.file_path)
+                if os.path.exists(file_full_path):
+                    try:
+                        os.remove(file_full_path)
+                        print(f"  ✓ Arquivo deletado: {content.file_path}")
+                    except Exception as e:
+                        print(f"  ⚠️ Erro ao deletar arquivo {content.file_path}: {e}")
+            
+            if content.thumbnail and content.thumbnail.startswith('uploads/'):
+                thumb_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'static', content.thumbnail)
+                if os.path.exists(thumb_path):
+                    try:
+                        os.remove(thumb_path)
+                        print(f"  ✓ Thumbnail deletado: {content.thumbnail}")
+                    except Exception as e:
+                        print(f"  ⚠️ Erro ao deletar thumbnail {content.thumbnail}: {e}")
+            
+            # Deletar dados relacionados ao conteúdo (cascade já faz isso, mas vamos garantir)
+            Comment.query.filter_by(content_id=content.id).delete()
+            Like.query.filter_by(content_id=content.id).delete()
+            WatchHistory.query.filter_by(content_id=content.id).delete()
+            Rating.query.filter_by(content_id=content.id).delete()
+            ContentCategory.query.filter_by(content_id=content.id).delete()
+            
+            # Deletar o conteúdo
+            db.session.delete(content)
+        print(f"✓ {len(contents_to_delete)} conteúdos deletados")
+        
+        # 1. Deletar avaliações restantes do usuário (caso haja alguma)
+        Rating.query.filter_by(user_id=user_id).delete()
+        print("✓ Avaliações deletadas")
+        
+        # 2. Deletar likes em posts de comunidades
+        CommunityPostLike.query.filter_by(user_id=user_id).delete()
+        print("Likes em posts deletados")
+        
+        # 3. Deletar comentários em posts de comunidades
+        CommunityPostComment.query.filter_by(user_id=user_id).delete()
+        print("Comentários em posts deletados")
+        
+        # 4. Deletar posts em comunidades
+        CommunityPost.query.filter_by(author_id=user_id).delete()
+        print("Posts em comunidades deletados")
+        
+        # 5. Deletar comunidades criadas pelo usuário
+        communities_to_delete = Community.query.filter_by(owner_id=user_id).all()
+        for community in communities_to_delete:
+            # Deletar posts da comunidade (e seus likes/comentários em cascata)
+            posts_in_community = CommunityPost.query.filter_by(community_id=community.id).all()
+            for post in posts_in_community:
+                CommunityPostLike.query.filter_by(post_id=post.id).delete()
+                CommunityPostComment.query.filter_by(post_id=post.id).delete()
+            CommunityPost.query.filter_by(community_id=community.id).delete()
+            
+            # Deletar bloqueios da comunidade
+            CommunityBlock.query.filter_by(community_id=community.id).delete()
+            
+            # Deletar a comunidade
+            db.session.delete(community)
+        print(f"✓ {len(communities_to_delete)} comunidades deletadas")
+        
+        # 6. Deletar bloqueios feitos pelo usuário
+        CommunityBlock.query.filter_by(user_id=user_id).delete()
+        print("✓ Bloqueios deletados")
+        
+        # 7. Deletar comentários e likes em conteúdos de outros usuários
+        Comment.query.filter_by(user_id=user_id).delete()
+        Like.query.filter_by(user_id=user_id).delete()
+        WatchHistory.query.filter_by(user_id=user_id).delete()
+        print("✓ Comentários, likes e histórico em conteúdos deletados")
+        
+        # Deletar o usuário do banco
+        db.session.delete(usuario)
+        db.session.commit()
+        
+        print(f"Usuário {user_name} deletado com sucesso!")
+        flash(f'Conta de {user_name} foi deletada com sucesso!', 'success')
+        return redirect(url_for('users.list_users'))
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Erro ao deletar usuário: {str(e)}")
+        flash(f'Erro ao deletar usuário: {str(e)}', 'danger')
+        return redirect(url_for('users.list_users'))

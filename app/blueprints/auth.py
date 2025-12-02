@@ -14,9 +14,21 @@ def register():
 
     if request.method == 'POST':
         nome = request.form.get('nome')
-        email = request.form.get('email')
+        email = request.form.get('email', '').strip()
         senha = request.form.get('senha')
         biografia = request.form.get('biografia')
+
+        # Validação de email obrigatório
+        if not email or '@' not in email:
+            flash('É obrigatório usar um email válido (ex: seuemail@gmail.com, seuemail@hotmail.com).', 'warning')
+            return redirect(url_for('auth.register'))
+        
+        # Validação de formato de email
+        import re
+        email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        if not re.match(email_pattern, email):
+            flash('Por favor, use um email válido com formato correto (ex: seuemail@gmail.com, seuemail@hotmail.com).', 'warning')
+            return redirect(url_for('auth.register'))
 
         # Verifica se já existe usuário com este email
         if Usuario.query.filter_by(email=email).first():

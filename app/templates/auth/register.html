@@ -14,7 +14,7 @@
             <i class="bi bi-person-plus-fill"></i>
             <span>Cadastrar</span>
           </div>
-          <form method="POST" class="needs-validation" novalidate>
+          <form method="POST" class="needs-validation" novalidate id="registerForm">
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label for="nome" class="form-label">Nome</label>
@@ -22,7 +22,14 @@
               </div>
               <div class="col-md-6 mb-3">
                 <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control auth-input" id="email" name="email" required>
+                <input type="email" class="form-control auth-input" id="email" name="email" 
+                       pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" 
+                       required 
+                       oninvalid="this.setCustomValidity('Por favor, use um email válido (ex: seuemail@gmail.com, seuemail@hotmail.com)')"
+                       oninput="this.setCustomValidity('')">
+                <div class="invalid-feedback">
+                  Por favor, use um email válido (ex: seuemail@gmail.com, seuemail@hotmail.com)
+                </div>
               </div>
             </div>
             <div class="mb-3">
@@ -74,6 +81,36 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleIcon.classList.add('bi-eye');
         toggleBtn.setAttribute('aria-label', 'Mostrar senha');
       }
+    });
+  }
+
+  // Validação de email customizada
+  const registerForm = document.getElementById('registerForm');
+  const emailInput = document.getElementById('email');
+  
+  if (registerForm && emailInput) {
+    registerForm.addEventListener('submit', function(event) {
+      const email = emailInput.value.trim();
+      
+      // Verifica se o email contém @ e tem formato válido
+      const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      
+      if (!email || !email.includes('@') || !emailPattern.test(email)) {
+        event.preventDefault();
+        event.stopPropagation();
+        emailInput.setCustomValidity('Por favor, use um email válido (ex: seuemail@gmail.com, seuemail@hotmail.com)');
+        emailInput.classList.add('is-invalid');
+      } else {
+        emailInput.setCustomValidity('');
+        emailInput.classList.remove('is-invalid');
+      }
+      
+      if (!registerForm.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      
+      registerForm.classList.add('was-validated');
     });
   }
 });

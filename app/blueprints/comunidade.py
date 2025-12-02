@@ -304,8 +304,10 @@ def delete_post(community_id, post_id):
     post = CommunityPost.query.get_or_404(post_id)
     comunidade = Community.query.get_or_404(community_id)
     
-    # Verificar permissão: autor do post, admin ou dono da comunidade
-    if current_user.id != post.author_id and not current_user.is_admin and current_user.id != comunidade.owner_id:
+    # Verificar permissão: autor do post, admin, dono da comunidade ou admin específico
+    from ..blueprints.users import can_delete_users
+    if (current_user.id != post.author_id and not current_user.is_admin 
+        and current_user.id != comunidade.owner_id and not can_delete_users()):
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return jsonify({'success': False, 'message': 'Sem permissão'}), 403
         flash('Você não tem permissão para excluir este post.', 'danger')

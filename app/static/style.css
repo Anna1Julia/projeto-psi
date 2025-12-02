@@ -128,7 +128,7 @@
     color: var(--color-text, #111827);
     text-transform: none;
     letter-spacing: 0;
-    margin-bottom: 1.75rem;
+    margin-bottom: 2.5rem;
     padding: 0;
 }
 
@@ -1034,19 +1034,20 @@ h1, h2, h3, h4, h5, h6 {
 
 #postsContainer {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 1.5rem;
-    justify-content: flex-start;
     align-items: stretch;
     padding: 1rem 0;
     width: 100%;
+    max-width: 820px;
+    margin: 0 auto;
 }
 
 /* Ajustes visuais para .post-card (aplicável a cards já marcados com a classe) */
 .post-card {
     width: 100%;
-    max-width: 420px;
-    flex: 1 1 360px;
+    max-width: 100%;
+    flex: none;
     margin: 0;
     padding: 1.15rem 1.25rem;
     border-radius: 14px;
@@ -1058,6 +1059,7 @@ h1, h2, h3, h4, h5, h6 {
     background: var(--color-surface);
     color: var(--color-text);
     transition: transform 0.18s ease, box-shadow 0.18s ease;
+    box-sizing: border-box;
 }
 
 .post-card:hover {
@@ -1193,12 +1195,12 @@ h1, h2, h3, h4, h5, h6 {
     .post-card {
         padding: 1rem;
         max-width: 100%;
-        flex: 1 1 100%;
     }
     .grid-cards a { max-width: 100%; }
     #postsContainer {
         flex-direction: column;
         gap: 1.25rem;
+        padding: 0.5rem;
     }
 }
 
@@ -1242,7 +1244,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* === Comunidades & Posts — paleta branco/azul/verde === */
-.post-card,
+/* Aplicar apenas a cards de comunidade, não aos posts dentro de #postsContainer */
 .community-card {
     max-width: 820px;
     margin: 1rem auto;
@@ -1253,6 +1255,16 @@ h1, h2, h3, h4, h5, h6 {
     box-shadow: 0 18px 40px rgba(15, 23, 42, 0.15);
     color: #1f2937;
     transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* Posts dentro de #postsContainer mantêm o estilo específico definido acima */
+#postsContainer .post-card {
+    max-width: 100%;
+    width: 100%;
+    margin: 0;
+    min-height: auto;
+    display: flex;
+    flex-direction: column;
 }
 
 .post-card:hover,
@@ -1315,8 +1327,15 @@ h1, h2, h3, h4, h5, h6 {
     color: #ffffff !important;
 }
 
-:root.dark .community-header h2 {
-    color: #ffffff;
+/* Título do header da comunidade sempre branco */
+.community-header h2,
+.community-header-title {
+    color: #ffffff !important;
+}
+
+:root.dark .community-header h2,
+:root.dark .community-header-title {
+    color: #ffffff !important;
 }
 
 .post-content {
@@ -1403,6 +1422,16 @@ h1, h2, h3, h4, h5, h6 {
     color: #fff;
     box-shadow: 0 25px 45px rgba(0,0,0,0.25);
     border: none;
+}
+
+/* Espaçamento entre título e descrição */
+.community-header-title-section h2,
+.community-header-title-section .community-header-title {
+    margin-bottom: 1rem;
+}
+
+.community-header-title-section .description {
+    margin-top: 0.75rem;
 }
 
 .community-card__badges .badge {

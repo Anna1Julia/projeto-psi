@@ -103,8 +103,11 @@ def edit_post(post_id):
 @login_required
 def delete_post(post_id):
     """Deleta um post"""
+    from ..blueprints.users import can_delete_users
+    
     post = CommunityPost.query.get_or_404(post_id)
-    if post.author_id != current_user.id and not current_user.is_administrador():
+    # Permitir deletar se for o autor OU se for admin geral OU se for o admin específico
+    if post.author_id != current_user.id and not current_user.is_administrador() and not can_delete_users():
         flash('Você não tem permissão para excluir este post.', 'danger')
         return redirect(url_for('posts.view_post', post_id=post_id))
     db.session.delete(post)

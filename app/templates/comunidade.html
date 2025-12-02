@@ -10,16 +10,16 @@
     <div class="community-header">
         <div class="community-header-top">
             <div class="community-header-title-section">
-                <h2>{{ comunidade.name }}</h2>
+                <h2 class="community-header-title">{{ comunidade.name }}</h2>
                 <p class="description mb-0">{{ comunidade.description or 'Sem descrição.' }}</p>
             </div>
             <div class="community-header-buttons">
-                <a href="{{ url_for('comunidade.comunidade') }}" class="btn btn-outline-secondary btn-sair me-2">
-                    <i class="bi bi-arrow-left me-1"></i>Sair
-                </a>
-                <button id="createPostButton" class="btn btn-create-post">
+                <button id="createPostButton" class="btn btn-create-post me-2">
                     <i class="bi bi-plus-circle me-2"></i>Criar Post
                 </button>
+                <a href="{{ url_for('comunidade.comunidade') }}" class="btn btn-outline-secondary btn-sair">
+                    <i class="bi bi-arrow-left me-1"></i>Sair
+                </a>
             </div>
         </div>
     </div>

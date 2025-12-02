@@ -228,9 +228,6 @@
               </div>
             </div>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-          </div>
         </div>
       </div>
     </div>
@@ -308,30 +305,136 @@
           var app = document.getElementById('appRoot');
           if (!app) return;
 
+          // Verificar se há modais abertos de forma mais robusta
           var hasOpenModal = document.querySelector('.modal.show') !== null;
-          app.style.filter = hasOpenModal ? 'blur(8px)' : '';
+          var hasBackdrop = document.querySelector('.modal-backdrop.show') !== null;
+          var bodyHasModal = document.body.classList.contains('modal-open');
+          
+          // Só aplicar blur se realmente houver um modal aberto
+          if (hasOpenModal || (hasBackdrop && bodyHasModal)) {
+            app.style.filter = 'blur(8px)';
+          } else {
+            // Forçar remoção do blur
+            app.style.filter = '';
+            // Limpar backdrops presos
+            if (hasBackdrop && !hasOpenModal) {
+              var backdrops = document.querySelectorAll('.modal-backdrop');
+              backdrops.forEach(function (el) { el.remove(); });
+              document.body.classList.remove('modal-open');
+            }
+          }
         }
 
         // Modais
         document.addEventListener('shown.bs.modal', syncAppBlur);
         document.addEventListener('hidden.bs.modal', function () {
+          // Limpar classes e backdrops
           document.body.classList.remove('modal-open');
           var backdrops = document.querySelectorAll('.modal-backdrop');
           backdrops.forEach(function (el) { el.remove(); });
-          syncAppBlur();
+          
+          // Forçar remoção do blur após um pequeno delay para garantir
+          setTimeout(function() {
+            syncAppBlur();
+            // Verificação adicional para garantir que não há modais
+            var app = document.getElementById('appRoot');
+            if (app && !document.querySelector('.modal.show') && !document.body.classList.contains('modal-open')) {
+              app.style.filter = '';
+            }
+          }, 100);
         });
 
-        // Dropdowns (Comunidades, Posts, etc.) usam overlay próprio com blur,
-        // para não afetar a nitidez do próprio menu.
+        // Dropdowns do HEADER (navbar) usam overlay próprio com blur
+        // Dropdowns dos cards NÃO devem ativar o blur
         function syncDropdownBlur() {
           var overlay = document.getElementById('dropdownBlurOverlay');
           if (!overlay) return;
-          var hasOpenDropdown = document.querySelector('.dropdown-menu.show') !== null;
-          overlay.classList.toggle('show', hasOpenDropdown);
+          
+          // Verificar apenas dropdowns do header/navbar, não dos cards
+          var navbarDropdowns = document.querySelectorAll('.navbar .dropdown-menu.show');
+          var hasNavbarDropdown = navbarDropdowns.length > 0;
+          
+          overlay.classList.toggle('show', hasNavbarDropdown);
         }
 
-        document.addEventListener('shown.bs.dropdown', syncDropdownBlur);
-        document.addEventListener('hidden.bs.dropdown', syncDropdownBlur);
+        document.addEventListener('shown.bs.dropdown', function(e) {
+          // Só aplicar blur se for dropdown do navbar
+          var isNavbarDropdown = e.target.closest('.navbar') !== null;
+          if (isNavbarDropdown) {
+            syncDropdownBlur();
+          }
+        });
+        
+        document.addEventListener('hidden.bs.dropdown', function(e) {
+          // Só remover blur se for dropdown do navbar
+          var isNavbarDropdown = e.target.closest('.navbar') !== null;
+          if (isNavbarDropdown) {
+            syncDropdownBlur();
+            // Garantir que o overlay seja removido
+            setTimeout(function() {
+              var overlay = document.getElementById('dropdownBlurOverlay');
+              if (overlay) {
+                var navbarDropdowns = document.querySelectorAll('.navbar .dropdown-menu.show');
+                if (navbarDropdowns.length === 0) {
+                  overlay.classList.remove('show');
+                }
+              }
+            }, 100);
+          }
+        });
+
+        // Limpar blur ao clicar fora de modais/dropdowns do navbar
+        document.addEventListener('click', function(e) {
+          // Se clicar em um elemento que não é modal ou dropdown do navbar
+          var clickedModal = e.target.closest('.modal');
+          var clickedDropdownMenu = e.target.closest('.dropdown-menu');
+          var clickedModalToggle = e.target.closest('[data-bs-toggle="modal"]');
+          var clickedNavbarDropdown = e.target.closest('.navbar [data-bs-toggle="dropdown"]');
+          
+          // Se não clicou em nenhum desses elementos, limpar blur
+          if (!clickedModal && !clickedModalToggle) {
+            setTimeout(function() {
+              syncAppBlur();
+            }, 150);
+          }
+          
+          // Para dropdowns, só limpar se não for do navbar
+          if (!clickedNavbarDropdown && !clickedDropdownMenu) {
+            setTimeout(function() {
+              syncDropdownBlur();
+            }, 150);
+          }
+        });
+
+        // Limpar blur quando a página perde o foco ou quando há navegação
+        window.addEventListener('beforeunload', function() {
+          var app = document.getElementById('appRoot');
+          if (app) app.style.filter = '';
+        });
+
+        // Verificação periódica para garantir que o blur seja removido se não houver modais
+        setInterval(function() {
+          var app = document.getElementById('appRoot');
+          if (!app) return;
+          
+          var hasOpenModal = document.querySelector('.modal.show') !== null;
+          var hasBackdrop = document.querySelector('.modal-backdrop.show') !== null;
+          var bodyHasModal = document.body.classList.contains('modal-open');
+          
+          // Se não há modal mas há blur, remover
+          if (!hasOpenModal && !hasBackdrop && !bodyHasModal && app.style.filter) {
+            app.style.filter = '';
+          }
+          
+          // Limpar overlay de dropdown se não houver dropdowns do navbar abertos
+          var overlay = document.getElementById('dropdownBlurOverlay');
+          if (overlay) {
+            var navbarDropdowns = document.querySelectorAll('.navbar .dropdown-menu.show');
+            if (navbarDropdowns.length === 0 && overlay.classList.contains('show')) {
+              overlay.classList.remove('show');
+            }
+          }
+        }, 500); // Verificar a cada 500ms
       })();
     </script>
 

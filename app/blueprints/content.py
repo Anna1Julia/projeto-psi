@@ -274,9 +274,12 @@ def rate_content(content_id):
 @login_required
 def delete_content(content_id):
     """Deleta um conteúdo"""
+    from ..blueprints.users import can_delete_users
+    
     content = Content.query.get_or_404(content_id)
 
-    if content.user_id != current_user.id:
+    # Permitir deletar se for o dono do conteúdo OU se for o admin específico
+    if content.user_id != current_user.id and not can_delete_users():
         flash("Você não tem permissão para excluir este conteúdo.", "danger")
         return redirect(url_for('content.view_content', content_id=content_id))
 

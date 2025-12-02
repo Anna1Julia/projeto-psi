@@ -222,13 +222,20 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </div>
                             {% endif %}
                             
-                            {% if current_user.is_authenticated and current_user.id == usuario.id %}
+                            {% if current_user.is_authenticated %}
                                 <div class="d-grid gap-2">
-                                    <a href="{{ url_for('users.edit_user', user_id=usuario.id) }}" class="btn btn-primary">Editar Perfil</a>
-                                    <form method="POST" action="{{ url_for('users.delete_user') }}" 
-                                          onsubmit="return confirm('Tem certeza que deseja deletar sua conta? Esta ação não pode ser desfeita.')">
-                                        <button type="submit" class="btn btn-danger w-100">Deletar Conta</button>
-                                    </form>
+                                    {% if current_user.id == usuario.id %}
+                                        <a href="{{ url_for('users.edit_user', user_id=usuario.id) }}" class="btn btn-primary">Editar Perfil</a>
+                                        <form method="POST" action="{{ url_for('users.delete_user') }}" 
+                                              onsubmit="return confirm('Tem certeza que deseja deletar sua conta? Esta ação não pode ser desfeita.')">
+                                            <button type="submit" class="btn btn-danger w-100">Deletar Conta</button>
+                                        </form>
+                                    {% elif can_delete_users %}
+                                        <form method="POST" action="{{ url_for('users.delete_other_user', user_id=usuario.id) }}" 
+                                              onsubmit="return confirm('Tem certeza que deseja deletar a conta de {{ usuario.nome }}? Esta ação não pode ser desfeita.')">
+                                            <button type="submit" class="btn btn-danger w-100">Deletar Conta do Usuário</button>
+                                        </form>
+                                    {% endif %}
                                 </div>
                             {% endif %}
                         </div>
