@@ -68,7 +68,7 @@
                 <label for="release_date" class="form-label fw-semibold">Data de Publicação (opcional)</label>
                 <input type="date" class="form-control rounded-3 shadow-sm"
                        id="release_date" name="release_date"
-                       value="{{ content.release_date.strftime('%Y-%m-%d') if content.release_date else '' }}">
+                       value="{{ content.release_date|format_date('%Y-%m-%d') if content.release_date else '' }}">
               </div>
             </div>
 

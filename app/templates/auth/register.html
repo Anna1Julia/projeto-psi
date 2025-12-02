@@ -5,46 +5,77 @@
 {% block extra_css %}{% endblock %}
 
 {% block content %}
-<section class="container py-5" data-aos="fade-up">
-  <div class="row justify-content-center">
-    <div class="col-sm-11 col-md-9 col-lg-7">
-      <div class="card hover-raise">
-        <div class="card-header text-center">
-          <div class="d-flex align-items-center justify-content-center gap-2">
+<section class="auth-section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-sm-11 col-md-9 col-lg-6">
+        <div class="auth-card" data-aos="fade-up">
+          <div class="auth-title">
             <i class="bi bi-person-plus-fill"></i>
-            <h3 class="mb-0" style="color: white;">Cadastro de Usuário</h3>
+            <span>Cadastrar</span>
           </div>
-        </div>
-        <div class="card-body p-4">
           <form method="POST" class="needs-validation" novalidate>
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label for="nome" class="form-label">Nome</label>
-                <input type="text" class="form-control" id="nome" name="nome" required>
+                <input type="text" class="form-control auth-input" id="nome" name="nome" required>
               </div>
               <div class="col-md-6 mb-3">
                 <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" name="email" required>
+                <input type="email" class="form-control auth-input" id="email" name="email" required>
               </div>
             </div>
             <div class="mb-3">
               <label for="senha" class="form-label">Senha</label>
-              <input type="password" class="form-control" id="senha" name="senha" required>
+              <div class="password-input-wrapper">
+                <input type="password" class="form-control auth-input" id="senha" name="senha" required>
+                <button type="button" class="password-toggle-btn" aria-label="Mostrar senha">
+                  <i class="bi bi-eye" id="toggleIconSenha"></i>
+                </button>
+              </div>
             </div>
             <div class="mb-3">
               <label for="biografia" class="form-label">Biografia (opcional)</label>
-              <textarea class="form-control" id="biografia" name="biografia" rows="4" placeholder="Conte um pouco sobre você..."></textarea>
+              <textarea class="form-control auth-input" id="biografia" name="biografia" rows="4" placeholder="Conte um pouco sobre você..."></textarea>
             </div>
-            <div class="d-grid gap-2 mt-4">
-              <button type="submit" class="btn btn-primary">Cadastrar</button>
-            </div>
+            <button type="submit" class="btn auth-btn mt-3">
+              <i class="bi bi-check-circle-fill"></i>
+              Cadastrar
+            </button>
           </form>
-          <div class="text-center mt-3">
-            <small>Já tem uma conta? <a href="{{ url_for('auth.login') }}">Faça login</a></small>
+          <div class="text-center mt-4">
+            <small class="auth-helper">
+              Já tem uma conta?
+              <a href="{{ url_for('auth.login') }}">Faça login</a>
+            </small>
           </div>
         </div>
       </div>
     </div>
   </div>
 </section>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const senhaInput = document.getElementById('senha');
+  const toggleBtn = document.querySelector('#senha').closest('.password-input-wrapper').querySelector('.password-toggle-btn');
+  const toggleIcon = document.getElementById('toggleIconSenha');
+  
+  if (toggleBtn && senhaInput) {
+    toggleBtn.addEventListener('click', function() {
+      const type = senhaInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      senhaInput.setAttribute('type', type);
+      
+      if (type === 'text') {
+        toggleIcon.classList.remove('bi-eye');
+        toggleIcon.classList.add('bi-eye-slash');
+        toggleBtn.setAttribute('aria-label', 'Ocultar senha');
+      } else {
+        toggleIcon.classList.remove('bi-eye-slash');
+        toggleIcon.classList.add('bi-eye');
+        toggleBtn.setAttribute('aria-label', 'Mostrar senha');
+      }
+    });
+  }
+});
+</script>
 {% endblock %}

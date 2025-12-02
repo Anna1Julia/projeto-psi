@@ -4,30 +4,9 @@
 
 {% block content %}
 <div class="container mt-4 mb-4" data-aos="fade-up">
-  <style>
-    /* === AJUSTES DE DROPDOWN === */
-    .dropdown-menu {
-      z-index: 2000 !important;
-      position: absolute !important;
-      transform: translateX(-100%) !important; /* joga o menu para a esquerda */
-      left: 0 !important;
-      right: auto !important;
-    }
-
-    .grid-cards {
-      position: relative;
-      z-index: 1;
-      overflow: visible !important;
-    }
-
-    .card {
-      overflow: visible !important;
-    }
-  </style>
-
   <div class="row">
     <div class="col-12">
-      <h1 class="h3 mb-4">Comunidades</h1>
+      <h1 class="h3 mb-4 force-white-title">Comunidades</h1>
 
       <!-- Filtros e Controles -->
       <div class="row mb-4 align-items-center">
@@ -39,7 +18,7 @@
         <div class="col-md-6 text-md-end">
           <div class="form-check form-switch d-inline-block me-3">
             <input class="form-check-input" type="checkbox" id="includeFiltered">
-            <label class="form-check-label" for="includeFiltered">
+            <label class="form-check-label force-white-subtitle" for="includeFiltered">
               Incluir conteúdo filtrado
             </label>
           </div>
@@ -50,109 +29,108 @@
       </div>
 
       {% if comunidades %}
-      <div class="grid-cards">
+      <div class="community-grid">
         {% for comunidade in comunidades %}
-        <div data-aos="fade-up" data-aos-delay="{{ loop.index0 * 50 }}">
-          <div class="card h-100 hover-raise">
-            <div class="card-body">
-              <div class="d-flex justify-content-between align-items-start mb-2">
-                <h5 class="card-title mb-0">{{ comunidade.name }}</h5>
-                <div class="dropdown">
-                  <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
-                    data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fas fa-ellipsis-v"></i>
-                  </button>
-                  <!-- ✅ adicionamos dropdown-menu-start para forçar o alinhamento à esquerda -->
-                  <ul class="dropdown-menu dropdown-menu-start">
-                    <li>
-                      <a class="dropdown-item"
-                        href="{{ url_for('comunidade.comunidade_users', community_id=comunidade.id) }}">
-                        <i class="fas fa-sign-in-alt"></i> Entrar
-                      </a>
-                    </li>
-                    {% if comunidade.owner_id == current_user.id %}
-                    <li><hr class="dropdown-divider"></li>
-                    <li>
-                      <form method="POST"
-                        action="{{ url_for('comunidade.delete_community', community_id=comunidade.id) }}"
-                        style="display: inline;">
-                        <button type="submit" class="dropdown-item text-danger"
-                          onclick="return confirm('Tem certeza que deseja APAGAR esta comunidade? Esta ação é IRREVERSÍVEL e todos os posts serão perdidos!')">
-                          <i class="fas fa-trash"></i> Apagar Comunidade
-                        </button>
-                      </form>
-                    </li>
-                    {% else %}
-                    <li>
-                      <form method="POST"
-                        action="{{ url_for('comunidade.block_community', community_id=comunidade.id) }}"
-                        style="display: inline;">
-                        <button type="submit" class="dropdown-item text-warning"
-                          onclick="return confirm('Tem certeza que deseja bloquear esta comunidade?')">
-                          <i class="fas fa-ban"></i> Bloquear
-                        </button>
-                      </form>
-                    </li>
-                    {% endif %}
-                    {% if current_user.is_administrador() %}
-                    <li><hr class="dropdown-divider"></li>
-                    <li>
-                      <form method="POST"
-                        action="{{ url_for('comunidade.admin_block_community', community_id=comunidade.id) }}"
-                        style="display: inline;">
-                        <button type="submit" class="dropdown-item text-warning"
-                          onclick="return confirm('Bloquear comunidade globalmente?')">
-                          <i class="fas fa-globe"></i> Bloquear Globalmente
-                        </button>
-                      </form>
-                    </li>
-                    <li>
-                      <form method="POST"
-                        action="{{ url_for('comunidade.admin_filter_community', community_id=comunidade.id) }}"
-                        style="display: inline;">
-                        <button type="submit" class="dropdown-item text-info"
-                          onclick="return confirm('Marcar como conteúdo filtrado?')">
-                          <i class="fas fa-filter"></i> Marcar como Filtrado
-                        </button>
-                      </form>
-                    </li>
-                    {% endif %}
-                  </ul>
-                </div>
-              </div>
-
-              <p class="card-text">{{ comunidade.description or "Sem descrição." }}</p>
-
-              <div class="mb-2">
-                {% if comunidade.is_filtered %}
-                <span class="badge bg-warning text-dark">
-                  <i class="fas fa-filter"></i> Conteúdo Filtrado
-                </span>
-                {% endif %}
-                {% if comunidade.status == 'private' %}
-                <span class="badge bg-secondary">
-                  <i class="fas fa-lock"></i> Privada
-                </span>
-                {% endif %}
-              </div>
-
-              <small class="text-muted">
-                Criada por {{ comunidade.owner.nome }} em {{ comunidade.created_at.strftime('%d/%m/%Y') }}
-              </small>
-
-              <div class="mt-3">
-                {% if comunidade.owner_id != current_user.id %}
-                <a href="{{ url_for('comunidade.comunidade_users', community_id=comunidade.id) }}"
-                  class="btn btn-primary btn-sm">
-                  <i class="fas fa-sign-in-alt"></i> Entrar na comunidade
-                </a>
+        <article class="community-card" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 50 }}">
+          <div class="community-card__header">
+            <div>
+              <h5 class="community-card__title mb-1">{{ comunidade.name }}</h5>
+              <p class="community-card__description mb-2">{{ comunidade.description or "Sem descrição." }}</p>
+            </div>
+            <div class="dropdown">
+              <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-ellipsis-v"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                  <a class="dropdown-item"
+                    href="{{ url_for('comunidade.comunidade_users', community_id=comunidade.id) }}">
+                    <i class="fas fa-sign-in-alt me-1"></i> Entrar
+                  </a>
+                </li>
+                {% if comunidade.owner_id == current_user.id %}
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <form method="POST"
+                    action="{{ url_for('comunidade.delete_community', community_id=comunidade.id) }}"
+                    style="display: inline;">
+                    <button type="submit" class="dropdown-item text-danger"
+                      onclick="return confirm('Tem certeza que deseja APAGAR esta comunidade? Esta ação é IRREVERSÍVEL e todos os posts serão perdidos!')">
+                      <i class="fas fa-trash me-1"></i> Apagar Comunidade
+                    </button>
+                  </form>
+                </li>
                 {% else %}
-                <span class="badge bg-success">Você é membro</span>
+                <li>
+                  <form method="POST"
+                    action="{{ url_for('comunidade.block_community', community_id=comunidade.id) }}"
+                    style="display: inline;">
+                    <button type="submit" class="dropdown-item text-warning"
+                      onclick="return confirm('Tem certeza que deseja bloquear esta comunidade?')">
+                      <i class="fas fa-ban me-1"></i> Bloquear
+                    </button>
+                  </form>
+                </li>
                 {% endif %}
-              </div>
+                {% if current_user.is_administrador() %}
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <form method="POST"
+                    action="{{ url_for('comunidade.admin_block_community', community_id=comunidade.id) }}"
+                    style="display: inline;">
+                    <button type="submit" class="dropdown-item text-warning"
+                      onclick="return confirm('Bloquear comunidade globalmente?')">
+                      <i class="fas fa-globe me-1"></i> Bloquear Globalmente
+                    </button>
+                  </form>
+                </li>
+                <li>
+                  <form method="POST"
+                    action="{{ url_for('comunidade.admin_filter_community', community_id=comunidade.id) }}"
+                    style="display: inline;">
+                    <button type="submit" class="dropdown-item text-info"
+                      onclick="return confirm('Marcar como conteúdo filtrado?')">
+                      <i class="fas fa-filter me-1"></i> Marcar como Filtrado
+                    </button>
+                  </form>
+                </li>
+                {% endif %}
+              </ul>
             </div>
           </div>
-        </div>
+
+          <div class="community-card__badges">
+            {% if comunidade.is_filtered %}
+            <span class="badge bg-warning text-dark me-2">
+              <i class="fas fa-filter me-1"></i> Conteúdo Filtrado
+            </span>
+            {% endif %}
+            {% if comunidade.status == 'private' %}
+            <span class="badge bg-secondary">
+              <i class="fas fa-lock me-1"></i> Privada
+            </span>
+            {% endif %}
+          </div>
+
+          <small class="community-card__meta">
+            Criada por {{ comunidade.owner.nome }} em {{ comunidade.created_at|format_datetime('%d/%m/%Y') }}
+          </small>
+
+          <div class="community-card__footer">
+            {% if comunidade.owner_id != current_user.id %}
+            <a href="{{ url_for('comunidade.comunidade_users', community_id=comunidade.id) }}"
+              class="btn btn-primary btn-sm community-card__cta">
+              <i class="fas fa-sign-in-alt me-1"></i> Entrar na comunidade
+            </a>
+            {% else %}
+            <span class="badge bg-success">Você é membro</span>
+            {% endif %}
+            <div class="community-card__actions text-muted small">
+              {{ comunidade.members|length if comunidade.members is defined else (comunidade.member_count or 0) }} membros
+            </div>
+          </div>
+        </article>
         {% endfor %}
       </div>
       {% else %}

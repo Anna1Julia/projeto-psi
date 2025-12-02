@@ -10,7 +10,7 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 def register():
     """Rota para cadastro de novos usuários"""
     if current_user.is_authenticated:
-        return redirect(url_for('main.index'))
+        return redirect(url_for('dashboard.index'))
 
     if request.method == 'POST':
         nome = request.form.get('nome')
@@ -41,7 +41,7 @@ def register():
         # Autentica automaticamente após cadastro
         login_user(novo)
         flash(f'Bem-vindo, {novo.nome}! Cadastro concluído e login efetuado.', 'success')
-        next_page = request.args.get('next') or url_for('main.index')
+        next_page = request.args.get('next') or url_for('dashboard.index')
         return redirect(next_page)
 
     
@@ -52,7 +52,7 @@ def register():
 def login():
     """Rota para login de usuários"""
     if current_user.is_authenticated:
-        return redirect(url_for('main.index'))
+        return redirect(url_for('dashboard.index'))
 
     if request.method == 'POST':
         email = request.form.get('email')
@@ -66,7 +66,7 @@ def login():
         if usuario and usuario.checar_senha(senha):
             login_user(usuario)
             flash(f'Bem-vindo, {usuario.nome}!', 'success')
-            next_page = request.args.get('next') or url_for('main.index')
+            next_page = request.args.get('next') or url_for('dashboard.index')
             return redirect(next_page)
         else:
             flash('E-mail ou senha incorretos.', 'danger')

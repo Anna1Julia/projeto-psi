@@ -27,7 +27,7 @@
                                         {{ comunidade.description or "Sem descrição." }}
                                     </p>
                                     <small style="color: #777;">
-                                        Criada em {{ comunidade.created_at.strftime('%d/%m/%Y') }}
+                                        Criada em {{ comunidade.created_at|format_datetime('%d/%m/%Y') }}
                                     </small>
                                     
                                     <div class="mt-3">

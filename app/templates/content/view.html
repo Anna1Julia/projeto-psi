@@ -86,7 +86,7 @@
                             {% endif %}
 
                             <div class="text-muted mt-3 d-flex gap-3 align-items-center">
-                                <small>Adicionado em {{ content.created_at.strftime('%d/%m/%Y %H:%M') }}</small>
+                                <small>Adicionado em {{ content.created_at|format_datetime('%d/%m/%Y %H:%M') }}</small>
                                 {% if content.views_count is not none %}
                                     <small><i class="bi bi-eye"></i> {{ content.views_count }} visualizações</small>
                                 {% endif %}
@@ -168,7 +168,7 @@
                                                 {% endif %}
                                             {% endfor %}
                                         </div>
-                                        <small class="text-muted">{{ rating.created_at.strftime('%d/%m/%Y às %H:%M') }}</small>
+                                        <small class="text-muted">{{ rating.created_at|format_datetime("%d/%m/%Y às %H:%M") }}</small>
                                     </div>
 
                                     {% if current_user.is_authenticated and (current_user.id == rating.user_id or current_user.is_admin) %}

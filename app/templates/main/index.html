@@ -4,172 +4,305 @@
 {% block title %}Início - MemóriaViva{% endblock %}
 
 {% block content %}
-<div class="container mt-4 mb-4" data-aos="fade-up">
-    <div class="row">
-        <div class="col-md-12">
-            <!-- Jumbotron de boas-vindas -->
-            <div class="jumbotron text-white p-5 rounded" data-aos="zoom-in" data-aos-delay="50">
-                <h1 class="display-4">MemóriaViva — Acervo Digital da Cultura Popular</h1>
-                <p class="lead">Plataforma para preservar e difundir a memória cultural: pessoas, tradições, histórias e patrimônios.</p>
-            </div>
+<div class="page-shell" data-aos="fade-up">
+    <!-- Hero principal -->
+    <section class="card-hero mb-4" data-aos="zoom-in" data-aos-delay="40">
+        <h1 class="page-header-title mb-2">
+            MemóriaViva — Acervo Digital da Cultura Popular
+        </h1>
+        <p class="page-header-subtitle mb-3">
+            Plataforma para preservar e difundir a memória cultural: pessoas, tradições, histórias e patrimônios.
+        </p>
 
-            <!-- Formulário de busca -->
-            <form action="{{ url_for('content.buscar_obra') }}" method="get" class="mb-4" data-aos="fade-up" data-aos-delay="100">
-                <div class="input-group">
-                    <input 
-                        type="text" 
-                        class="form-control" 
-                        name="q" 
-                        placeholder="Buscar conteúdos culturais (artigos, relatos, entrevistas)" 
-                        value="{{ termo_busca or '' }}"
-                        aria-label="Buscar conteúdos"
-                    >
-                    <button class="btn btn-outline-secondary" type="submit">Buscar</button>
-                </div>
-            </form>
-
-            <!-- Lista de conteúdos -->
-            {% if obras %}
-            <div class="list-group mb-5" data-aos="fade-up" data-aos-delay="150">
-                {% for obra in obras %}
-                <a href="{{ url_for('content.detalhe_obra', obra_id=obra.id) }}" class="list-group-item list-group-item-action">
-                    <h5 class="mb-1">{{ obra.title }}</h5>
-                    <p class="mb-1 text-truncate">{{ obra.description or 'Sem descrição' }}</p>
-                </a>
-                {% endfor %}
+        <!-- Formulário de busca principal -->
+        <form action="{{ url_for('content.buscar_obra') }}" method="get" class="mt-3">
+            <div class="input-group input-group-lg">
+                <input 
+                    type="text"
+                    class="form-control"
+                    name="q"
+                    placeholder="Buscar conteúdos culturais (artigos, relatos, entrevistas)"
+                    value="{{ termo_busca or '' }}"
+                    aria-label="Buscar conteúdos"
+                >
+                <button class="btn btn-outline-light fw-semibold px-4" type="submit">
+                    Buscar
+                </button>
             </div>
-            {% elif termo_busca %}
-                <p class="text-muted-white">Nenhum conteúdo encontrado.</p>
-            {% endif %}
+        </form>
+    </section>
+
+    <!-- Lista de conteúdos em destaque / resultado de busca -->
+    {% if obras %}
+    <section class="mb-5" data-aos="fade-up" data-aos-delay="120">
+        <header class="page-header">
+            <div class="page-header-main">
+                <h2 class="page-header-title">Conteúdos em destaque</h2>
+                <p class="page-header-subtitle">
+                    Resultados para sua busca ou últimas obras adicionadas ao acervo.
+                </p>
+            </div>
+        </header>
+
+        <div class="card-grid-2">
+            {% for obra in obras %}
+            <a href="{{ url_for('content.detalhe_obra', obra_id=obra.id) }}" class="text-decoration-none">
+                <article class="card card-elevated h-100 hover-raise">
+                    <div class="card-body">
+                        <h5 class="mb-1">{{ obra.title }}</h5>
+                        <p class="mb-1 text-truncate text-muted">{{ obra.description or 'Sem descrição' }}</p>
+                    </div>
+                </article>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% elif termo_busca %}
+        <p class="text-muted-white">Nenhum conteúdo encontrado.</p>
+    {% endif %}
 
             {% if current_user.is_authenticated %}
-                <!-- Mensagem de usuário logado -->
-                <div class="alert alert-info mt-4">
-                    <h4>Olá, {{ current_user.nome }}!</h4>
-                    <p>Bem-vindo de volta ao MemóriaViva. Explore nosso conteúdo e participe da comunidade!</p>
-                </div>
+                <!-- Mensagem de usuário logado + atalhos principais -->
+                <section class="mb-4" data-aos="fade-up" data-aos-delay="180">
+                    <header class="page-header">
+                        <div class="page-header-main">
+                            <h2 class="page-header-title">Olá, {{ current_user.nome }}!</h2>
+                            <p class="page-header-subtitle">
+                                Bem-vindo de volta ao MemóriaViva. Explore nosso conteúdo e participe da comunidade.
+                            </p>
+                        </div>
+                    </header>
 
-                <!-- Cards principais para usuário logado -->
-                <div class="row mt-4" data-aos="fade-up" data-aos-delay="200">
-                    <div class="col-md-3 mb-3">
-                        <div class="card h-100 hover-raise">
+                    <div class="card-grid-4">
+                        <article class="card card-elevated h-100 hover-raise home-feature-card">
                             <div class="card-body">
-                                <h5 class="card-title"><i class="fas fa-user"></i> Meu Perfil</h5>
+                                <h5 class="card-title"><i class="fas fa-user me-2"></i>Meu Perfil</h5>
                                 <p class="card-text">Visualize e edite suas informações pessoais.</p>
                                 <a href="{{ url_for('users.profile', user_id=current_user.id) }}" class="btn btn-primary">Ver Perfil</a>
                             </div>
-                        </div>
-                    </div>
+                        </article>
 
-                    <div class="col-md-3 mb-3">
-                        <div class="card h-100 hover-raise">
+                        <article class="card card-elevated h-100 hover-raise home-feature-card">
                             <div class="card-body">
-                                <h5 class="card-title"><i class="fas fa-book"></i> Conteúdos</h5>
+                                <h5 class="card-title"><i class="fas fa-book me-2"></i>Conteúdos</h5>
                                 <p class="card-text">Explore artigos, relatos, entrevistas e fotos.</p>
                                 <a href="{{ url_for('content.list_content') }}" class="btn btn-primary">Ver Conteúdos</a>
                             </div>
-                        </div>
-                    </div>
+                        </article>
 
-                    <div class="col-md-3 mb-3">
-                        <div class="card h-100 hover-raise">
+                        <article class="card card-elevated h-100 hover-raise home-feature-card">
                             <div class="card-body">
-                                <h5 class="card-title"><i class="fas fa-comments"></i> Posts</h5>
-                                <p class="card-text">Veja e crie posts na comunidade.</p>
-                                <a href="{{ url_for('posts.list_posts') }}" class="btn btn-primary">Ver Posts</a>
+                                <h5 class="card-title"><i class="fas fa-comments me-2"></i>Posts</h5>
+                                <p class="card-text">Veja e gerencie os posts que você criou.</p>
+                                <a href="{{ url_for('posts.meus_posts') }}" class="btn btn-primary">Ver meus posts</a>
                             </div>
-                        </div>
-                    </div>
+                        </article>
 
-                    <div class="col-md-3 mb-3">
-                        <div class="card h-100 hover-raise">
+                        <article class="card card-elevated h-100 hover-raise home-feature-card">
                             <div class="card-body">
-                                <h5 class="card-title"><i class="fas fa-users"></i> Comunidades</h5>
+                                <h5 class="card-title"><i class="fas fa-users me-2"></i>Comunidades</h5>
                                 <p class="card-text">Acesse as comunidades das quais você é membro.</p>
-                                <a href="{{ url_for('comunidade.minhas_comunidades') }}" class="btn btn-primary">Ver Comunidades</a>
+                                <a href="{{ url_for('comunidade.minhas_comunidades') }}" class="btn btn-primary">Minhas comunidades</a>
                             </div>
-                        </div>
+                        </article>
                     </div>
-                </div>
+                </section>
 
-                <!-- Ações rápidas e comunidade -->
-                <div class="row mt-4">
-                    <div class="col-md-6 mb-3">
-                        <div class="card hover-raise">
+                <!-- Ações rápidas e comunidade (layout em dois cards alinhados) -->
+                <section class="mt-4" data-aos="fade-up" data-aos-delay="220">
+                    <div class="card-grid-2">
+                        <article class="card card-elevated h-100 hover-raise home-quick-actions">
                             <div class="card-body">
-                                <h5 class="card-title">Ações Rápidas</h5>
+                                <h5 class="card-title mb-3">Ações Rápidas</h5>
                                 <div class="d-grid gap-2">
-                                    <a href="{{ url_for('posts.create_post') }}" class="btn btn-success">Criar Post</a>
-                                    <a href="{{ url_for('content.create_content') }}" class="btn btn-info">Adicionar Obra</a>
-                                    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#feedbackModal">
+                                    <button type="button"
+                                            class="btn btn-success"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#createPostModal">
+                                        Criar Post
+                                    </button>
+                                    <button type="button"
+                                            class="btn btn-info"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#createContentModal">
+                                        Adicionar Obra
+                                    </button>
+                                    <button type="button" class="btn btn-warning force-white-title" data-bs-toggle="modal" data-bs-target="#feedbackModal">
                                         <i class="fas fa-comment-dots me-1"></i> Enviar Feedback
                                     </button>
                                 </div>
                             </div>
-                        </div>
-                    </div>
+                        </article>
 
-                    <div class="col-md-6 mb-3">
-                        <div class="card hover-raise">
+                        <article class="card card-elevated h-100 hover-raise">
                             <div class="card-body">
-                                <h5 class="card-title">Comunidade</h5>
-                                <p class="card-text">Conecte-se para discutir temas culturais locais.</p>
-                                <a href="{{ url_for('users.list_users') }}" class="btn btn-outline-primary">Ver Usuários</a>
+                                <h5 class="card-title mb-3">Comunidade</h5>
+                                <p class="card-text">
+                                    Conecte-se para discutir temas culturais locais e participar de comunidades temáticas.
+                                </p>
+                                <div class="d-grid gap-2 mt-3">
+                                    {% if current_user.is_authenticated and current_user.is_admin %}
+                                    <a href="{{ url_for('users.list_users') }}" class="btn btn-outline-primary">Ver Usuários</a>
+                                    {% endif %}
+                                    <a href="{{ url_for('comunidade.comunidade_oficial') }}" class="btn btn-outline-primary">Comunidade oficial</a>
+                                    <a href="{{ url_for('comunidade.criar_comunidade') }}" class="btn btn-outline-primary">Criar comunidade</a>
+                                    <a href="{{ url_for('comunidade.comunidade') }}" class="btn btn-outline-primary">Explorar comunidades</a>
+                                </div>
                             </div>
-                            <div class="card-body">
-                                <p class="card-text">Entre na comunidade oficial da MemóriaViva</p>
-                                <a href="{{ url_for('comunidade.comunidade_oficial') }}" class="btn btn-outline-primary">Entrar</a>
-                            </div>
-                            <div class="card-body">
-                                <p class="card-text">Crie sua própria comunidade</p>
-                                <a href="{{ url_for('comunidade.criar_comunidade') }}" class="btn btn-outline-primary">Criar</a>
-                            </div>
-                            <div class="card-body">
-                                <p class="card-text">Comunidades criadas por outros users</p>
-                                <a href="{{ url_for('comunidade.comunidade') }}" class="btn btn-outline-primary">Acessar</a>
-                            </div>
-                        </div>
+                        </article>
                     </div>
-                </div>
+                </section>
             {% else %}
-                <!-- Cards informativos sobre Obras, Comunidade e Avaliações -->
-                <div class="row mt-3">
-                    <div class="col-md-4 mb-3">
-                        <div class="card text-center h-100 hover-raise">
+                <!-- Cards informativos para visitantes -->
+                <section class="mt-4">
+                    <header class="page-header">
+                        <div class="page-header-main">
+                            <h2 class="page-header-title">Descubra o MemóriaViva</h2>
+                            <p class="page-header-subtitle">
+                                Explore o acervo cultural, conecte-se com a comunidade e compartilhe suas histórias.
+                            </p>
+                        </div>
+                    </header>
+
+                    <div class="card-grid">
+                        <article class="card card-elevated text-center h-100 hover-raise">
                             <div class="card-body">
                                 <i class="fas fa-book fa-3x text-primary mb-3"></i>
                                 <h5 class="card-title">Cultura Popular</h5>
                                 <p class="card-text">Descubra conteúdos do acervo cultural regional.</p>
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="card text-center h-100 hover-raise">
+                        </article>
+
+                        <article class="card card-elevated text-center h-100 hover-raise">
                             <div class="card-body">
                                 <i class="fas fa-users fa-3x text-success mb-3"></i>
                                 <h5 class="card-title">Comunidade</h5>
                                 <p class="card-text">Conecte-se com outros leitores e compartilhe opiniões.</p>
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <div class="card text-center h-100 hover-raise">
+                        </article>
+
+                        <article class="card card-elevated text-center h-100 hover-raise">
                             <div class="card-body">
                                 <i class="fas fa-star fa-3x text-warning mb-3"></i>
                                 <h5 class="card-title">Avaliações</h5>
                                 <p class="card-text">Avalie conteúdos e compartilhe sua perspectiva.</p>
                             </div>
-                        </div>
+                        </article>
+                    </div>
+                </section>
+            {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_css %}{% endblock %}
+
+{% block global_modals %}
+{{ super() }}
+<!-- Modal Criar Post (global, fora do appRoot, não sofre blur) -->
+<div class="modal fade" id="createPostModal" tabindex="-1" aria-labelledby="createPostModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createPostModalLabel">Criar Novo Post</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <form method="POST" action="{{ url_for('posts.create_post') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="modal_community_id" class="form-label">Comunidade</label>
+                        <select class="form-select" id="modal_community_id" name="community_id" required>
+                            <option value="">Selecione a comunidade</option>
+                            {% for c in communities or [] %}
+                            <option value="{{ c.id }}">{{ c.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modal_conteudo" class="form-label">Conteúdo</label>
+                        <textarea class="form-control"
+                                  id="modal_conteudo"
+                                  name="conteudo"
+                                  rows="5"
+                                  placeholder="Escreva seu post aqui..."
+                                  required></textarea>
                     </div>
                 </div>
-            {% endif %}
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Publicar Post</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
-<!-- Modal de Feedback -->
+<!-- Modal Adicionar Obra (global) -->
+<div class="modal fade" id="createContentModal" tabindex="-1" aria-labelledby="createContentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createContentModalLabel">Adicionar Novo Conteúdo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <form method="POST" action="{{ url_for('content.create_content') }}" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            <label for="modal_title" class="form-label">Título</label>
+                            <input type="text" class="form-control" id="modal_title" name="title" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="modal_type" class="form-label">Tipo de Conteúdo</label>
+                            <select class="form-select" id="modal_type" name="type" required>
+                                <option value="">Selecione o tipo</option>
+                                <option value="artigo">Artigo</option>
+                                <option value="relato">Relato</option>
+                                <option value="entrevista">Entrevista</option>
+                                <option value="foto">Foto</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modal_description" class="form-label">Breve Descrição</label>
+                        <textarea class="form-control" id="modal_description" name="description" rows="3" placeholder="Descreva o conteúdo..." required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modal_url" class="form-label">Link relacionado (YouTube ou página externa)</label>
+                        <input type="url" class="form-control" id="modal_url" name="url" placeholder="https://youtube.com/watch?v=...">
+                        <small class="text-muted">Link relacionado ao conteúdo, como vídeo de entrevista ou referência externa.</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modal_file" class="form-label">Arquivo (PDF, EPUB ou imagem) - opcional se houver link</label>
+                        <input type="file"
+                               class="form-control"
+                               id="modal_file"
+                               name="file"
+                               accept=".pdf,.epub,.jpg,.jpeg,.png,.webp">
+                        <small class="text-muted">Formatos aceitos: PDF, EPUB, JPG, JPEG, PNG, WEBP. Arquivo ou link é obrigatório.</small>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="modal_thumbnail" class="form-label">URL da Capa (opcional)</label>
+                            <input type="url" class="form-control" id="modal_thumbnail" name="thumbnail" placeholder="https://...">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="modal_release_date" class="form-label">Data de Publicação (opcional)</label>
+                            <input type="date" class="form-control" id="modal_release_date" name="release_date">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Adicionar Conteúdo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Feedback (global, fora do appRoot, não sofre blur) -->
 <div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="feedbackModalLabel">Enviar Feedback</h5>
@@ -208,5 +341,3 @@
     </div>
 </div>
 {% endblock %}
-
-{% block extra_css %}{% endblock %}

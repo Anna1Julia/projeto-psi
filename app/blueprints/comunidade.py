@@ -139,7 +139,9 @@ def comment_post(community_id, post_id):
             'id': comment.id,
             'author': current_user.nome,
             'text': comment.text,
-            'created_at': comment.created_at.strftime('%d/%m/%Y %H:%M')
+            'created_at': comment.created_at.strftime('%d/%m/%Y %H:%M'),
+            'created_at_iso': comment.created_at.isoformat(),
+            'created_at_ts': int(comment.created_at.timestamp() * 1000)
         }
     })
 
@@ -303,7 +305,7 @@ def delete_post(community_id, post_id):
     comunidade = Community.query.get_or_404(community_id)
     
     # Verificar permissão: autor do post, admin ou dono da comunidade
-    if current_user.id != post.user_id and not current_user.is_admin and current_user.id != comunidade.owner_id:
+    if current_user.id != post.author_id and not current_user.is_admin and current_user.id != comunidade.owner_id:
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return jsonify({'success': False, 'message': 'Sem permissão'}), 403
         flash('Você não tem permissão para excluir este post.', 'danger')
@@ -330,7 +332,7 @@ def delete_post(community_id, post_id):
             return jsonify({'success': False, 'message': str(e)}), 500
         flash(f'Erro ao excluir post: {str(e)}', 'danger')
     
-    return redirect(url_for('comunidade.ver_comunidade', community_id=community_id))
+    return redirect(url_for('comunidade.comunidade_users', community_id=community_id))
 
 @comunidade_bp.route('/comment/<int:comment_id>/delete', methods=['POST'])
 @login_required
@@ -367,4 +369,4 @@ def delete_comment(comment_id):
             return jsonify({'success': False, 'message': str(e)}), 500
         flash(f'Erro ao excluir comentário: {str(e)}', 'danger')
     
-    return redirect(url_for('comunidade.ver_comunidade', community_id=post.community_id))
+    return redirect(url_for('comunidade.comunidade_users', community_id=post.community_id))

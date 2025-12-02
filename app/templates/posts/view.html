@@ -10,7 +10,7 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <h4 class="mb-0">Post</h4>
-                        <small class="text-muted">{{ post.created_at.strftime('%d/%m/%Y %H:%M') }}</small>
+                        <small class="text-muted">{{ post.created_at|format_datetime('%d/%m/%Y %H:%M') }}</small>
                     </div>
                     <p>{{ post.content }}</p>
                     <div class="d-flex gap-2">

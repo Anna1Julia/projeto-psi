@@ -86,3 +86,28 @@ def youtube_embed_url(video_id: str, autoplay: bool = True) -> str:
     return (
         f"https://www.youtube.com/embed/{video_id}?autoplay={auto}&rel=0&modestbranding=1"
     )
+
+
+    def format_datetime(dt, format_str: str = '%d/%m/%Y %H:%M'):
+        """Formata um objeto datetime para o fuso horário local do servidor.
+
+        - Se o datetime for "naive" (sem tzinfo), assume que está em UTC.
+        - Converte para o fuso horário local e retorna a string formatada.
+        """
+        if not dt:
+            return ''
+        try:
+            from datetime import datetime, timezone
+
+            # Se for naive, assume UTC
+            if getattr(dt, 'tzinfo', None) is None or dt.tzinfo.utcoffset(dt) is None:
+                dt = dt.replace(tzinfo=timezone.utc)
+
+            local_tz = datetime.now().astimezone().tzinfo
+            local_dt = dt.astimezone(local_tz)
+            return local_dt.strftime(format_str)
+        except Exception:
+            try:
+                return dt.strftime(format_str)
+            except Exception:
+                return str(dt)

@@ -157,15 +157,15 @@ def delete_user():
         
         # 2. Deletar likes em posts de comunidades
         CommunityPostLike.query.filter_by(user_id=user_id).delete()
-        print("✓ Likes em posts deletados")
+        print("Likes em posts deletados")
         
         # 3. Deletar comentários em posts de comunidades
         CommunityPostComment.query.filter_by(user_id=user_id).delete()
-        print("✓ Comentários em posts deletados")
+        print("Comentários em posts deletados")
         
         # 4. Deletar posts em comunidades
         CommunityPost.query.filter_by(author_id=user_id).delete()
-        print("✓ Posts em comunidades deletados")
+        print("Posts em comunidades deletados")
         
         # 5. Deletar comunidades criadas pelo usuário
         # Nota: Isso também deletará todos os posts, likes e comentários dessas comunidades
@@ -196,13 +196,13 @@ def delete_user():
         db.session.delete(usuario)
         db.session.commit()
         
-        print(f"✅ Usuário {user_name} deletado com sucesso!")
+        print(f"Usuário {user_name} deletado com sucesso!")
         flash(f'Conta de {user_name} foi deletada com sucesso!', 'success')
         return redirect(url_for('main.index'))
         
     except Exception as e:
         db.session.rollback()
-        print(f"❌ Erro ao deletar usuário: {str(e)}")
+        print(f"Erro ao deletar usuário: {str(e)}")
         flash(f'Erro ao deletar usuário: {str(e)}', 'danger')
         # Se der erro, tentar redirecionar para o perfil se ainda estiver logado
         if current_user.is_authenticated:

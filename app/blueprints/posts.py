@@ -11,6 +11,21 @@ def list_posts():
     communities = Community.query.all()
     return render_template('posts/list.html', posts=posts, communities=communities)
 
+
+@posts_bp.route('/meus')
+@login_required
+def meus_posts():
+    """Lista apenas posts criados pelo usuário atual"""
+    posts = (CommunityPost.query
+             .filter_by(author_id=current_user.id)
+             .order_by(CommunityPost.created_at.desc())
+             .all())
+    communities = Community.query.all()
+    return render_template('posts/list.html',
+                           posts=posts,
+                           communities=communities,
+                           only_mine=True)
+
 @posts_bp.route('/create', methods=['GET', 'POST'])
 @login_required
 def create_post():

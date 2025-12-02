@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 <style>
+/* Profile page styles with dark/light mode support */
 .timeline-item {
     position: relative;
 }
@@ -24,8 +25,12 @@ document.addEventListener('DOMContentLoaded', function() {
     top: 50px;
     width: 2px;
     height: calc(100% - 30px);
-    background: #dee2e6;
+    background: rgba(0,0,0,0.1);
     z-index: 1;
+}
+
+:root.dark .timeline-item:not(:last-child)::after {
+    background: rgba(255,255,255,0.15);
 }
 
 .timeline-icon {
@@ -34,26 +39,169 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .timeline-content {
-    background: #f8f9fa;
+    background: var(--color-surface, #f8f9fa);
     border-radius: 8px;
     padding: 15px;
-    border-left: 3px solid #dee2e6;
+    border-left: 3px solid rgba(0,0,0,0.1);
     transition: all 0.3s ease;
+    color: var(--color-text);
+}
+
+:root.dark .timeline-content {
+    background: var(--color-surface, #1E293B);
+    border-left-color: rgba(255,255,255,0.15);
 }
 
 .timeline-content:hover {
-    background: #e9ecef;
-    border-left-color: #007bff;
+    background: rgba(0,0,0,0.03);
+    border-left-color: var(--color-primary, #2563EB);
     transform: translateX(5px);
 }
 
+:root.dark .timeline-content:hover {
+    background: rgba(255,255,255,0.05);
+    border-left-color: var(--color-primary, #3B82F6);
+}
+
 .activity-link {
-    color: inherit;
+    color: var(--color-text);
     text-decoration: none;
 }
 
 .activity-link:hover {
-    color: #007bff;
+    color: var(--color-primary, #2563EB);
+}
+
+:root.dark .activity-link:hover {
+    color: var(--color-primary, #3B82F6);
+}
+
+/* Profile card text colors */
+.profile-card-body {
+    color: var(--color-text) !important;
+}
+
+.profile-card-body h4 {
+    color: var(--color-text) !important;
+}
+
+.profile-card-body p {
+    color: var(--color-text) !important;
+}
+
+.profile-card-body strong {
+    color: var(--color-text) !important;
+}
+
+.profile-card-body em {
+    color: var(--color-text) !important;
+}
+
+.profile-card-body small {
+    color: var(--color-muted, rgba(15,23,42,0.6)) !important;
+}
+
+:root.dark .profile-card-body small {
+    color: var(--color-muted, rgba(226,232,240,0.7)) !important;
+}
+
+.profile-card-body .text-muted {
+    color: var(--color-muted, rgba(15,23,42,0.6)) !important;
+}
+
+:root.dark .profile-card-body .text-muted {
+    color: var(--color-muted, rgba(226,232,240,0.7)) !important;
+}
+
+.profile-card-body hr {
+    border-color: rgba(0,0,0,0.1);
+}
+
+:root.dark .profile-card-body hr {
+    border-color: rgba(255,255,255,0.1);
+}
+
+/* Garantir que todos os textos dentro do card-body usem as cores do tema */
+.card-body h4,
+.card-body h5,
+.card-body h6 {
+    color: var(--color-text) !important;
+}
+
+.card-body p,
+.card-body span:not(.badge):not(.text-white) {
+    color: var(--color-text) !important;
+}
+
+.card-body strong {
+    color: var(--color-text) !important;
+    font-weight: 600;
+}
+
+.card-body em {
+    color: var(--color-text) !important;
+    font-style: italic;
+}
+
+/* Garantir que h5 nas estatísticas seja visível */
+.card-body .row.text-center h5 {
+    color: var(--color-text) !important;
+    font-weight: 700;
+}
+
+/* Timeline content text */
+.timeline-content h6 {
+    color: var(--color-text) !important;
+}
+
+.timeline-content h6 a {
+    color: var(--color-text) !important;
+}
+
+.timeline-content h6 a:hover {
+    color: var(--color-primary) !important;
+}
+
+:root.dark .timeline-content h6 a:hover {
+    color: var(--color-primary) !important;
+}
+
+/* Forçar cores corretas em todos os elementos de texto */
+.card-body * {
+    color: inherit;
+}
+
+.card-body h4,
+.card-body h5,
+.card-body h6,
+.card-body p,
+.card-body span:not(.badge):not(.text-white),
+.card-body strong,
+.card-body em,
+.card-body small:not(.text-white) {
+    color: var(--color-text) !important;
+}
+
+:root.dark .card-body h4,
+:root.dark .card-body h5,
+:root.dark .card-body h6,
+:root.dark .card-body p,
+:root.dark .card-body span:not(.badge):not(.text-white),
+:root.dark .card-body strong,
+:root.dark .card-body em,
+:root.dark .card-body small:not(.text-white) {
+    color: var(--color-text, #E2E8F0) !important;
+}
+
+/* Textos muted devem usar a variável correta */
+.card-body .text-muted,
+.card-body small.text-muted {
+    color: var(--color-muted, rgba(15,23,42,0.6)) !important;
+}
+
+:root.dark .card-body .text-muted,
+:root.dark .card-body small.text-muted {
+    color: var(--color-muted, rgba(226,232,240,0.7)) !important;
 }
 </style>
 <div class="container mt-4">
@@ -61,9 +209,9 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="col-md-8 mx-auto">
             <div class="card">
                 <div class="card-header">
-                    <h3 style="color: #ffffff;">Perfil de {{ usuario.nome }}</h3>
+                    <h3 style="color: #ffffff !important;">Perfil de {{ usuario.nome }}</h3>
                 </div>
-                <div class="card-body">
+                <div class="card-body profile-card-body">
                     <div class="row">
                         <div class="col-md-4 text-center">
                             {% if usuario.profile_picture %}
@@ -87,12 +235,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         <div class="col-md-8">
                             <h4>{{ usuario.nome }}</h4>
-                            <p style="color: #000 !important;">{{ usuario.email }}</p>
+                            <p>{{ usuario.email }}</p>
                             
                             <hr>
                             
                             <div class="mb-3">
-                                <strong>Membro desde:</strong> {{ usuario.criado_em.strftime('%d de %B de %Y') }}
+                                <strong>Membro desde:</strong> {{ usuario.criado_em|format_datetime('%d de %B de %Y') }}
                             </div>
                             
                             {% if usuario.biografia %}
@@ -102,7 +250,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </div>
                             {% else %}
                                 <div class="mb-3">
-                                    <em style="color: #000;">Nenhuma biografia disponível.</em>
+                                    <em>Nenhuma biografia disponível.</em>
                                 </div>
                             {% endif %}
                             
@@ -111,15 +259,15 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="row text-center">
                                 <div class="col-4">
                                     <h5>{{ usuario.comentarios.count() }}</h5>
-                                    <small style="color: #000 !important;">Comentários</small>
+                                    <small>Comentários</small>
                                 </div>
                                 <div class="col-4">
                                     <h5>{{ usuario.likes.count() }}</h5>
-                                    <small style="color: #000 !important;">Likes</small>
+                                    <small>Likes</small>
                                 </div>
                                 <div class="col-4">
                                     <h5>{{ usuario.avaliacoes.count() }}</h5>
-                                    <small style="color: #000 !important;">Avaliações</small>
+                                    <small>Avaliações</small>
                                 </div>
                             </div>
                         </div>
@@ -130,10 +278,10 @@ document.addEventListener('DOMContentLoaded', function() {
             <!-- Seção de atividades recentes -->
             <div class="card mt-4 mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0" style="color: #ffffff!important;">Atividades Recentes</h5>
-                    <small style="color: #fffff !important;">Últimos 30 dias</small>
+                    <h5 class="mb-0" style="color: #ffffff !important;">Atividades Recentes</h5>
+                    <small style="color: rgba(255,255,255,0.9) !important;">Últimos 30 dias</small>
                 </div>
-                <div class="card-body">
+                <div class="card-body profile-card-body">
                     {% if activities %}
                         <div class="timeline">
                             {% for activity in activities %}
@@ -164,7 +312,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                             <div class="d-flex align-items-center">
                                                 <small class="text-muted">
                                                     <i class="fas fa-clock me-1"></i>
-                                                    {{ activity.date.strftime('%d/%m/%Y às %H:%M') }}
+                                                    {{ activity.date|format_datetime('%d/%m/%Y às %H:%M') }}
                                                 </small>
                                             </div>
                                         </div>
@@ -183,9 +331,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         {% endif %}
                     {% else %}
                         <div class="text-center py-4">
-                            <i class="fas fa-history fa-3x text-muted mb-3" style="color: #000 !important;"></i>
-                            <p class="text-muted" style="color: #000 !important;">Nenhuma atividade recente encontrada.</p>
-                            <small class="text-muted" style="color: #000 !important;">
+                            <i class="fas fa-history fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">Nenhuma atividade recente encontrada.</p>
+                            <small class="text-muted">
                                 As atividades dos últimos 30 dias aparecerão aqui.
                             </small>
                         </div>

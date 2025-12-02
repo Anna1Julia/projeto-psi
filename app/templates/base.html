@@ -17,17 +17,7 @@
     <!-- AOS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css">
     {% block extra_css %}{% endblock %}
-    <script>
-      // Apply persisted theme ASAP to prevent FOUC
-      (function() {
-        try {
-          const stored = localStorage.getItem('theme');
-          const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-          const shouldDark = stored ? stored === 'dark' : prefersDark;
-          if (shouldDark) document.documentElement.classList.add('dark');
-        } catch (_) {}
-      })();
-    </script>
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
     {% block head_scripts %}{% endblock %}
   </head>
   <body class="{% if is_homepage %}homepage{% endif %} {{ body_class|default('') }}">
@@ -36,7 +26,10 @@
       <div class="spinner-border" role="status" aria-label="Carregando..."></div>
     </div>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark navbar-fixed">
+    <!-- Wrapper principal: tudo que será desfocado quando um modal global abrir -->
+    <div id="appRoot">
+
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-fixed app-navbar">
       <div class="container">
         <a class="navbar-brand" href="{{ url_for('main.index') }}">MemóriaViva</a>
 
@@ -45,32 +38,89 @@
         </button>
 
         <div class="collapse navbar-collapse" id="navbarNav">
+          <!-- Navegação principal (esquerda) -->
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item"><a class="nav-link" href="{{ url_for('main.index') }}">Início</a></li>
             <li class="nav-item"><a class="nav-link" href="{{ url_for('content.list_content') }}">Conteúdos</a></li>
-            {% if current_user.is_authenticated and current_user.is_admin %}
-         
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('comunidade.comunidade') }}">Comunidades</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('posts.list_posts') }}">Posts</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('users.list_users') }}">Usuários</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('feedback.enviar_feedback') }}">Feedback</a></li>
-          </ul>
+            {% if current_user.is_authenticated %}
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('dashboard.index') }}">Dashboard</a></li>
+
+            <!-- Dropdown Comunidades -->
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navComunidades" role="button" data-bs-toggle="dropdown">
+                Comunidades
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navComunidades">
+                <li>
+                  <a class="dropdown-item" href="{{ url_for('comunidade.minhas_comunidades') }}">
+                    Minhas comunidades
+                  </a>
+                </li>
+                {% if current_user.is_admin %}
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <a class="dropdown-item" href="{{ url_for('comunidade.comunidade') }}">
+                    Gerenciar comunidades
+                  </a>
+                </li>
+                {% endif %}
+              </ul>
+            </li>
+
+            <!-- Dropdown Posts -->
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navPosts" role="button" data-bs-toggle="dropdown">
+                Posts
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navPosts">
+                <li>
+                  <a class="dropdown-item" href="{{ url_for('posts.meus_posts') }}">
+                    Meus posts
+                  </a>
+                </li>
+                {% if current_user.is_admin %}
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <a class="dropdown-item" href="{{ url_for('posts.list_posts') }}">
+                    Gerenciar posts
+                  </a>
+                </li>
+                {% endif %}
+              </ul>
+            </li>
             {% endif %}
-          <ul class="navbar-nav align-items-center gap-2">
+          </ul>
+
+          <!-- Ações à direita: tema + usuário/login -->
+          <ul class="navbar-nav align-items-center gap-2 ms-lg-2">
             <li class="nav-item">
-              <button id="themeToggle" class="btn btn-outline-light btn-sm" type="button" aria-label="Alternar tema">
-                <i class="bi bi-moon-stars-fill" data-icon="moon"></i>
-                <i class="bi bi-sun-fill d-none" data-icon="sun"></i>
+              <button id="themeToggle" class="theme-toggle-btn" type="button" aria-label="Alternar tema">
+                <i class="bi bi-moon-fill" data-icon="moon" aria-hidden="true"></i>
+                <i class="bi bi-sun-fill" data-icon="sun" aria-hidden="true"></i>
               </button>
             </li>
             {% if current_user.is_authenticated %}
             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" data-no-loader="true">
                 {{ current_user.nome }}
               </a>
               <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="{{ url_for('users.profile', user_id=current_user.id) }}">Meu Perfil</a></li>
-                <li><a class="dropdown-item" href="{{ url_for('users.edit_user', user_id=current_user.id) }}">Editar Perfil</a></li>
+                <li>
+                  <button type="button"
+                          class="dropdown-item"
+                          data-bs-toggle="modal"
+                          data-bs-target="#profileModal">
+                    Meu Perfil
+                  </button>
+                </li>
+                <li>
+                  <button type="button"
+                          class="dropdown-item"
+                          data-bs-toggle="modal"
+                          data-bs-target="#editProfileModal">
+                    Editar Perfil
+                  </button>
+                </li>
                 <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">Sair</a></li>
               </ul>
@@ -115,10 +165,176 @@
       </div>
     </footer>
 
+    </div> <!-- /#appRoot -->
+
+    <!-- Overlay para blur suave quando dropdowns do header estiverem abertos -->
+    <div id="dropdownBlurOverlay" aria-hidden="true"></div>
+
+    {% block global_modals %}
+    <!-- Modal Meu Perfil (global) -->
+    {% if current_user.is_authenticated %}
+    <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="profileModalLabel">Meu Perfil</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-md-4 text-center mb-3 mb-md-0">
+                {% if current_user.profile_picture %}
+                  <img src="{{ current_user.profile_picture }}"
+                       alt="Foto de {{ current_user.nome }}"
+                       class="rounded-circle mb-3"
+                       width="130"
+                       height="130">
+                {% else %}
+                  <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3"
+                       style="width: 130px; height: 130px; font-size: 2.4rem;">
+                    {{ current_user.nome[0].upper() }}
+                  </div>
+                {% endif %}
+                <p class="mb-1 fw-semibold">{{ current_user.nome }}</p>
+                <p class="mb-0 text-muted small">{{ current_user.email }}</p>
+              </div>
+              <div class="col-md-8">
+                <div class="mb-2">
+                  <strong>Membro desde:</strong>
+                  <span class="ms-1">
+                    {{ current_user.criado_em|format_datetime('%d de %B de %Y') if current_user.criado_em else '—' }}
+                  </span>
+                </div>
+                <hr class="my-2">
+                <div class="mb-2">
+                  <strong>Biografia:</strong>
+                  <p class="mt-1 mb-0">
+                    {{ current_user.biografia or 'Nenhuma biografia disponível.' }}
+                  </p>
+                </div>
+                <div class="mt-3 d-flex flex-wrap gap-2">
+                  <a href="{{ url_for('users.profile', user_id=current_user.id) }}"
+                     class="btn btn-outline-primary btn-sm">
+                    Ver perfil completo
+                  </a>
+                  <button type="button"
+                          class="btn btn-primary btn-sm"
+                          data-bs-dismiss="modal"
+                          data-bs-toggle="modal"
+                          data-bs-target="#editProfileModal">
+                    Editar Perfil
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Editar Perfil (global) -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editProfileModalLabel">Editar Perfil</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+          </div>
+          <form method="POST" action="{{ url_for('users.edit_user', user_id=current_user.id) }}">
+            <div class="modal-body">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="modal_nome" class="form-label">Nome</label>
+                  <input type="text"
+                         class="form-control"
+                         id="modal_nome"
+                         name="nome"
+                         value="{{ current_user.nome }}"
+                         required>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="modal_email" class="form-label">Email</label>
+                  <input type="email"
+                         class="form-control"
+                         id="modal_email"
+                         name="email"
+                         value="{{ current_user.email }}"
+                         required>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="modal_senha" class="form-label">Nova Senha</label>
+                <input type="password"
+                       class="form-control"
+                       id="modal_senha"
+                       name="senha"
+                       placeholder="Deixe em branco para manter a senha atual">
+                <div class="form-text">Deixe este campo vazio se não quiser alterar sua senha.</div>
+              </div>
+              <div class="mb-3">
+                <label for="modal_biografia" class="form-label">Biografia</label>
+                <textarea class="form-control"
+                          id="modal_biografia"
+                          name="biografia"
+                          rows="4"
+                          placeholder="Conte um pouco sobre você...">{{ current_user.biografia or '' }}</textarea>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    {% endblock %}
+
     <!-- JS: Bootstrap, AOS, Theme -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
-    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+
+    <!-- Limpeza de backdrops "presos" de modais Bootstrap
+         + blur do appRoot quando um modal global estiver aberto
+         + blur suave em background quando dropdowns do header estiverem abertos -->
+    <script>
+      (function () {
+        function syncAppBlur() {
+          var app = document.getElementById('appRoot');
+          if (!app) return;
+
+          var hasOpenModal = document.querySelector('.modal.show') !== null;
+          app.style.filter = hasOpenModal ? 'blur(8px)' : '';
+        }
+
+        // Modais
+        document.addEventListener('shown.bs.modal', syncAppBlur);
+        document.addEventListener('hidden.bs.modal', function () {
+          document.body.classList.remove('modal-open');
+          var backdrops = document.querySelectorAll('.modal-backdrop');
+          backdrops.forEach(function (el) { el.remove(); });
+          syncAppBlur();
+        });
+
+        // Dropdowns (Comunidades, Posts, etc.) usam overlay próprio com blur,
+        // para não afetar a nitidez do próprio menu.
+        function syncDropdownBlur() {
+          var overlay = document.getElementById('dropdownBlurOverlay');
+          if (!overlay) return;
+          var hasOpenDropdown = document.querySelector('.dropdown-menu.show') !== null;
+          overlay.classList.toggle('show', hasOpenDropdown);
+        }
+
+        document.addEventListener('shown.bs.dropdown', syncDropdownBlur);
+        document.addEventListener('hidden.bs.dropdown', syncDropdownBlur);
+      })();
+    </script>
+
     {% block extra_js %}{% endblock %}
   </body>
   </html>

@@ -1,0 +1,648 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — MemóriaViva{% endblock %}
+
+{% block head_scripts %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Dashboard Container */
+    .dashboard-container {
+        padding: 2rem 1rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    
+    /* Header */
+    .dashboard-header {
+        margin-bottom: 2.5rem;
+    }
+    
+    /* 
+       Importante: não sobrescrever títulos que usam a classe utilitária
+       .force-white-title — assim eles permanecem brancos em qualquer tema.
+    */
+    .dashboard-header h1:not(.force-white-title) {
+        color: var(--color-text, #0F172A) !important;
+    }
+    
+    .dashboard-header h1:not(.force-white-title) i {
+        color: var(--color-text, #0F172A) !important;
+    }
+    
+    .dashboard-header .text-muted {
+        color: rgba(15, 23, 42, 0.7) !important;
+    }
+    
+    :root.dark .dashboard-header h1:not(.force-white-title) {
+        color: var(--color-text, #E2E8F0) !important;
+    }
+    
+    :root.dark .dashboard-header h1:not(.force-white-title) i {
+        color: var(--color-text, #E2E8F0) !important;
+    }
+    
+    :root.dark .dashboard-header .text-muted {
+        color: rgba(226, 232, 240, 0.8) !important;
+    }
+    
+    /* Override force-white classes in dark mode for dashboard (mantém branco) */
+    :root.dark .dashboard-header .force-white-title {
+        color: #ffffff !important;
+    }
+    
+    :root.dark .dashboard-header .force-white-subtitle {
+        color: rgba(255, 255, 255, 0.92) !important;
+    }
+    
+    /* Stat Cards */
+    .stat-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border: none;
+        border-radius: 12px;
+        height: 100%;
+        min-height: 140px;
+        background: #fff !important;
+    }
+    
+    .stat-card.bg-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    }
+    
+    .stat-card.bg-success {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+    }
+    
+    .stat-card.bg-info {
+        background: linear-gradient(135deg, #3494E6 0%, #EC6EAD 100%) !important;
+    }
+    
+    .stat-card.bg-warning {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.15) !important;
+    }
+    
+    .stat-card .card-body {
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+    }
+    
+    .stat-icon {
+        font-size: 3rem;
+        opacity: 0.9;
+        flex-shrink: 0;
+    }
+    
+    .stat-card .card-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 0;
+        line-height: 1.2;
+    }
+    
+    .stat-card .card-subtitle {
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.75rem;
+    }
+    
+    /* Chart Cards */
+    .chart-card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .chart-card .card-header {
+        border-bottom: 1px solid rgba(0,0,0,0.08);
+        padding: 1.25rem 1.5rem;
+        background: #fff !important;
+        border-radius: 12px 12px 0 0;
+    }
+    
+    .chart-card .card-title {
+        color: var(--color-text, #0F172A) !important;
+    }
+    
+    .chart-card .card-title i {
+        color: var(--color-text, #0F172A) !important;
+    }
+    
+    .chart-card .card-body {
+        padding: 1.5rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .chart-container {
+        position: relative;
+        height: 350px;
+        width: 100%;
+        flex: 1;
+        min-height: 300px;
+    }
+    
+    /* Table Card */
+    .table-card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    
+    .table-card .card-header {
+        border-bottom: 1px solid rgba(0,0,0,0.08);
+        padding: 1.25rem 1.5rem;
+        background: #fff !important;
+        border-radius: 12px 12px 0 0;
+    }
+    
+    .table-card .card-title {
+        color: var(--color-text, #0F172A) !important;
+    }
+    
+    .table-card .card-title i {
+        color: var(--color-text, #0F172A) !important;
+    }
+    
+    .table-card .table {
+        margin: 0;
+    }
+    
+    .table-card .table thead th {
+        border-bottom: 2px solid rgba(0,0,0,0.08);
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        padding: 1rem 1.5rem;
+        background: transparent !important;
+        color: var(--color-text, #0F172A) !important;
+    }
+    
+    :root.dark .table-card .table thead th {
+        border-bottom-color: rgba(226,232,240,0.15) !important;
+        color: var(--color-text, #E2E8F0) !important;
+    }
+    
+    .table-card .table tbody td {
+        padding: 1rem 1.5rem;
+        vertical-align: middle;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .dashboard-container {
+            padding: 1rem 0.5rem;
+        }
+        
+        .stat-card {
+            min-height: 120px;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-card .card-title {
+            font-size: 2rem;
+        }
+        
+        .stat-icon {
+            font-size: 2.5rem;
+        }
+        
+        .chart-container {
+            height: 280px;
+            min-height: 250px;
+        }
+        
+        .dashboard-header h1 {
+            font-size: 1.75rem;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .stat-card .card-body {
+            padding: 1rem;
+        }
+        
+        .stat-card .card-title {
+            font-size: 1.75rem;
+        }
+        
+        .stat-icon {
+            font-size: 2rem;
+        }
+        
+        .chart-container {
+            height: 250px;
+            min-height: 200px;
+        }
+    }
+    
+    /* Dark mode support */
+    :root.dark .chart-card,
+    :root.dark .table-card {
+        background: var(--color-surface, #1E293B) !important;
+        color: var(--color-text, #E2E8F0) !important;
+    }
+    
+    :root.dark .chart-card .card-header,
+    :root.dark .table-card .card-header {
+        background: var(--color-surface, #1E293B) !important;
+        border-bottom-color: rgba(226,232,240,0.15) !important;
+    }
+    
+    :root.dark .chart-card .card-title {
+        color: var(--color-text, #E2E8F0) !important;
+    }
+    
+    :root.dark .chart-card .card-title i {
+        color: var(--color-text, #E2E8F0) !important;
+    }
+    
+    :root.dark .table-card .card-title {
+        color: var(--color-text, #E2E8F0) !important;
+    }
+    
+    :root.dark .table-card .card-title i {
+        color: var(--color-text, #E2E8F0) !important;
+    }
+    
+    :root.dark .table-card .table {
+        color: var(--color-text, #E2E8F0) !important;
+    }
+    
+    :root.dark .table-card .table thead th {
+        border-bottom-color: rgba(226,232,240,0.15) !important;
+        color: var(--color-text, #E2E8F0) !important;
+    }
+    
+    :root.dark .table-card .table tbody td,
+    :root.dark .table-card .table tbody th {
+        color: var(--color-text, #E2E8F0) !important;
+        border-color: rgba(226,232,240,0.1) !important;
+        background-color: transparent !important;
+    }
+    
+    :root.dark .table-card .table tbody tr:hover {
+        background-color: rgba(226,232,240,0.08) !important;
+    }
+    
+    .table-card .table tbody tr:hover {
+        background-color: rgba(0,0,0,0.03) !important;
+    }
+    
+    :root.dark .table-card .table .text-muted {
+        color: rgba(226,232,240,0.7) !important;
+    }
+    
+    .table-card .table .text-muted {
+        color: rgba(15,23,42,0.6) !important;
+    }
+    
+    :root.dark .table-card .table .badge {
+        color: #fff !important;
+    }
+    
+    .table-card .table .badge {
+        color: #fff !important;
+    }
+    
+    /* Light mode - garantir contraste */
+    .chart-card,
+    .table-card {
+        background: #fff !important;
+        color: var(--color-text, #0F172A) !important;
+    }
+    
+    .chart-card .card-header,
+    .table-card .card-header {
+        background: #fff !important;
+        border-bottom-color: rgba(0,0,0,0.08) !important;
+    }
+    
+    .chart-card .card-title,
+    .table-card .card-title {
+        color: var(--color-text, #0F172A) !important;
+    }
+    
+    .table-card .table {
+        color: var(--color-text, #0F172A) !important;
+    }
+    
+    .table-card .table thead th {
+        color: var(--color-text, #0F172A) !important;
+    }
+    
+    .table-card .table tbody td {
+        color: var(--color-text, #0F172A) !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1 class="display-5 fw-bold mb-2 force-white-title">
+            <i class="bi bi-speedometer2 me-2"></i>Dashboard
+        </h1>   
+        <p class="text-muted force-white-subtitle">Visão geral do sistema MemóriaViva</p>
+    </div>
+
+    <!-- Cards de Estatísticas -->
+    <div class="row g-4 mb-4">
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card stat-card bg-primary text-white shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <h6 class="card-subtitle text-white-50">Usuários Cadastrados</h6>
+                            <h2 class="card-title">{{ total_usuarios }}</h2>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card stat-card bg-success text-white shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <h6 class="card-subtitle text-white-50">Obras Cadastradas</h6>
+                            <h2 class="card-title">{{ total_obras }}</h2>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="bi bi-book-fill"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card stat-card bg-info text-white shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <h6 class="card-subtitle text-white-50">Comunidades Criadas</h6>
+                            <h2 class="card-title">{{ total_comunidades }}</h2>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="bi bi-people"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card stat-card bg-warning text-white shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <h6 class="card-subtitle text-white-50">Avaliações Registradas</h6>
+                            <h2 class="card-title">{{ total_avaliacoes }}</h2>
+                        </div>
+                        <div class="stat-icon">
+                            <i class="bi bi-star-fill"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="row g-4 mb-4">
+        <div class="col-12 col-lg-8">
+            <div class="card chart-card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-bar-chart-fill me-2"></i>Novos Itens por Mês
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="chartBarras"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-4">
+            <div class="card chart-card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-pie-chart-fill me-2"></i>Tipos de Conteúdos
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="chartPizza"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela de Últimos Itens -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card table-card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-clock-history me-2"></i>Últimos Itens Adicionados
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Título</th>
+                                    <th>Autor</th>
+                                    <th>Tipo</th>
+                                    <th>Data de Criação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if ultimos_itens %}
+                                    {% for item in ultimos_itens %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ item.title }}</strong>
+                                        </td>
+                                        <td>
+                                            {% if item.autor %}
+                                                {{ item.autor.nome }}
+                                            {% else %}
+                                                <span class="text-muted">N/A</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary">{{ item.type }}</span>
+                                        </td>
+                                        <td>
+                                            <small class="text-muted">
+                                                {{ item.created_at|format_datetime('%d/%m/%Y %H:%M') if item.created_at else 'N/A' }}
+                                            </small>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted py-4">
+                                            <i class="bi bi-inbox me-2"></i>Nenhum item encontrado
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Gráfico de Barras - Novos Itens por Mês
+    const ctxBarras = document.getElementById('chartBarras').getContext('2d');
+    const chartBarras = new Chart(ctxBarras, {
+        type: 'bar',
+        data: {
+            labels: {{ meses_dados|tojson }},
+            datasets: [{
+                label: 'Novos Itens',
+                data: {{ valores_dados|tojson }},
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 2,
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    padding: 12,
+                    titleFont: {
+                        size: 14
+                    },
+                    bodyFont: {
+                        size: 13
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+
+    // Gráfico de Pizza - Tipos de Conteúdos
+    const ctxPizza = document.getElementById('chartPizza').getContext('2d');
+    const chartPizza = new Chart(ctxPizza, {
+        type: 'pie',
+        data: {
+            labels: {{ tipos_labels|tojson }},
+            datasets: [{
+                data: {{ tipos_valores|tojson }},
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.8)',
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(255, 206, 86, 0.8)',
+                    'rgba(75, 192, 192, 0.8)',
+                    'rgba(153, 102, 255, 0.8)',
+                    'rgba(255, 159, 64, 0.8)',
+                    'rgba(199, 199, 199, 0.8)',
+                    'rgba(83, 102, 255, 0.8)',
+                    'rgba(255, 99, 255, 0.8)',
+                    'rgba(99, 255, 132, 0.8)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)',
+                    'rgba(199, 199, 199, 1)',
+                    'rgba(83, 102, 255, 1)',
+                    'rgba(255, 99, 255, 1)',
+                    'rgba(99, 255, 132, 1)'
+                ],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 15,
+                        font: {
+                            size: 12
+                        }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    padding: 12,
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            label += context.parsed + ' item(ns)';
+                            return label;
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
+

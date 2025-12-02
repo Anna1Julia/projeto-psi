@@ -132,7 +132,7 @@
                                     
                                     <div class="mt-auto">
                                         <div class="d-flex justify-content-between align-items-center">
-                                            <small class="text-muted">Adicionado em {{ content.created_at.strftime('%d/%m/%Y') }}</small>
+                                            <small class="text-muted">Adicionado em {{ content.created_at|format_datetime('%d/%m/%Y') }}</small>
                                             <a href="{{ url_for('content.view_content', content_id=content.id) }}" class="btn btn-outline-primary btn-sm">Ver Detalhes</a>
                                         </div>
                                     </div>

@@ -3,29 +3,35 @@
 {% block title %}Conteúdos - MemóriaViva{% endblock %}
 
 {% block content %}
-<div class="container mt-4 mb-4">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2>Catálogo de Conteúdos</h2>
-                {% if current_user.is_authenticated %}
-                    <a href="{{ url_for('content.create_content') }}" class="btn btn-primary">Adicionar Conteúdo</a>
-                {% endif %}
-            </div>
+<div class="page-shell">
+    <header class="page-header">
+        <div class="page-header-main">
+            <h1 class="page-header-title">Catálogo de Conteúdos</h1>
+            <p class="page-header-subtitle">
+                Explore artigos, relatos, entrevistas, fotos e outros registros do acervo.
+            </p>
+        </div>
+        {% if current_user.is_authenticated %}
+        <div class="page-header-actions">
+            <a href="{{ url_for('content.create_content') }}" class="btn btn-primary">
+                Adicionar Conteúdo
+            </a>
+        </div>
+        {% endif %}
+    </header>
             
-            {% if contents %}
-                <div class="row">
-                    {% for content in contents %}
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="card h-100">
+    {% if contents %}
+        <section class="card-grid">
+            {% for content in contents %}
+                <article class="card card-elevated h-100">
                                 {% if content.url %}
                                     <!-- Thumbnail com play icon se tiver URL do YouTube -->
                                     <a href="{{ content.url }}" target="_blank" class="text-decoration-none">
                                         <div class="obra-thumbnail-container" style="border-radius: 0;">
                                             {% if content.thumbnail %}
-                                                <img src="{{ content.thumbnail }}" class="card-img-top" alt="{{ content.title }}" style="height: 300px; object-fit: cover;">
+                                                <img src="{{ content.thumbnail }}" class="card-img-top" alt="{{ content.title }}" style="height: 220px; object-fit: cover;">
                                             {% else %}
-                                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+                                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 220px;">
                                                     <i class="fas fa-book fa-4x text-muted"></i>
                                                 </div>
                                             {% endif %}
@@ -39,9 +45,9 @@
                                 {% else %}
                                     <!-- Apenas thumbnail sem play icon -->
                                     {% if content.thumbnail %}
-                                        <img src="{{ content.thumbnail }}" class="card-img-top" alt="{{ content.title }}" style="height: 300px; object-fit: cover;">
+                                        <img src="{{ content.thumbnail }}" class="card-img-top" alt="{{ content.title }}" style="height: 220px; object-fit: cover;">
                                     {% else %}
-                                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+                                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 220px;">
                                             <i class="fas fa-book fa-4x text-muted"></i>
                                         </div>
                                     {% endif %}
@@ -64,29 +70,28 @@
                                         <p class="card-text">{{ content.description[:150] }}{% if content.description|length > 150 %}...{% endif %}</p>
                                     {% endif %}
                                     
-                                    <div class="mt-auto">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <small class="text-muted">Adicionado em {{ content.created_at.strftime('%d/%m/%Y') }}</small>
-                                            <a href="{{ url_for('content.view_content', content_id=content.id) }}" class="btn btn-outline-primary btn-sm">Ver Detalhes</a>
-                                        </div>
+                                    <div class="mt-auto d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">Adicionado em {{ content.created_at|format_datetime('%d/%m/%Y') }}</small>
+                                        <a href="{{ url_for('content.view_content', content_id=content.id) }}" class="btn btn-outline-primary btn-sm">Ver detalhes</a>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <div class="alert alert-info">
-                    <h4>Nenhum conteúdo encontrado</h4>
-                    <p>Ainda não há conteúdos cadastrados na plataforma.</p>
+                </article>
+            {% endfor %}
+        </section>
+    {% else %}
+        <section class="mt-3">
+            <div class="card card-elevated">
+                <div class="card-body">
+                    <h4 class="mb-2">Nenhum conteúdo encontrado</h4>
+                    <p class="mb-3">Ainda não há conteúdos cadastrados na plataforma.</p>
                     {% if current_user.is_authenticated %}
                         <a href="{{ url_for('content.create_content') }}" class="btn btn-primary">Seja o primeiro a adicionar um conteúdo!</a>
                     {% else %}
                         <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Faça login para adicionar conteúdos</a>
                     {% endif %}
                 </div>
-            {% endif %}
-        </div>
-    </div>
+            </div>
+        </section>
+    {% endif %}
 </div>
 {% endblock %}

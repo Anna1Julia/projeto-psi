@@ -1,227 +1,475 @@
 {% extends "base.html" %}
 
-{% block title %}Comunidade - MemóriaViva{% endblock %}
+{% block title %}{{ comunidade.name }} - MemóriaViva{% endblock %}
+
+{% block extra_css %}{% endblock %}
 
 {% block content %}
-<div class="container mt-4 mb-4">
-  <div class="card shadow-sm">
-    <div class="card-body">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="mb-0 text-dark">{{ comunidade.name }}</h2>
-        <div class="d-flex gap-2">
-          <a href="{{ url_for('comunidade.comunidade') }}" class="btn btn-outline-secondary">Sair</a>
+<div class="community-container">
+    <!-- Header da Comunidade -->
+    <div class="community-header">
+        <div class="community-header-top">
+            <div class="community-header-title-section">
+                <h2>{{ comunidade.name }}</h2>
+                <p class="description mb-0">{{ comunidade.description or 'Sem descrição.' }}</p>
+            </div>
+            <div class="community-header-buttons">
+                <a href="{{ url_for('comunidade.comunidade') }}" class="btn btn-outline-secondary btn-sair me-2">
+                    <i class="bi bi-arrow-left me-1"></i>Sair
+                </a>
+                <button id="createPostButton" class="btn btn-create-post">
+                    <i class="bi bi-plus-circle me-2"></i>Criar Post
+                </button>
+            </div>
         </div>
-      </div>
-
-      <p class="text-muted mb-4">{{ comunidade.description or 'Sem descrição.' }}</p>
-
-      <div class="d-flex justify-content-end mb-3">
-        <button id="createPostButton" class="btn btn-primary rounded-pill px-3 fw-semibold">
-          Criar Post
-        </button>
-      </div>
-
-      <div id="postsContainer" class="mt-2">
-        {% for msg in mensagens %}
-        <div class="card mb-4">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-start mb-2">
-              <div class="flex-grow-1">
-                <p class="mb-2">{{ msg.content }}</p>
-                <small class="text-muted">Postado por {{ msg.usuario.nome }} em {{ msg.created_at.strftime('%d/%m/%Y %H:%M') }}</small>
-              </div>
-              {% if current_user.is_authenticated and (current_user.id == msg.user_id or current_user.is_admin or current_user.id == comunidade.owner_id) %}
-              <button class="btn btn-sm btn-outline-danger delete-post-btn"
-                data-community-id="{{ comunidade.id }}"
-                data-post-id="{{ msg.id }}"
-                title="Excluir post">
-                <i class="fas fa-trash-alt"></i>
-              </button>
-              {% endif %}
-            </div>
-
-            <div class="d-flex justify-content-between mt-3 align-items-center">
-              <form class="d-inline like-form" data-community-id="{{ comunidade.id }}" data-post-id="{{ msg.id }}">
-                <button type="submit" class="btn btn-outline-primary btn-sm rounded-pill">Curtir/Descurtir</button>
-              </form>
-              <form class="input-group input-group-sm comment-form" style="max-width: 420px;"
-                data-community-id="{{ comunidade.id }}" data-post-id="{{ msg.id }}">
-                <input type="text" name="text" class="form-control comment-input" placeholder="Adicionar comentário"
-                  style="color: white;">
-                <button class="btn btn-outline-secondary comment-button" type="submit">Comentar</button>
-              </form>
-            </div>
-
-            <div class="mt-2">
-              <small class="text-muted">Curtidas:
-                <span class="like-count" data-post-id="{{ msg.id }}">{{ msg.likes_count() }}</span></small>
-            </div>
-            <div class="mt-2">
-              <small class="text-muted">Comentários (<span class="comments-count"
-                  data-post-id="{{ msg.id }}">{{ msg.comments_count() }}</span>)</small>
-            </div>
-
-            <div class="mt-2 comments" data-post-id="{{ msg.id }}">
-              {% for c in msg.get_comments() %}
-              <div class="border rounded p-2 mb-2 comment-item">
-                <div class="d-flex justify-content-between align-items-start">
-                  <div class="flex-grow-1">
-                    <strong>{{ c.user.nome }}</strong>
-                    <small class="text-muted ms-2">{{ c.created_at.strftime('%d/%m/%Y %H:%M') }}</small>
-                    <div class="mt-1">{{ c.text }}</div>
-                  </div>
-                  {% if current_user.is_authenticated and (current_user.id == c.user_id or current_user.is_admin or current_user.id == comunidade.owner_id) %}
-                  <button class="btn btn-sm btn-outline-danger delete-comment-btn" data-comment-id="{{ c.id }}"
-                    data-post-id="{{ msg.id }}" title="Excluir comentário">
-                    <i class="fas fa-times"></i>
-                  </button>
-                  {% endif %}
-                </div>
-              </div>
-              {% endfor %}
-            </div>
-          </div>
-        </div>
-        {% endfor %}
-      </div>
     </div>
-  </div>
+
+    <!-- Posts -->
+    <div id="postsContainer">
+        {% if mensagens %}
+            {% for msg in mensagens %}
+            <div class="post-card" data-post-id="{{ msg.id }}">
+                <div class="post-header">
+                    <div class="flex-grow-1 post-header-main">
+                        <div class="post-content">{{ msg.content }}</div>
+                        <div class="post-meta">
+                            <i class="bi bi-person-circle"></i>
+                            <span>Postado por <strong>{{ msg.usuario.nome }}</strong></span>
+                            <span>•</span>
+                            <span>{{ msg.created_at|format_datetime('%d/%m/%Y %H:%M') }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="post-actions">
+                    <form class="like-form" data-community-id="{{ comunidade.id }}" data-post-id="{{ msg.id }}">
+                        <button type="submit" class="like-btn" data-post-id="{{ msg.id }}">
+                            <i class="bi bi-heart me-1"></i>Curtir
+                        </button>
+                    </form>
+                    
+                    <form class="comment-form" data-community-id="{{ comunidade.id }}" data-post-id="{{ msg.id }}">
+                        <input type="text" name="text" class="comment-input" placeholder="Adicionar comentário..." required>
+                        <button type="submit" class="comment-btn">Comentar</button>
+                    </form>
+                    {% if current_user.is_authenticated and (current_user.id == msg.author_id or current_user.is_admin or current_user.id == comunidade.owner_id) %}
+                    <button class="delete-btn delete-post-btn"
+                        data-community-id="{{ comunidade.id }}"
+                        data-post-id="{{ msg.id }}"
+                        title="Excluir post">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                    {% endif %}
+                </div>
+
+                <div class="post-stats">
+                    <span>
+                        <i class="bi bi-heart-fill me-1"></i>
+                        <span class="like-count" data-post-id="{{ msg.id }}">{{ msg.likes_count() }}</span> curtidas
+                    </span>
+                    <span>
+                        <i class="bi bi-chat-dots me-1"></i>
+                        <span class="comments-count" data-post-id="{{ msg.id }}">{{ msg.comments_count() }}</span> comentários
+                    </span>
+                </div>
+
+                <div class="comments-section comments" data-post-id="{{ msg.id }}">
+                    {% for c in msg.get_comments() %}
+                    <div class="comment-item" data-comment-id="{{ c.id }}">
+                        <div class="comment-header">
+                            <div>
+                                <span class="comment-author">{{ c.user.nome }}</span>
+                                <span class="comment-date">{{ c.created_at|format_datetime('%d/%m/%Y %H:%M') }}</span>
+                            </div>
+                            {% if current_user.is_authenticated and (current_user.id == c.user_id or current_user.is_admin or current_user.id == comunidade.owner_id) %}
+                            <button class="delete-btn delete-comment-btn" 
+                                data-comment-id="{{ c.id }}"
+                                data-post-id="{{ msg.id }}" 
+                                title="Excluir comentário">
+                                <i class="bi bi-x"></i>
+                            </button>
+                            {% endif %}
+                        </div>
+                        <div class="comment-text">{{ c.text }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="post-card text-center py-5">
+                <i class="bi bi-inbox" style="font-size: 3rem; color: var(--color-text, #6B7280); opacity: 0.5;"></i>
+                <p class="mt-3 mb-0" style="color: var(--color-text, #6B7280);">Nenhum post ainda. Seja o primeiro a postar!</p>
+            </div>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-
-  // === CSS DO MODAL ===
-  const styleId = 'injected-create-post-modal-style';
-  if (!document.getElementById(styleId)) {
-    const s = document.createElement('style');
-    s.id = styleId;
-    s.textContent = `
-      #injectedCreatePostModal {
-        position: fixed;
-        inset: 0;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        background: rgba(0,0,0,0.55);
-        z-index: 2147483647;
-      }
-      #injectedCreatePostModal.show { display: flex; }
-      #injectedCreatePostModal .dialog {
-        background: #ffffff;
-        width: 100%;
-        max-width: 640px;
-        border-radius: 12px;
-        padding: 24px;
-        box-shadow: 0 12px 40px rgba(0,0,0,0.3);
-        max-height: 85vh;
-        overflow: auto;
-      }
-    `;
-    document.head.appendChild(s);
-  }
-
-  // remove modal duplicado
-  const existing = document.getElementById('injectedCreatePostModal');
-  if (existing) existing.remove();
-
-  // === ESTRUTURA DO MODAL ===
-  const modal = document.createElement('div');
-  modal.id = 'injectedCreatePostModal';
-  modal.setAttribute('role', 'dialog');
-  modal.setAttribute('aria-hidden', 'true');
-  modal.innerHTML = `
-    <div class="dialog" role="document">
-      <h2 style="
-        margin-top: 0;
-        margin-bottom: 12px;
-        color: #000000 !important;
-        font-weight: 700;
-        font-size: 1.5rem;
-        text-align: center;
-      ">
-        Criar Nova Postagem
-      </h2>
-
-      <form id="injectedPostForm">
-        <textarea name="mensagem" id="injectedPostContent"
-          class="form-control"
-          placeholder="O que está em sua mente?"
-          required
-          style="
-            min-height: 100px;
-            width: 100%;
-            resize: vertical;
-            padding: .9rem;
-            border-radius: .75rem;
-            border: 1px solid #d0d7de;
-            background-color: #f9fafb;
-            font-size: 0.95rem;
-            color: #111827;
-          "></textarea>
-
-        <div style="display: flex; justify-content: space-between; gap: 16px; margin-top: 14px;">
-          <button type="button" id="injectedCancelBtn"
-            class="btn btn-secondary rounded-pill px-4 fw-semibold">
-            Cancelar
-          </button>
-          <button type="submit"
-            class="btn btn-primary rounded-pill px-4 fw-semibold shadow"
-            style="background: linear-gradient(135deg, #4F46E5, #3B82F6); border: none;">
-            Publicar
-          </button>
-        </div>
-      </form>
-    </div>
-  `;
-  document.body.appendChild(modal);
-
-  // === FUNCIONALIDADE DO MODAL ===
-  const openButton = document.getElementById('createPostButton');
-  const cancelBtn = modal.querySelector('#injectedCancelBtn');
-  const postForm = modal.querySelector('#injectedPostForm');
-  const postTextarea = modal.querySelector('#injectedPostContent');
-
-  const openModal = () => {
-    modal.classList.add('show');
-    modal.setAttribute('aria-hidden', 'false');
-    document.body.style.overflow = 'hidden';
-    setTimeout(() => postTextarea.focus(), 50);
-  };
-  const closeModal = () => {
-    modal.classList.remove('show');
-    modal.setAttribute('aria-hidden', 'true');
-    document.body.style.overflow = '';
-    postTextarea.value = '';
-  };
-
-  if (openButton) openButton.addEventListener('click', e => { e.preventDefault(); openModal(); });
-  cancelBtn.addEventListener('click', closeModal);
-  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape' && modal.classList.contains('show')) closeModal(); });
-
-  // === ENVIO DO POST ===
-  postForm.addEventListener('submit', async evt => {
-    evt.preventDefault();
-    const data = new URLSearchParams(new FormData(postForm));
-    try {
-      const res = await fetch(window.location.pathname, {
-        method: 'POST',
-        headers: { 'X-Requested-With': 'XMLHttpRequest' },
-        body: data
-      });
-      if (res.redirected) return window.location.href = res.url;
-      if (res.ok) window.location.reload();
-      else alert('Erro ao criar post.');
-    } catch (err) {
-      console.error(err);
-      alert('Erro de rede ao criar post.');
+    const communityId = {{ comunidade.id }};
+    
+    // === MODAL DE CRIAR POST ===
+    const styleId = 'injected-create-post-modal-style';
+    if (!document.getElementById(styleId)) {
+        const s = document.createElement('style');
+        s.id = styleId;
+        s.textContent = `
+            #injectedCreatePostModal {
+                position: fixed;
+                inset: 0;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                background: rgba(0,0,0,0.55);
+                z-index: 2147483647;
+            }
+            #injectedCreatePostModal.show { display: flex; }
+            #injectedCreatePostModal .dialog {
+                background: var(--color-surface, #ffffff);
+                width: 100%;
+                max-width: 640px;
+                border-radius: 16px;
+                padding: 24px;
+                box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+                max-height: 85vh;
+                overflow: auto;
+            }
+        `;
+        document.head.appendChild(s);
     }
-  });
+
+    const existing = document.getElementById('injectedCreatePostModal');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'injectedCreatePostModal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-hidden', 'true');
+    modal.innerHTML = `
+        <div class="dialog" role="document">
+            <h2 style="margin-top: 0; margin-bottom: 12px; color: var(--color-text, #000000); font-weight: 700; font-size: 1.5rem; text-align: center;">
+                Criar Nova Postagem
+            </h2>
+            <form id="injectedPostForm">
+                <textarea name="mensagem" id="injectedPostContent"
+                    class="form-control"
+                    placeholder="O que está em sua mente?"
+                    required
+                    style="min-height: 100px; width: 100%; resize: vertical; padding: .9rem; border-radius: .75rem; border: 1px solid rgba(0,0,0,0.1); background-color: var(--color-bg, #f9fafb); font-size: 0.95rem; color: var(--color-text, #111827);"></textarea>
+                <div style="display: flex; justify-content: space-between; gap: 16px; margin-top: 14px;">
+                    <button type="button" id="injectedCancelBtn" class="btn btn-secondary rounded-pill px-4 fw-semibold">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 fw-semibold shadow" style="background: linear-gradient(135deg, #4E73DF, #5a7fe8); border: none;">
+                        Publicar
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    const openButton = document.getElementById('createPostButton');
+    const cancelBtn = modal.querySelector('#injectedCancelBtn');
+    const postForm = modal.querySelector('#injectedPostForm');
+    const postTextarea = modal.querySelector('#injectedPostContent');
+
+    const openModal = () => {
+        modal.classList.add('show');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+        setTimeout(() => postTextarea.focus(), 50);
+    };
+    
+    const closeModal = () => {
+        modal.classList.remove('show');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        postTextarea.value = '';
+    };
+
+    if (openButton) openButton.addEventListener('click', e => { e.preventDefault(); openModal(); });
+    cancelBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && modal.classList.contains('show')) closeModal(); });
+
+    postForm.addEventListener('submit', async evt => {
+        evt.preventDefault();
+        const data = new URLSearchParams(new FormData(postForm));
+        try {
+            const res = await fetch(window.location.pathname, {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                body: data
+            });
+            if (res.redirected) return window.location.href = res.url;
+            if (res.ok) window.location.reload();
+            else alert('Erro ao criar post.');
+        } catch (err) {
+            console.error(err);
+            alert('Erro de rede ao criar post.');
+        }
+    });
+
+    // === SISTEMA DE CURTIR ===
+    function setupLikeButtons() {
+        document.querySelectorAll('.like-form').forEach(form => {
+            // Remove listeners anteriores para evitar duplicação
+            const newForm = form.cloneNode(true);
+            form.parentNode.replaceChild(newForm, form);
+            
+            newForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const postId = newForm.dataset.postId;
+                const commId = newForm.dataset.communityId;
+                const btn = newForm.querySelector('button');
+                const countEl = document.querySelector(`.like-count[data-post-id="${postId}"]`);
+                
+                if (!btn || !countEl) return;
+                
+                btn.disabled = true;
+                
+                try {
+                    const res = await fetch(`/comunidade/${commId}/post/${postId}/like`, {
+                        method: 'POST',
+                        headers: { 
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        }
+                    });
+                    
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.likes_count !== undefined) {
+                            countEl.textContent = data.likes_count;
+                        }
+                        
+                        if (data.liked) {
+                            btn.classList.add('liked');
+                            btn.innerHTML = '<i class="bi bi-heart-fill me-1"></i>Curtido';
+                        } else {
+                            btn.classList.remove('liked');
+                            btn.innerHTML = '<i class="bi bi-heart me-1"></i>Curtir';
+                        }
+                    } else {
+                        const errorData = await res.json().catch(() => ({}));
+                        alert(errorData.message || 'Erro ao curtir post.');
+                    }
+                } catch (err) {
+                    console.error('Erro ao curtir:', err);
+                    alert('Erro de rede ao curtir post.');
+                } finally {
+                    btn.disabled = false;
+                }
+            });
+        });
+    }
+    
+    setupLikeButtons();
+
+    // === SISTEMA DE COMENTAR ===
+    function setupCommentForms() {
+        document.querySelectorAll('.comment-form').forEach(form => {
+            // Remove listeners anteriores para evitar duplicação
+            const newForm = form.cloneNode(true);
+            form.parentNode.replaceChild(newForm, form);
+            
+            newForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const postId = newForm.dataset.postId;
+                const commId = newForm.dataset.communityId;
+                const input = newForm.querySelector('.comment-input');
+                const text = input.value.trim();
+                
+                if (!text) return;
+                
+                const btn = newForm.querySelector('.comment-btn');
+                if (!btn) return;
+                
+                const originalText = btn.textContent;
+                btn.disabled = true;
+                btn.textContent = 'Enviando...';
+                
+                try {
+                    const formData = new URLSearchParams();
+                    formData.append('text', text);
+                    
+                    const res = await fetch(`/comunidade/${commId}/post/${postId}/comment`, {
+                        method: 'POST',
+                        headers: { 
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: formData
+                    });
+                    
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.success) {
+                            input.value = '';
+                            
+                            // Atualizar contador
+                            const countEl = document.querySelector(`.comments-count[data-post-id="${postId}"]`);
+                            if (countEl) {
+                                countEl.textContent = data.comments_count;
+                            }
+                            
+                            // Adicionar comentário na lista
+                            const commentsSection = document.querySelector(`.comments[data-post-id="${postId}"]`);
+                            if (commentsSection && data.comment) {
+                                const createdAt = (function(){
+                                    try {
+                                        // prefer epoch ms if available (reliable across browsers)
+                                        if (data.comment.created_at_ts) {
+                                            const d = new Date(Number(data.comment.created_at_ts));
+                                            const date = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                                            const time = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                                            return `${date} ${time}`;
+                                        }
+                                        // fallback to ISO if present
+                                        const iso = data.comment.created_at_iso || data.comment.created_at;
+                                        if (typeof iso === 'string' && iso.indexOf('T') !== -1) {
+                                            const d = new Date(iso);
+                                            if (!isNaN(d)) {
+                                                const date = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                                                const time = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                                                return `${date} ${time}`;
+                                            }
+                                        }
+                                        return iso;
+                                    } catch (e) { return data.comment.created_at; }
+                                })();
+
+                                const commentHtml = `
+                                    <div class="comment-item" data-comment-id="${data.comment.id}">
+                                        <div class="comment-header">
+                                            <div>
+                                                <span class="comment-author">${escapeHtml(data.comment.author)}</span>
+                                                <span class="comment-date">${escapeHtml(createdAt)}</span>
+                                            </div>
+                                            <button class="delete-btn delete-comment-btn" 
+                                                data-comment-id="${data.comment.id}"
+                                                data-post-id="${postId}" 
+                                                title="Excluir comentário">
+                                                <i class="bi bi-x"></i>
+                                            </button>
+                                        </div>
+                                        <div class="comment-text">${escapeHtml(data.comment.text)}</div>
+                                    </div>
+                                `;
+                                commentsSection.insertAdjacentHTML('afterbegin', commentHtml);
+                                
+                                // Adicionar listener ao novo botão de deletar
+                                const newDeleteBtn = commentsSection.querySelector(`.delete-comment-btn[data-comment-id="${data.comment.id}"]`);
+                                if (newDeleteBtn) {
+                                    newDeleteBtn.addEventListener('click', handleDeleteComment);
+                                }
+                            }
+                        } else {
+                            alert(data.message || 'Erro ao comentar.');
+                        }
+                    } else {
+                        const errorData = await res.json().catch(() => ({}));
+                        alert(errorData.message || 'Erro ao comentar.');
+                    }
+                } catch (err) {
+                    console.error('Erro ao comentar:', err);
+                    alert('Erro de rede ao comentar.');
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = originalText;
+                }
+            });
+        });
+    }
+    
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    // Helper to format ISO timestamps into local pt-BR date/time string
+    function formatIsoToLocal(isoOrString) {
+        if (!isoOrString) return '';
+        try {
+            if (typeof isoOrString === 'string' && isoOrString.indexOf('T') !== -1) {
+                const d = new Date(isoOrString);
+                if (isNaN(d)) return isoOrString;
+                const date = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                const time = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                return `${date} ${time}`;
+            }
+            return isoOrString;
+        } catch (e) {
+            return isoOrString;
+        }
+    }
+    
+    setupCommentForms();
+
+    // === SISTEMA DE DELETAR POST ===
+    function handleDeletePost(e) {
+        if (!confirm('Tem certeza que deseja excluir este post?')) return;
+        
+        const postId = e.target.closest('.delete-post-btn').dataset.postId;
+        const commId = e.target.closest('.delete-post-btn').dataset.communityId;
+        
+        fetch(`/comunidade/${commId}/post/${postId}/delete`, {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                document.querySelector(`.post-card[data-post-id="${postId}"]`).remove();
+            } else {
+                alert(data.message || 'Erro ao excluir post.');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Erro de rede ao excluir post.');
+        });
+    }
+    
+    document.querySelectorAll('.delete-post-btn').forEach(btn => {
+        btn.addEventListener('click', handleDeletePost);
+    });
+
+    // === SISTEMA DE DELETAR COMENTÁRIO ===
+    function handleDeleteComment(e) {
+        if (!confirm('Tem certeza que deseja excluir este comentário?')) return;
+        
+        const commentId = e.target.closest('.delete-comment-btn').dataset.commentId;
+        const postId = e.target.closest('.delete-comment-btn').dataset.postId;
+        
+        fetch(`/comunidade/comment/${commentId}/delete`, {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                document.querySelector(`.comment-item[data-comment-id="${commentId}"]`).remove();
+                const countEl = document.querySelector(`.comments-count[data-post-id="${postId}"]`);
+                countEl.textContent = data.comments_count;
+            } else {
+                alert(data.message || 'Erro ao excluir comentário.');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Erro de rede ao excluir comentário.');
+        });
+    }
+    
+    document.querySelectorAll('.delete-comment-btn').forEach(btn => {
+        btn.addEventListener('click', handleDeleteComment);
+    });
 });
 </script>
 {% endblock %}
-
-
