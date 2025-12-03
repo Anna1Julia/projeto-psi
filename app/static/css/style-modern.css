@@ -162,26 +162,201 @@ main::before {
 
 /* Navbar */
 .navbar {
-  backdrop-filter: saturate(180%) blur(8px);
+  backdrop-filter: saturate(150%) blur(12px);
+  -webkit-backdrop-filter: saturate(150%) blur(12px);
 }
 
-/* Navbar temática (header principal) */
+/* Navbar temática (header principal) - Glassmorphism com Iluminação Realista */
 .app-navbar {
-  background-color: #ffffff;
+  position: relative;
+  
+  /* Glassmorphism refinado: translúcido com blur */
+  background: rgba(255, 255, 255, 0.25);
+  
+  /* Blur intenso para efeito glass elegante */
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  
   color: var(--color-text);
-  box-shadow: 0 2px 18px rgba(15,23,42,0.12);
-  border-bottom: 1px solid rgba(15,23,42,0.06);
+  
+  /* Borda branca sutil como na referência */
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 0;
+  
+  /* Sombras com iluminação realista - múltiplas camadas */
+  box-shadow: 
+    /* Sombra principal difusa */
+    0 8px 32px 0 rgba(15, 23, 42, 0.12),
+    0 2px 8px 0 rgba(15, 23, 42, 0.08),
+    /* Highlight superior - simula luz vinda de cima */
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.6),
+    inset 0 2px 4px 0 rgba(255, 255, 255, 0.3),
+    /* Sombra inferior sutil */
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.05);
+  
+  /* Transição suave */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  overflow: hidden;
 }
 
+/* Brilho superior intenso - simula reflexo de luz */
+.app-navbar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 20%,
+    rgba(255, 255, 255, 0.8) 40%,
+    rgba(255, 255, 255, 0.95) 50%,
+    rgba(255, 255, 255, 0.8) 60%,
+    rgba(255, 255, 255, 0.4) 80%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+  filter: blur(0.5px);
+  box-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+/* Reflexo interno superior - simula luz refletida */
+.app-navbar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 45%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.25) 0%,
+    rgba(255, 255, 255, 0.15) 30%,
+    rgba(255, 255, 255, 0.05) 60%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+  border-radius: inherit;
+}
+
+/* Efeito de hover refinado com iluminação aprimorada */
+.app-navbar:hover {
+  background: rgba(255, 255, 255, 0.3);
+  
+  backdrop-filter: blur(18px) saturate(200%);
+  -webkit-backdrop-filter: blur(18px) saturate(200%);
+  
+  border-color: rgba(255, 255, 255, 0.45);
+  
+  box-shadow: 
+    /* Sombras mais pronunciadas no hover */
+    0 12px 40px 0 rgba(15, 23, 42, 0.15),
+    0 4px 12px 0 rgba(15, 23, 42, 0.1),
+    /* Highlight superior mais intenso */
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.7),
+    inset 0 2px 6px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.05);
+}
+
+.app-navbar:hover::before {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.5) 20%,
+    rgba(255, 255, 255, 0.9) 40%,
+    rgba(255, 255, 255, 1) 50%,
+    rgba(255, 255, 255, 0.9) 60%,
+    rgba(255, 255, 255, 0.5) 80%,
+    transparent 100%
+  );
+  box-shadow: 0 1px 3px rgba(255, 255, 255, 0.4);
+}
+
+/* Dark mode glass effect com iluminação realista */
 :root.dark .app-navbar {
-  background-color: #020617; /* azul bem escuro já usado no fundo */
-  border-bottom-color: rgba(148,163,184,0.45);
+  background: rgba(15, 23, 42, 0.3);
+  
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  
+  box-shadow: 
+    /* Sombras para dark mode */
+    0 8px 32px 0 rgba(0, 0, 0, 0.3),
+    0 2px 8px 0 rgba(0, 0, 0, 0.2),
+    /* Highlight superior azulado - simula luz fria */
+    inset 0 1px 0 0 rgba(96, 165, 250, 0.2),
+    inset 0 2px 4px 0 rgba(96, 165, 250, 0.1),
+    /* Sombra inferior */
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.2);
+}
+
+:root.dark .app-navbar::before {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(96, 165, 250, 0.3) 20%,
+    rgba(96, 165, 250, 0.5) 40%,
+    rgba(96, 165, 250, 0.6) 50%,
+    rgba(96, 165, 250, 0.5) 60%,
+    rgba(96, 165, 250, 0.3) 80%,
+    transparent 100%
+  );
+  box-shadow: 0 1px 2px rgba(96, 165, 250, 0.2);
+}
+
+:root.dark .app-navbar::after {
+  background: linear-gradient(
+    180deg,
+    rgba(96, 165, 250, 0.15) 0%,
+    rgba(96, 165, 250, 0.08) 30%,
+    rgba(96, 165, 250, 0.03) 60%,
+    transparent 100%
+  );
+}
+
+:root.dark .app-navbar:hover {
+  background: rgba(15, 23, 42, 0.35);
+  
+  backdrop-filter: blur(18px) saturate(170%);
+  -webkit-backdrop-filter: blur(18px) saturate(170%);
+  
+  border-color: rgba(255, 255, 255, 0.2);
+  
+  box-shadow: 
+    0 12px 40px 0 rgba(0, 0, 0, 0.4),
+    0 4px 12px 0 rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 0 rgba(96, 165, 250, 0.25),
+    inset 0 2px 6px 0 rgba(96, 165, 250, 0.15),
+    inset 0 -1px 0 0 rgba(0, 0, 0, 0.25);
+}
+
+:root.dark .app-navbar:hover::before {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(96, 165, 250, 0.4) 20%,
+    rgba(96, 165, 250, 0.6) 40%,
+    rgba(96, 165, 250, 0.7) 50%,
+    rgba(96, 165, 250, 0.6) 60%,
+    rgba(96, 165, 250, 0.4) 80%,
+    transparent 100%
+  );
+  box-shadow: 0 1px 3px rgba(96, 165, 250, 0.3);
 }
 
 .app-navbar .navbar-brand,
 .app-navbar .nav-link,
 .app-navbar .navbar-toggler {
   color: var(--color-text) !important;
+  position: relative;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 :root.dark .app-navbar .navbar-brand,
@@ -206,23 +381,213 @@ main::before {
 :root.dark #themeToggle [data-icon="moon"] { display: inline-flex; }
 :root.dark #themeToggle [data-icon="sun"] { display: none; }
 
+/* Theme toggle button: Glassmorphism Refinado */
+#themeToggle,
+.theme-toggle-btn {
+  position: relative;
+  
+  /* Glass effect refinado */
+  background: rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  color: var(--color-text) !important;
+  
+  box-shadow: 
+    0 4px 12px rgba(15, 23, 42, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Light mode: botão glass claro */
+:root:not(.dark) #themeToggle,
+:root:not(.dark) .theme-toggle-btn {
+  background: rgba(255, 255, 255, 0.25) !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  color: #0f172a !important;
+  
+  box-shadow: 
+    0 4px 12px rgba(15, 23, 42, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+:root:not(.dark) #themeToggle:hover,
+:root:not(.dark) .theme-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.35) !important;
+  border-color: rgba(255, 255, 255, 0.45) !important;
+  
+  backdrop-filter: blur(14px) saturate(200%);
+  -webkit-backdrop-filter: blur(14px) saturate(200%);
+  
+  box-shadow: 
+    0 6px 16px rgba(15, 23, 42, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  
+  transform: translateY(-1px);
+}
+
+/* Dark mode: botão glass escuro */
+:root.dark #themeToggle,
+:root.dark .theme-toggle-btn {
+  background: rgba(30, 41, 59, 0.3) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: #e2e8f0 !important;
+  
+  backdrop-filter: blur(12px) saturate(150%);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+:root.dark #themeToggle:hover,
+:root.dark .theme-toggle-btn:hover {
+  background: rgba(30, 41, 59, 0.4) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  
+  backdrop-filter: blur(14px) saturate(170%);
+  -webkit-backdrop-filter: blur(14px) saturate(170%);
+  
+  box-shadow: 
+    0 6px 16px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  
+  transform: translateY(-1px);
+}
+
+#themeToggle [data-icon],
+.theme-toggle-btn [data-icon] {
+  color: currentColor !important;
+}
+
 .navbar.navbar-fixed {
   position: sticky;
   top: 0;
   z-index: 1030;
 }
 
+/* Container interno do navbar com profundidade adicional */
+.app-navbar .container {
+  position: relative;
+  z-index: 2;
+}
+
+/* Melhora o visual dos elementos internos */
+.app-navbar .navbar-nav {
+  gap: 0.25rem;
+}
+
+/* Dropdowns com glassmorphism refinado e iluminação */
+.app-navbar .dropdown-menu {
+  margin-top: 0.5rem;
+  border-radius: var(--radius-md);
+  
+  /* Glass effect refinado */
+  background: rgba(255, 255, 255, 0.25) !important;
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  
+  box-shadow: 
+    0 8px 32px rgba(15, 23, 42, 0.15),
+    0 2px 8px rgba(15, 23, 42, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 2px 4px rgba(255, 255, 255, 0.2);
+  
+  transform: translateY(-2px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:root.dark .app-navbar .dropdown-menu {
+  background: rgba(15, 23, 42, 0.3) !important;
+  
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  
+  border-color: rgba(255, 255, 255, 0.15);
+  
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(96, 165, 250, 0.2),
+    inset 0 2px 4px rgba(96, 165, 250, 0.1);
+}
+
 .navbar-brand {
   font-weight: 700;
   letter-spacing: -0.01em;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.navbar-brand:hover {
+  transform: translateY(-1px);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+:root.dark .navbar-brand {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+:root.dark .navbar-brand:hover {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .navbar .nav-link {
-  transition: color var(--transition-fast);
+  position: relative;
+  padding: 0.5rem 1rem !important;
+  border-radius: var(--radius-sm);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 500;
+  
+  /* Efeito glass nos links */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
+/* Removida animação de borda inferior - apenas hover sutil */
 .navbar .nav-link:hover {
-  color: var(--color-secondary) !important;
+  color: var(--color-primary) !important;
+  
+  /* Glass effect refinado no hover com iluminação */
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 
+    0 4px 12px rgba(37, 99, 235, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 2px 3px rgba(255, 255, 255, 0.2);
+  
+  transform: translateY(-1px);
+}
+
+:root.dark .navbar .nav-link:hover {
+  background: rgba(96, 165, 250, 0.15);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 4px 12px rgba(96, 165, 250, 0.15),
+    inset 0 1px 0 rgba(96, 165, 250, 0.2),
+    inset 0 2px 3px rgba(96, 165, 250, 0.1);
+}
+
+/* Dropdown toggle com efeito 3D */
+.navbar .dropdown-toggle {
+  position: relative;
+}
+
+.navbar .dropdown-toggle::after {
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.navbar .dropdown-toggle[aria-expanded="true"]::after {
+  transform: rotate(180deg);
 }
 
 /* Footer */
@@ -270,36 +635,523 @@ main::before {
   transition: box-shadow var(--transition-fast);
 }
 
-/* Buttons */
+/* Buttons - Glassmorphism Refinado com Iluminação */
 .btn {
+  position: relative;
   border-radius: var(--radius-sm);
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
+  font-weight: 500;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Glass effect base */
+  backdrop-filter: blur(8px) saturate(150%);
+  -webkit-backdrop-filter: blur(8px) saturate(150%);
+  
+  /* Borda sempre branca/transparente - nunca azul */
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 
+    0 2px 8px rgba(15, 23, 42, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 2px 3px rgba(255, 255, 255, 0.15);
+}
+
+/* Remove qualquer pseudo-elemento que possa criar linhas */
+.btn::before,
+.btn::after {
+  display: none !important;
+}
+
+/* Garantir que nenhum botão tenha borda azul - sobrescreve qualquer estilo */
+.btn,
+.btn-primary,
+.btn-success,
+.btn-info,
+.btn-warning,
+.btn-danger,
+.btn-secondary,
+.btn-outline-primary,
+.btn-outline-light,
+.btn-outline-secondary,
+.btn-outline-success,
+.btn-outline-info,
+.btn-outline-warning,
+.btn-outline-danger {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.btn:hover,
+.btn-primary:hover,
+.btn-success:hover,
+.btn-info:hover,
+.btn-warning:hover,
+.btn-danger:hover,
+.btn-secondary:hover,
+.btn-outline-primary:hover,
+.btn-outline-light:hover,
+.btn-outline-secondary:hover,
+.btn-outline-success:hover,
+.btn-outline-info:hover,
+.btn-outline-warning:hover,
+.btn-outline-danger:hover {
+  border-color: rgba(255, 255, 255, 0.35) !important;
+}
+
+:root.dark .btn,
+:root.dark .btn-primary,
+:root.dark .btn-success,
+:root.dark .btn-info,
+:root.dark .btn-warning,
+:root.dark .btn-danger,
+:root.dark .btn-secondary,
+:root.dark .btn-outline-primary,
+:root.dark .btn-outline-light,
+:root.dark .btn-outline-secondary,
+:root.dark .btn-outline-success,
+:root.dark .btn-outline-info,
+:root.dark .btn-outline-warning,
+:root.dark .btn-outline-danger {
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+:root.dark .btn:hover,
+:root.dark .btn-primary:hover,
+:root.dark .btn-success:hover,
+:root.dark .btn-info:hover,
+:root.dark .btn-warning:hover,
+:root.dark .btn-danger:hover,
+:root.dark .btn-secondary:hover,
+:root.dark .btn-outline-primary:hover,
+:root.dark .btn-outline-light:hover,
+:root.dark .btn-outline-secondary:hover,
+:root.dark .btn-outline-success:hover,
+:root.dark .btn-outline-info:hover,
+:root.dark .btn-outline-warning:hover,
+:root.dark .btn-outline-danger:hover {
+  border-color: rgba(255, 255, 255, 0.25) !important;
 }
 
 .btn-primary {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
+  background: rgba(37, 99, 235, 0.7);
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: #fff;
+  
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+  
+  box-shadow: 
+    0 4px 12px rgba(37, 99, 235, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.2);
 }
 
 .btn-primary:hover {
-  background: #1D4ED8;
-  border-color: #1D4ED8;
-  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
-  transform: translateY(-1px);
+  background: rgba(29, 78, 216, 0.8);
+  border-color: rgba(255, 255, 255, 0.45) !important;
+  
+  backdrop-filter: blur(12px) saturate(200%);
+  -webkit-backdrop-filter: blur(12px) saturate(200%);
+  
+  box-shadow: 
+    0 6px 20px rgba(37, 99, 235, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 2px 5px rgba(255, 255, 255, 0.3);
+  
+  /* Apenas aumento sutil - sem animação de borda */
+  transform: translateY(-1px) scale(1.02);
 }
 
 .btn-outline-primary {
+  background: rgba(255, 255, 255, 0.15);
   color: var(--color-primary);
-  border-color: var(--color-primary);
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+  
+  box-shadow: 
+    0 2px 8px rgba(37, 99, 235, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 2px 3px rgba(255, 255, 255, 0.15);
 }
 
 .btn-outline-primary:hover {
-  background: var(--color-primary);
+  background: rgba(37, 99, 235, 0.7);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  
+  backdrop-filter: blur(12px) saturate(200%);
+  -webkit-backdrop-filter: blur(12px) saturate(200%);
+  
+  box-shadow: 
+    0 4px 12px rgba(37, 99, 235, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.2);
+  
+  /* Apenas aumento sutil */
+  transform: translateY(-1px) scale(1.02);
+}
+
+.btn-success { 
+  background: rgba(16, 185, 129, 0.7);
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: #fff;
+  
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+  
+  box-shadow: 
+    0 4px 12px rgba(16, 185, 129, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.2);
+}
+
+.btn-success:hover {
+  background: rgba(5, 150, 105, 0.8);
+  border-color: rgba(255, 255, 255, 0.45) !important;
+  
+  backdrop-filter: blur(12px) saturate(200%);
+  -webkit-backdrop-filter: blur(12px) saturate(200%);
+  
+  box-shadow: 
+    0 6px 20px rgba(16, 185, 129, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 2px 5px rgba(255, 255, 255, 0.3);
+  
+  transform: translateY(-1px) scale(1.02);
+}
+
+.btn-info { 
+  background: rgba(6, 182, 212, 0.7);
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: #fff;
+  
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+  
+  box-shadow: 
+    0 4px 12px rgba(6, 182, 212, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.2);
+}
+
+.btn-info:hover {
+  background: rgba(14, 165, 233, 0.8);
+  border-color: rgba(255, 255, 255, 0.45) !important;
+  
+  backdrop-filter: blur(12px) saturate(200%);
+  -webkit-backdrop-filter: blur(12px) saturate(200%);
+  
+  box-shadow: 
+    0 6px 20px rgba(6, 182, 212, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 2px 5px rgba(255, 255, 255, 0.3);
+  
+  transform: translateY(-1px) scale(1.02);
+}
+
+/* Dark mode para botões */
+:root.dark .btn {
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+:root.dark .btn-primary {
+  background: rgba(37, 99, 235, 0.6);
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  
+  box-shadow: 
+    0 4px 12px rgba(37, 99, 235, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+:root.dark .btn-primary:hover {
+  background: rgba(29, 78, 216, 0.7);
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  
+  box-shadow: 
+    0 6px 20px rgba(37, 99, 235, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 2px 4px rgba(255, 255, 255, 0.1);
+  
+  transform: translateY(-1px) scale(1.02);
+}
+
+:root.dark .btn-outline-primary {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  
+  box-shadow: 
+    0 2px 8px rgba(96, 165, 250, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 2px 3px rgba(255, 255, 255, 0.05);
+}
+
+:root.dark .btn-outline-primary:hover {
+  background: rgba(37, 99, 235, 0.6);
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  
+  box-shadow: 
+    0 4px 12px rgba(37, 99, 235, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 2px 4px rgba(255, 255, 255, 0.1);
+  
+  transform: translateY(-1px) scale(1.02);
+}
+
+:root.dark .btn-success {
+  background: rgba(16, 185, 129, 0.6);
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  
+  box-shadow: 
+    0 4px 12px rgba(16, 185, 129, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 2px 3px rgba(255, 255, 255, 0.08);
+}
+
+:root.dark .btn-success:hover {
+  background: rgba(5, 150, 105, 0.7);
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  
+  box-shadow: 
+    0 6px 20px rgba(16, 185, 129, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 2px 4px rgba(255, 255, 255, 0.1);
+  
+  transform: translateY(-1px) scale(1.02);
+}
+
+:root.dark .btn-info {
+  background: rgba(6, 182, 212, 0.6);
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  
+  box-shadow: 
+    0 4px 12px rgba(6, 182, 212, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 2px 3px rgba(255, 255, 255, 0.08);
+}
+
+:root.dark .btn-info:hover {
+  background: rgba(14, 165, 233, 0.7);
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  
+  box-shadow: 
+    0 6px 20px rgba(6, 182, 212, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 2px 4px rgba(255, 255, 255, 0.1);
+  
+  transform: translateY(-1px) scale(1.02);
+}
+
+/* Botões adicionais com glassmorphism */
+.btn-warning {
+  background: rgba(245, 158, 11, 0.7);
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: #fff;
+  
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+  
+  box-shadow: 
+    0 4px 12px rgba(245, 158, 11, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.2);
+}
+
+.btn-warning:hover {
+  background: rgba(217, 119, 6, 0.8);
+  border-color: rgba(255, 255, 255, 0.45) !important;
+  
+  backdrop-filter: blur(12px) saturate(200%);
+  -webkit-backdrop-filter: blur(12px) saturate(200%);
+  
+  box-shadow: 
+    0 6px 20px rgba(245, 158, 11, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 2px 5px rgba(255, 255, 255, 0.3);
+  
+  transform: translateY(-1px) scale(1.02);
   color: #fff;
 }
 
-.btn-success { background: #10B981; border-color: #10B981; }
-.btn-info { background: #06B6D4; border-color: #06B6D4; }
+.btn-danger {
+  background: rgba(239, 68, 68, 0.7);
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: #fff;
+  
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+  
+  box-shadow: 
+    0 4px 12px rgba(239, 68, 68, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.2);
+}
+
+.btn-danger:hover {
+  background: rgba(220, 38, 38, 0.8);
+  border-color: rgba(255, 255, 255, 0.45) !important;
+  
+  backdrop-filter: blur(12px) saturate(200%);
+  -webkit-backdrop-filter: blur(12px) saturate(200%);
+  
+  box-shadow: 
+    0 6px 20px rgba(239, 68, 68, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 2px 5px rgba(255, 255, 255, 0.3);
+  
+  transform: translateY(-1px) scale(1.02);
+  color: #fff;
+}
+
+.btn-outline-light {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+  
+  box-shadow: 
+    0 2px 8px rgba(255, 255, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 2px 3px rgba(255, 255, 255, 0.15);
+}
+
+.btn-outline-light:hover {
+  background: rgba(255, 255, 255, 0.25);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  
+  backdrop-filter: blur(12px) saturate(200%);
+  -webkit-backdrop-filter: blur(12px) saturate(200%);
+  
+  box-shadow: 
+    0 4px 12px rgba(255, 255, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.2);
+  
+  transform: translateY(-1px) scale(1.02);
+}
+
+.btn-secondary {
+  background: rgba(108, 117, 125, 0.7);
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: #fff;
+  
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+  
+  box-shadow: 
+    0 4px 12px rgba(108, 117, 125, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.2);
+}
+
+.btn-secondary:hover {
+  background: rgba(73, 80, 87, 0.8);
+  border-color: rgba(255, 255, 255, 0.45) !important;
+  
+  backdrop-filter: blur(12px) saturate(200%);
+  -webkit-backdrop-filter: blur(12px) saturate(200%);
+  
+  box-shadow: 
+    0 6px 20px rgba(108, 117, 125, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 2px 5px rgba(255, 255, 255, 0.3);
+  
+  transform: translateY(-1px) scale(1.02);
+  color: #fff;
+}
+
+/* Dark mode para botões adicionais */
+:root.dark .btn-warning {
+  background: rgba(245, 158, 11, 0.6);
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  
+  box-shadow: 
+    0 4px 12px rgba(245, 158, 11, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 2px 3px rgba(255, 255, 255, 0.08);
+}
+
+:root.dark .btn-warning:hover {
+  background: rgba(217, 119, 6, 0.7);
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  
+  box-shadow: 
+    0 6px 20px rgba(245, 158, 11, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 2px 4px rgba(255, 255, 255, 0.1);
+  
+  transform: translateY(-1px) scale(1.02);
+}
+
+:root.dark .btn-danger {
+  background: rgba(239, 68, 68, 0.6);
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  
+  box-shadow: 
+    0 4px 12px rgba(239, 68, 68, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 2px 3px rgba(255, 255, 255, 0.08);
+}
+
+:root.dark .btn-danger:hover {
+  background: rgba(220, 38, 38, 0.7);
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  
+  box-shadow: 
+    0 6px 20px rgba(239, 68, 68, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 2px 4px rgba(255, 255, 255, 0.1);
+  
+  transform: translateY(-1px) scale(1.02);
+}
+
+:root.dark .btn-outline-light {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  
+  box-shadow: 
+    0 2px 8px rgba(255, 255, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 2px 3px rgba(255, 255, 255, 0.05);
+}
+
+:root.dark .btn-outline-light:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  
+  box-shadow: 
+    0 4px 12px rgba(255, 255, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 2px 4px rgba(255, 255, 255, 0.1);
+  
+  transform: translateY(-1px) scale(1.02);
+}
+
+:root.dark .btn-secondary {
+  background: rgba(108, 117, 125, 0.6);
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  
+  box-shadow: 
+    0 4px 12px rgba(108, 117, 125, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 2px 3px rgba(255, 255, 255, 0.08);
+}
+
+:root.dark .btn-secondary:hover {
+  background: rgba(73, 80, 87, 0.7);
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  
+  box-shadow: 
+    0 6px 20px rgba(108, 117, 125, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 2px 4px rgba(255, 255, 255, 0.1);
+  
+  transform: translateY(-1px) scale(1.02);
+}
 
 /* Forms */
 .form-control, .form-select {
@@ -654,4 +1506,59 @@ main::before {
 :root.dark #feedbackModal .modal-header,
 :root.dark #feedbackModal .modal-footer {
   border-color: rgba(148, 163, 184, 0.35);
+}
+
+/* === Dropdowns: suporte a light/dark mode === */
+
+/* Light-mode: dropdown claro */
+.dropdown-menu {
+  background: var(--color-surface) !important;
+  border: 1px solid var(--border-soft) !important;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  color: var(--color-text);
+  padding: 0.5rem;
+}
+
+.dropdown-item {
+  color: var(--color-text) !important;
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.75rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background-color: rgba(37, 99, 235, 0.08) !important;
+  color: var(--color-primary) !important;
+}
+
+.dropdown-item.active,
+.dropdown-item:active {
+  background-color: var(--color-primary) !important;
+  color: #fff !important;
+}
+
+/* Dark-mode: ajustes específicos */
+:root.dark .dropdown-menu {
+  background: var(--color-surface) !important;
+  border-color: rgba(226, 232, 240, 0.12) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+:root.dark .dropdown-item {
+  color: var(--color-text) !important;
+}
+
+:root.dark .dropdown-item:hover,
+:root.dark .dropdown-item:focus {
+  background-color: rgba(96, 165, 250, 0.12) !important;
+  color: var(--color-secondary) !important;
+}
+
+:root.dark .dropdown-item.active,
+:root.dark .dropdown-item:active {
+  background-color: var(--color-primary) !important;
+  color: #fff !important;
 }
