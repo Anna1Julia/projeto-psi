@@ -7,10 +7,15 @@
   --color-surface: #ffffff;
   --shadow-sm: 0 1px 2px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.10);
   --shadow-md: 0 10px 15px rgba(2,6,23,0.10), 0 4px 6px rgba(2,6,23,0.05);
+  --shadow-glass: 0 12px 32px rgba(0, 0, 0, 0.12), 0 6px 16px rgba(0, 0, 0, 0.08);
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 18px;
   --transition-fast: 180ms ease;
+  --glass-bg: rgba(255, 255, 255, 0.48);
+  --glass-border: rgba(255, 255, 255, 0.65);
+  --glass-light: rgba(255, 255, 255, 0.95);
+  --glass-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(96, 165, 250, 0.08) 50%, rgba(0, 0, 0, 0.12) 100%);
 }
 
 /* THEME DARK */
@@ -21,6 +26,11 @@
   --color-primary: #3B82F6;
   --color-secondary: #60A5FA;
   --color-accent: #FACC15;
+  --shadow-glass: 0 12px 32px rgba(0, 0, 0, 0.5), 0 6px 16px rgba(0, 0, 0, 0.3);
+  --glass-bg: rgba(30, 41, 59, 0.58);
+  --glass-border: rgba(96, 165, 250, 0.35);
+  --glass-light: rgba(96, 165, 250, 0.2);
+  --glass-gradient: linear-gradient(135deg, rgba(96, 165, 250, 0.2) 0%, rgba(96, 165, 250, 0.08) 50%, rgba(0, 0, 0, 0.15) 100%);
 }
 
 /* Map variables (fixes legacy compatibility) */
@@ -122,8 +132,12 @@ main {
   flex-direction: column;
   position: relative;
   z-index: 0;
+  border-top: none !important;
+  border-bottom: none !important;
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  box-shadow: none !important;
 }
-
 
 /* Overlay suavizado — não escurece demais o conteúdo */
 main::before {
@@ -141,6 +155,8 @@ main::before {
   z-index: -2;
   pointer-events: none;
   transition: background 1.8s ease-in-out;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 :root.dark main::before {
@@ -157,6 +173,75 @@ main::before {
   letter-spacing: -0.02em;
 }
 
+/* Remove all unwanted borders and outlines */
+a:focus,
+a:focus-visible,
+.nav-link:focus,
+.nav-link:focus-visible,
+.dropdown-toggle:focus,
+.dropdown-toggle:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* Remove Bootstrap active/show indicators */
+.nav-link.show,
+.navbar .nav-link.show,
+.navbar .dropdown-toggle.show,
+.dropdown-toggle.show {
+  border: none !important;
+  border-bottom: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.navbar::after,
+.navbar-collapse::after,
+.navbar-nav::after {
+  display: none !important;
+}
+
+/* Force remove any navbar border that might exist */
+.navbar,
+.navbar-light,
+.navbar-dark,
+.navbar-expand,
+.navbar-expand-lg,
+.navbar-expand-md,
+.navbar-expand-sm {
+  border: 0 !important;
+  border-bottom: 0 !important;
+  border-top: 0 !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+  box-shadow: none !important;
+  background-image: none !important;
+}
+
+/* Remove navbar border for all responsive sizes */
+@media (min-width: 576px) {
+  .navbar-expand-sm {
+    border: 0 !important;
+    border-bottom: 0 !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .navbar-expand-md {
+    border: 0 !important;
+    border-bottom: 0 !important;
+  }
+}
+
+@media (min-width: 992px) {
+  .navbar-expand-lg {
+    border: 0 !important;
+    border-bottom: 0 !important;
+  }
+}
+
 .lead { color: rgba(15,23,42,0.8); }
 :root.dark .lead { color: rgba(226,232,240,0.85); }
 
@@ -164,191 +249,126 @@ main::before {
 .navbar {
   backdrop-filter: saturate(150%) blur(12px);
   -webkit-backdrop-filter: saturate(150%) blur(12px);
+  border: 0 !important;
+  border-bottom: 0 !important;
+  border-top: 0 !important;
+  box-shadow: none !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+  background-image: none !important;
 }
 
-/* Navbar temática (header principal) - Glassmorphism com Iluminação Realista */
+.navbar::before,
+.navbar::after {
+  display: none !important;
+}
+
+.navbar-collapse,
+.navbar-nav {
+  border: 0 !important;
+  border-bottom: 0 !important;
+  border-top: 0 !important;
+  box-shadow: none !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+  background: transparent !important;
+}
+
+.navbar-collapse::before,
+.navbar-collapse::after,
+.navbar-nav::before,
+.navbar-nav::after {
+  display: none !important;
+}
+
+.navbar-container,
+.navbar > .container,
+.navbar > .container-fluid {
+  border: 0 !important;
+  border-bottom: 0 !important;
+  border-top: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Navbar temática (header principal) - Liquid Glass Premium */
 .app-navbar {
   position: relative;
-  
-  /* Glassmorphism refinado: translúcido com blur */
-  background: rgba(255, 255, 255, 0.25);
-  
-  /* Blur intenso para efeito glass elegante */
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  
-  color: var(--color-text);
-  
-  /* Borda branca sutil como na referência */
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(18px) saturate(165%);
+  -webkit-backdrop-filter: blur(18px) saturate(165%);
+  border: 0 !important;
   border-radius: 0;
-  
-  /* Sombras com iluminação realista - múltiplas camadas */
-  box-shadow: 
-    /* Sombra principal difusa */
-    0 8px 32px 0 rgba(15, 23, 42, 0.12),
-    0 2px 8px 0 rgba(15, 23, 42, 0.08),
-    /* Highlight superior - simula luz vinda de cima */
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.6),
-    inset 0 2px 4px 0 rgba(255, 255, 255, 0.3),
-    /* Sombra inferior sutil */
-    inset 0 -1px 0 0 rgba(0, 0, 0, 0.05);
-  
-  /* Transição suave */
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  
-  overflow: hidden;
+  box-shadow: inset 0 2px 6px rgba(255, 255, 255, 0.35), inset 0 -1px 2px rgba(0, 0, 0, 0.08);
+  color: var(--color-text);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: visible !important;
+  background-image: none !important;
+  padding: 1rem 0 !important;
+  margin-bottom: 0 !important;
+  outline: none !important;
 }
 
-/* Brilho superior intenso - simula reflexo de luz */
-.app-navbar::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.4) 20%,
-    rgba(255, 255, 255, 0.8) 40%,
-    rgba(255, 255, 255, 0.95) 50%,
-    rgba(255, 255, 255, 0.8) 60%,
-    rgba(255, 255, 255, 0.4) 80%,
-    transparent 100%
-  );
-  pointer-events: none;
-  z-index: 1;
-  filter: blur(0.5px);
-  box-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
-}
-
-/* Reflexo interno superior - simula luz refletida */
 .app-navbar::after {
   content: '';
   position: absolute;
-  top: 0;
+  bottom: 0;
   left: 0;
   right: 0;
-  height: 45%;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.25) 0%,
-    rgba(255, 255, 255, 0.15) 30%,
-    rgba(255, 255, 255, 0.05) 60%,
-    transparent 100%
-  );
-  pointer-events: none;
-  z-index: 1;
-  border-radius: inherit;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.25) 20%, 
+    rgba(255, 255, 255, 0.35) 50%, 
+    rgba(255, 255, 255, 0.25) 80%, 
+    transparent 100%);
+  opacity: 0.6;
+  z-index: 3;
 }
 
-/* Efeito de hover refinado com iluminação aprimorada */
+.app-navbar::before {
+  display: none !important;
+}
+
+.app-navbar > * {
+  position: relative;
+  z-index: 2;
+  border: none !important;
+  border-bottom: none !important;
+  border-top: none !important;
+  box-shadow: none !important;
+}
+
+.app-navbar + * {
+  border-top: none !important;
+  margin-top: 0 !important;
+}
+
 .app-navbar:hover {
-  background: rgba(255, 255, 255, 0.3);
-  
-  backdrop-filter: blur(18px) saturate(200%);
-  -webkit-backdrop-filter: blur(18px) saturate(200%);
-  
-  border-color: rgba(255, 255, 255, 0.45);
-  
-  box-shadow: 
-    /* Sombras mais pronunciadas no hover */
-    0 12px 40px 0 rgba(15, 23, 42, 0.15),
-    0 4px 12px 0 rgba(15, 23, 42, 0.1),
-    /* Highlight superior mais intenso */
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.7),
-    inset 0 2px 6px 0 rgba(255, 255, 255, 0.4),
-    inset 0 -1px 0 0 rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.62);
+  border: 0 !important;
+  box-shadow: inset 0 2px 8px rgba(255, 255, 255, 0.4), inset 0 -1px 2px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+  transform: translateY(-1px);
 }
 
-.app-navbar:hover::before {
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.5) 20%,
-    rgba(255, 255, 255, 0.9) 40%,
-    rgba(255, 255, 255, 1) 50%,
-    rgba(255, 255, 255, 0.9) 60%,
-    rgba(255, 255, 255, 0.5) 80%,
-    transparent 100%
-  );
-  box-shadow: 0 1px 3px rgba(255, 255, 255, 0.4);
-}
-
-/* Dark mode glass effect com iluminação realista */
 :root.dark .app-navbar {
-  background: rgba(15, 23, 42, 0.3);
-  
-  backdrop-filter: blur(16px) saturate(150%);
-  -webkit-backdrop-filter: blur(16px) saturate(150%);
-  
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  
-  box-shadow: 
-    /* Sombras para dark mode */
-    0 8px 32px 0 rgba(0, 0, 0, 0.3),
-    0 2px 8px 0 rgba(0, 0, 0, 0.2),
-    /* Highlight superior azulado - simula luz fria */
-    inset 0 1px 0 0 rgba(96, 165, 250, 0.2),
-    inset 0 2px 4px 0 rgba(96, 165, 250, 0.1),
-    /* Sombra inferior */
-    inset 0 -1px 0 0 rgba(0, 0, 0, 0.2);
+  background: var(--glass-bg);
+  border: 0 !important;
+  box-shadow: inset 0 2px 6px rgba(96, 165, 250, 0.2), inset 0 -1px 2px rgba(0, 0, 0, 0.2);
 }
 
 :root.dark .app-navbar::before {
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(96, 165, 250, 0.3) 20%,
-    rgba(96, 165, 250, 0.5) 40%,
-    rgba(96, 165, 250, 0.6) 50%,
-    rgba(96, 165, 250, 0.5) 60%,
-    rgba(96, 165, 250, 0.3) 80%,
-    transparent 100%
-  );
-  box-shadow: 0 1px 2px rgba(96, 165, 250, 0.2);
-}
-
-:root.dark .app-navbar::after {
-  background: linear-gradient(
-    180deg,
-    rgba(96, 165, 250, 0.15) 0%,
-    rgba(96, 165, 250, 0.08) 30%,
-    rgba(96, 165, 250, 0.03) 60%,
-    transparent 100%
-  );
+  display: none !important;
 }
 
 :root.dark .app-navbar:hover {
-  background: rgba(15, 23, 42, 0.35);
-  
-  backdrop-filter: blur(18px) saturate(170%);
-  -webkit-backdrop-filter: blur(18px) saturate(170%);
-  
-  border-color: rgba(255, 255, 255, 0.2);
-  
-  box-shadow: 
-    0 12px 40px 0 rgba(0, 0, 0, 0.4),
-    0 4px 12px 0 rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 0 rgba(96, 165, 250, 0.25),
-    inset 0 2px 6px 0 rgba(96, 165, 250, 0.15),
-    inset 0 -1px 0 0 rgba(0, 0, 0, 0.25);
-}
-
-:root.dark .app-navbar:hover::before {
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(96, 165, 250, 0.4) 20%,
-    rgba(96, 165, 250, 0.6) 40%,
-    rgba(96, 165, 250, 0.7) 50%,
-    rgba(96, 165, 250, 0.6) 60%,
-    rgba(96, 165, 250, 0.4) 80%,
-    transparent 100%
-  );
-  box-shadow: 0 1px 3px rgba(96, 165, 250, 0.3);
+  background: rgba(30, 41, 59, 0.72);
+  border: 0 !important;
+  backdrop-filter: blur(22px) saturate(175%);
+  -webkit-backdrop-filter: blur(22px) saturate(175%);
+  box-shadow: inset 0 2px 8px rgba(96, 165, 250, 0.25), inset 0 -1px 2px rgba(0, 0, 0, 0.3);
+  transform: translateY(-1px);
 }
 
 .app-navbar .navbar-brand,
@@ -385,6 +405,13 @@ main::before {
 #themeToggle,
 .theme-toggle-btn {
   position: relative;
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 8px !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   
   /* Glass effect refinado */
   background: rgba(255, 255, 255, 0.2) !important;
@@ -395,7 +422,7 @@ main::before {
   color: var(--color-text) !important;
   
   box-shadow: 
-    0 4px 12px rgba(15, 23, 42, 0.1),
+    0 2px 6px rgba(15, 23, 42, 0.06),
     inset 0 1px 0 rgba(255, 255, 255, 0.4);
   
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -409,7 +436,7 @@ main::before {
   color: #0f172a !important;
   
   box-shadow: 
-    0 4px 12px rgba(15, 23, 42, 0.12),
+    0 2px 6px rgba(15, 23, 42, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
@@ -422,7 +449,7 @@ main::before {
   -webkit-backdrop-filter: blur(14px) saturate(200%);
   
   box-shadow: 
-    0 6px 16px rgba(15, 23, 42, 0.15),
+    0 4px 10px rgba(15, 23, 42, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.6);
   
   transform: translateY(-1px);
@@ -439,7 +466,7 @@ main::before {
   -webkit-backdrop-filter: blur(12px) saturate(150%);
   
   box-shadow: 
-    0 4px 12px rgba(0, 0, 0, 0.3),
+    0 2px 6px rgba(0, 0, 0, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
@@ -452,7 +479,7 @@ main::before {
   -webkit-backdrop-filter: blur(14px) saturate(170%);
   
   box-shadow: 
-    0 6px 16px rgba(0, 0, 0, 0.4),
+    0 4px 10px rgba(0, 0, 0, 0.25),
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
   
   transform: translateY(-1px);
@@ -463,6 +490,19 @@ main::before {
   color: currentColor !important;
 }
 
+/* Profile dropdown button shadow - override Bootstrap */
+.app-navbar #navbarDropdown {
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06) !important;
+}
+
+:root:not(.dark) .app-navbar #navbarDropdown {
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08) !important;
+}
+
+:root.dark .app-navbar #navbarDropdown {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+}
+
 .navbar.navbar-fixed {
   position: sticky;
   top: 0;
@@ -470,14 +510,33 @@ main::before {
 }
 
 /* Container interno do navbar com profundidade adicional */
-.app-navbar .container {
+.app-navbar .container,
+.app-navbar .container-fluid {
   position: relative;
   z-index: 2;
+  padding: 0 1.5rem !important;
 }
 
 /* Melhora o visual dos elementos internos */
 .app-navbar .navbar-nav {
   gap: 0.25rem;
+  margin: 0.5rem 0 !important;
+}
+
+/* Divide o navbar em dois grupos: nav principal e ações à direita */
+.app-navbar .navbar-nav.me-auto {
+  margin-right: auto !important;
+}
+
+.app-navbar .navbar-nav:not(.me-auto) {
+  flex-shrink: 0;
+  padding-left: 1rem !important;
+  border-left: 1px solid rgba(0, 0, 0, 0.08);
+  margin-left: 1rem !important;
+}
+
+:root.dark .app-navbar .navbar-nav:not(.me-auto) {
+  border-left-color: rgba(255, 255, 255, 0.08);
 }
 
 /* Dropdowns com glassmorphism refinado e iluminação */
@@ -486,95 +545,127 @@ main::before {
   border-radius: var(--radius-md);
   
   /* Glass effect refinado */
-  background: rgba(255, 255, 255, 0.25) !important;
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  background: rgba(255, 255, 255, 0.35) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1.5px solid rgba(37, 99, 235, 0.35);
   
   box-shadow: 
-    0 8px 32px rgba(15, 23, 42, 0.15),
-    0 2px 8px rgba(15, 23, 42, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    inset 0 2px 4px rgba(255, 255, 255, 0.2);
+    0 16px 48px rgba(15, 23, 42, 0.2),
+    0 4px 12px rgba(15, 23, 42, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 2px 6px rgba(255, 255, 255, 0.3),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.1);
   
   transform: translateY(-2px);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 :root.dark .app-navbar .dropdown-menu {
-  background: rgba(15, 23, 42, 0.3) !important;
+  background: rgba(15, 23, 42, 0.45) !important;
   
-  backdrop-filter: blur(16px) saturate(150%);
-  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  backdrop-filter: blur(20px) saturate(170%);
+  -webkit-backdrop-filter: blur(20px) saturate(170%);
   
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(96, 165, 250, 0.4);
   
   box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.4),
-    0 2px 8px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(96, 165, 250, 0.2),
-    inset 0 2px 4px rgba(96, 165, 250, 0.1);
+    0 16px 48px rgba(0, 0, 0, 0.5),
+    0 4px 12px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(96, 165, 250, 0.3),
+    inset 0 2px 6px rgba(96, 165, 250, 0.15),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .navbar-brand {
   font-weight: 700;
+  font-size: 1.3rem;
   letter-spacing: -0.01em;
-  position: relative;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  color: var(--color-primary) !important;
+  transition: color 0.2s ease;
 }
 
 .navbar-brand:hover {
-  transform: translateY(-1px);
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-:root.dark .navbar-brand {
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-}
-
-:root.dark .navbar-brand:hover {
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  color: var(--color-accent) !important;
 }
 
 .navbar .nav-link {
   position: relative;
-  padding: 0.5rem 1rem !important;
-  border-radius: var(--radius-sm);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0.5rem 0.75rem !important;
   font-weight: 500;
-  
-  /* Efeito glass nos links */
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  font-size: 0.95rem;
+  color: var(--color-text) !important;
+  transition: all 0.2s ease;
+  border: none !important;
+  border-bottom: none !important;
+  border-top: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background-image: none !important;
+  text-decoration: none !important;
+  text-decoration-line: none !important;
 }
 
-/* Removida animação de borda inferior - apenas hover sutil */
+.navbar .nav-link::after,
+.navbar .nav-link::before {
+  display: none !important;
+}
+
 .navbar .nav-link:hover {
   color: var(--color-primary) !important;
-  
-  /* Glass effect refinado no hover com iluminação */
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(12px) saturate(180%);
-  -webkit-backdrop-filter: blur(12px) saturate(180%);
-  
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  box-shadow: 
-    0 4px 12px rgba(37, 99, 235, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    inset 0 2px 3px rgba(255, 255, 255, 0.2);
-  
+  border: none !important;
+  border-bottom: none !important;
+  border-top: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background-image: none !important;
+}
+
+.navbar .nav-link.active {
+  border: none !important;
+  border-bottom: none !important;
+  border-top: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background-image: none !important;
+}
+
+.navbar .nav-link[aria-current] {
+  border: none !important;
+  border-bottom: none !important;
+  border-top: none !important;
+  outline: none !important;
+}
+
+/* Modern theme toggle button */
+#themeToggle,
+.theme-toggle-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid var(--border-soft) !important;
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+#themeToggle:hover,
+.theme-toggle-btn:hover {
+  background: var(--color-bg) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   transform: translateY(-1px);
 }
 
-:root.dark .navbar .nav-link:hover {
-  background: rgba(96, 165, 250, 0.15);
-  border-color: rgba(255, 255, 255, 0.2);
-  box-shadow: 
-    0 4px 12px rgba(96, 165, 250, 0.15),
-    inset 0 1px 0 rgba(96, 165, 250, 0.2),
-    inset 0 2px 3px rgba(96, 165, 250, 0.1);
+#themeToggle:focus-visible,
+.theme-toggle-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 /* Dropdown toggle com efeito 3D */
@@ -583,11 +674,122 @@ main::before {
 }
 
 .navbar .dropdown-toggle::after {
-  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  display: none !important;
 }
 
 .navbar .dropdown-toggle[aria-expanded="true"]::after {
-  transform: rotate(180deg);
+  display: none !important;
+}
+
+/* User profile dropdown button - Glass effect */
+.app-navbar .navbar-nav:last-child .dropdown-toggle {
+  background: rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 8px !important;
+  padding: 0.4rem 0.8rem !important;
+  color: var(--color-text) !important;
+  box-shadow: 
+    0 2px 6px rgba(15, 23, 42, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:root:not(.dark) .app-navbar .navbar-nav:last-child .dropdown-toggle {
+  background: rgba(255, 255, 255, 0.25) !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  color: #0f172a !important;
+  box-shadow: 
+    0 2px 6px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+:root:not(.dark) .app-navbar .navbar-nav:last-child .dropdown-toggle:hover {
+  background: rgba(255, 255, 255, 0.35) !important;
+  border-color: rgba(255, 255, 255, 0.45) !important;
+  backdrop-filter: blur(14px) saturate(200%);
+  -webkit-backdrop-filter: blur(14px) saturate(200%);
+  box-shadow: 
+    0 4px 10px rgba(15, 23, 42, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transform: translateY(-1px);
+}
+
+:root.dark .app-navbar .navbar-nav:last-child .dropdown-toggle {
+  background: rgba(30, 41, 59, 0.3) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: #e2e8f0 !important;
+  backdrop-filter: blur(12px) saturate(150%);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  box-shadow: 
+    0 2px 6px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+:root.dark .app-navbar .navbar-nav:last-child .dropdown-toggle:hover {
+  background: rgba(30, 41, 59, 0.4) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(14px) saturate(170%);
+  -webkit-backdrop-filter: blur(14px) saturate(170%);
+  box-shadow: 
+    0 4px 10px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+/* Modern dropdown menu - Liquid Glass Premium */
+.dropdown-menu {
+  position: absolute;
+  background: var(--glass-bg) !important;
+  border: 1.5px solid var(--glass-border) !important;
+  border-radius: 10px !important;
+  box-shadow: var(--shadow-glass), inset 0 2px 4px rgba(255, 255, 255, 0.35), inset 0 -1px 2px rgba(0, 0, 0, 0.08) !important;
+  padding: 0.5rem 0 !important;
+  backdrop-filter: blur(18px) saturate(165%);
+  -webkit-backdrop-filter: blur(18px) saturate(165%);
+  overflow: visible;
+  z-index: 1050 !important;
+}
+
+.dropdown-menu::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), rgba(96, 165, 250, 0.2), transparent);
+  z-index: 1;
+}
+
+.dropdown-menu > * {
+  position: relative;
+  z-index: 2;
+}
+
+:root.dark .dropdown-menu {
+  background: var(--glass-bg) !important;
+  border-color: var(--glass-border) !important;
+  box-shadow: var(--shadow-glass), inset 0 2px 4px rgba(96, 165, 250, 0.15), inset 0 -1px 2px rgba(0, 0, 0, 0.2) !important;
+}
+
+:root.dark .dropdown-menu::before {
+  background: linear-gradient(90deg, transparent, rgba(96, 165, 250, 0.35), rgba(96, 165, 250, 0.15), transparent);
+}
+
+.dropdown-item {
+  color: var(--color-text) !important;
+  transition: all 0.2s ease;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  padding: 0.5rem 1rem !important;
+}
+
+.dropdown-item:hover {
+  background: var(--color-bg) !important;
+  color: var(--color-primary) !important;
+  transform: none !important;
 }
 
 /* Footer */
@@ -610,52 +812,107 @@ main::before {
   color: #ffffff !important;
 }
 
-/* Cards */
+/* Cards - Liquid Glass Premium */
 .card {
-  border: none;
+  position: relative;
+  border: 1.5px solid var(--glass-border);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
-  background: var(--color-surface) !important;
+  box-shadow: var(--shadow-glass), inset 0 2px 6px rgba(255, 255, 255, 0.35), inset 0 -1px 2px rgba(0, 0, 0, 0.1);
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(18px) saturate(165%);
+  -webkit-backdrop-filter: blur(18px) saturate(165%);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  outline: none !important;
 }
 
-/*** Fix — cartões mais sólidos no modo escuro ***/
+.card:focus,
+.card:focus-visible,
+.card:focus-within {
+  outline: none !important;
+  border-color: var(--glass-border) !important;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.65), rgba(96, 165, 250, 0.25), transparent);
+  z-index: 1;
+}
+
+.card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--glass-gradient);
+  pointer-events: none;
+  z-index: 0;
+  border-radius: var(--radius-md);
+}
+
+.card > * {
+  position: relative;
+  z-index: 2;
+}
+
 :root.dark .card {
-  background: #1E293B !important;
+  background: var(--glass-bg) !important;
+  border-color: var(--glass-border);
+  box-shadow: var(--shadow-glass), inset 0 2px 6px rgba(96, 165, 250, 0.2), inset 0 -1px 2px rgba(0, 0, 0, 0.2);
+}
+
+:root.dark .card::before {
+  background: linear-gradient(90deg, transparent, rgba(96, 165, 250, 0.35), rgba(96, 165, 250, 0.15), transparent);
 }
 
 .card .card-header {
   background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
   color: #fff;
   border: none;
-  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  border-radius: calc(var(--radius-md) - 1px) calc(var(--radius-md) - 1px) 0 0;
 }
 
 .card:hover {
-  box-shadow: var(--shadow-md);
-  transition: box-shadow var(--transition-fast);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.22), inset 0 2px 8px rgba(255, 255, 255, 0.4), inset 0 -1px 2px rgba(0, 0, 0, 0.12);
+  border-color: rgba(255, 255, 255, 0.65) !important;
+  transform: translateY(-6px);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+  outline: none !important;
 }
 
-/* Buttons - Glassmorphism Refinado com Iluminação */
+:root.dark .card:hover {
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 2px 8px rgba(96, 165, 250, 0.25), inset 0 -1px 2px rgba(0, 0, 0, 0.3);
+  border-color: rgba(96, 165, 250, 0.5);
+}
+
+/* Buttons - Glassmorphism Premium */
 .btn {
   position: relative;
   border-radius: var(--radius-sm);
   font-weight: 500;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  
-  /* Glass effect base */
-  backdrop-filter: blur(8px) saturate(150%);
-  -webkit-backdrop-filter: blur(8px) saturate(150%);
-  
-  /* Borda sempre branca/transparente - nunca azul */
+  transition: all 0.2s ease;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  box-shadow: 
-    0 2px 8px rgba(15, 23, 42, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3),
-    inset 0 2px 3px rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  overflow: hidden;
 }
 
-/* Remove qualquer pseudo-elemento que possa criar linhas */
-.btn::before,
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  opacity: 0.6;
+  z-index: 1;
+}
+
 .btn::after {
   display: none !important;
 }
@@ -730,338 +987,179 @@ main::before {
 }
 
 .btn-primary {
-  background: rgba(37, 99, 235, 0.7);
-  border-color: rgba(255, 255, 255, 0.3) !important;
+  background: var(--color-primary);
+  border-color: var(--color-primary) !important;
   color: #fff;
-  
-  backdrop-filter: blur(10px) saturate(180%);
-  -webkit-backdrop-filter: blur(10px) saturate(180%);
-  
-  box-shadow: 
-    0 4px 12px rgba(37, 99, 235, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4),
-    inset 0 2px 4px rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
 }
 
 .btn-primary:hover {
-  background: rgba(29, 78, 216, 0.8);
-  border-color: rgba(255, 255, 255, 0.45) !important;
-  
-  backdrop-filter: blur(12px) saturate(200%);
-  -webkit-backdrop-filter: blur(12px) saturate(200%);
-  
-  box-shadow: 
-    0 6px 20px rgba(37, 99, 235, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    inset 0 2px 5px rgba(255, 255, 255, 0.3);
-  
-  /* Apenas aumento sutil - sem animação de borda */
-  transform: translateY(-1px) scale(1.02);
+  background: var(--color-secondary);
+  border-color: var(--color-secondary) !important;
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+  transform: translateY(-1px);
 }
 
 .btn-outline-primary {
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--glass-bg);
   color: var(--color-primary);
-  border-color: rgba(255, 255, 255, 0.3) !important;
-  
-  backdrop-filter: blur(10px) saturate(180%);
-  -webkit-backdrop-filter: blur(10px) saturate(180%);
-  
-  box-shadow: 
-    0 2px 8px rgba(37, 99, 235, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3),
-    inset 0 2px 3px rgba(255, 255, 255, 0.15);
+  border-color: var(--color-primary) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
 }
 
 .btn-outline-primary:hover {
-  background: rgba(37, 99, 235, 0.7);
-  color: #fff;
-  border-color: rgba(255, 255, 255, 0.35) !important;
-  
-  backdrop-filter: blur(12px) saturate(200%);
-  -webkit-backdrop-filter: blur(12px) saturate(200%);
-  
-  box-shadow: 
-    0 4px 12px rgba(37, 99, 235, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4),
-    inset 0 2px 4px rgba(255, 255, 255, 0.2);
-  
-  /* Apenas aumento sutil */
-  transform: translateY(-1px) scale(1.02);
+  background: rgba(37, 99, 235, 0.15);
+  color: var(--color-primary);
+  border-color: var(--color-secondary) !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+  transform: translateY(-1px);
 }
 
-.btn-success { 
-  background: rgba(16, 185, 129, 0.7);
-  border-color: rgba(255, 255, 255, 0.3) !important;
+.btn-success {
+  background: #10B981;
+  border-color: #10B981 !important;
   color: #fff;
-  
-  backdrop-filter: blur(10px) saturate(180%);
-  -webkit-backdrop-filter: blur(10px) saturate(180%);
-  
-  box-shadow: 
-    0 4px 12px rgba(16, 185, 129, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4),
-    inset 0 2px 4px rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
 }
 
 .btn-success:hover {
-  background: rgba(5, 150, 105, 0.8);
-  border-color: rgba(255, 255, 255, 0.45) !important;
-  
-  backdrop-filter: blur(12px) saturate(200%);
-  -webkit-backdrop-filter: blur(12px) saturate(200%);
-  
-  box-shadow: 
-    0 6px 20px rgba(16, 185, 129, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    inset 0 2px 5px rgba(255, 255, 255, 0.3);
-  
-  transform: translateY(-1px) scale(1.02);
+  background: #059669;
+  border-color: #059669 !important;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+  transform: translateY(-1px);
 }
 
-.btn-info { 
-  background: rgba(6, 182, 212, 0.7);
-  border-color: rgba(255, 255, 255, 0.3) !important;
+.btn-info {
+  background: #06B6D4;
+  border-color: #06B6D4 !important;
   color: #fff;
-  
-  backdrop-filter: blur(10px) saturate(180%);
-  -webkit-backdrop-filter: blur(10px) saturate(180%);
-  
-  box-shadow: 
-    0 4px 12px rgba(6, 182, 212, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4),
-    inset 0 2px 4px rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.2);
 }
 
 .btn-info:hover {
-  background: rgba(14, 165, 233, 0.8);
-  border-color: rgba(255, 255, 255, 0.45) !important;
-  
-  backdrop-filter: blur(12px) saturate(200%);
-  -webkit-backdrop-filter: blur(12px) saturate(200%);
-  
-  box-shadow: 
-    0 6px 20px rgba(6, 182, 212, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    inset 0 2px 5px rgba(255, 255, 255, 0.3);
-  
-  transform: translateY(-1px) scale(1.02);
+  background: #0891B2;
+  border-color: #0891B2 !important;
+  box-shadow: 0 6px 20px rgba(6, 182, 212, 0.3);
+  transform: translateY(-1px);
 }
 
 /* Dark mode para botões */
 :root.dark .btn {
-  border-color: rgba(255, 255, 255, 0.15) !important;
-  box-shadow: 
-    0 2px 8px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 :root.dark .btn-primary {
-  background: rgba(37, 99, 235, 0.6);
-  border-color: rgba(255, 255, 255, 0.2) !important;
-  
-  box-shadow: 
-    0 4px 12px rgba(37, 99, 235, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  background: #3B82F6;
+  border-color: #3B82F6 !important;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 :root.dark .btn-primary:hover {
-  background: rgba(29, 78, 216, 0.7);
-  border-color: rgba(255, 255, 255, 0.3) !important;
-  
-  box-shadow: 
-    0 6px 20px rgba(37, 99, 235, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2),
-    inset 0 2px 4px rgba(255, 255, 255, 0.1);
-  
-  transform: translateY(-1px) scale(1.02);
+  background: #2563EB;
+  border-color: #2563EB !important;
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  transform: translateY(-1px);
 }
 
 :root.dark .btn-outline-primary {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.25) !important;
-  
-  box-shadow: 
-    0 2px 8px rgba(96, 165, 250, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    inset 0 2px 3px rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #60A5FA !important;
+  box-shadow: 0 2px 8px rgba(96, 165, 250, 0.15);
 }
 
 :root.dark .btn-outline-primary:hover {
-  background: rgba(37, 99, 235, 0.6);
-  border-color: rgba(255, 255, 255, 0.25) !important;
-  
-  box-shadow: 
-    0 4px 12px rgba(37, 99, 235, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15),
-    inset 0 2px 4px rgba(255, 255, 255, 0.1);
-  
-  transform: translateY(-1px) scale(1.02);
+  background: rgba(96, 165, 250, 0.15);
+  border-color: #60A5FA !important;
+  box-shadow: 0 4px 12px rgba(96, 165, 250, 0.3);
+  transform: translateY(-1px);
 }
 
 :root.dark .btn-success {
-  background: rgba(16, 185, 129, 0.6);
-  border-color: rgba(255, 255, 255, 0.2) !important;
-  
-  box-shadow: 
-    0 4px 12px rgba(16, 185, 129, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15),
-    inset 0 2px 3px rgba(255, 255, 255, 0.08);
+  background: #10B981;
+  border-color: #10B981 !important;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
 :root.dark .btn-success:hover {
-  background: rgba(5, 150, 105, 0.7);
-  border-color: rgba(255, 255, 255, 0.3) !important;
-  
-  box-shadow: 
-    0 6px 20px rgba(16, 185, 129, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2),
-    inset 0 2px 4px rgba(255, 255, 255, 0.1);
-  
-  transform: translateY(-1px) scale(1.02);
+  background: #059669;
+  border-color: #059669 !important;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+  transform: translateY(-1px);
 }
 
 :root.dark .btn-info {
-  background: rgba(6, 182, 212, 0.6);
-  border-color: rgba(255, 255, 255, 0.2) !important;
-  
-  box-shadow: 
-    0 4px 12px rgba(6, 182, 212, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15),
-    inset 0 2px 3px rgba(255, 255, 255, 0.08);
+  background: #06B6D4;
+  border-color: #06B6D4 !important;
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
 }
 
 :root.dark .btn-info:hover {
-  background: rgba(14, 165, 233, 0.7);
-  border-color: rgba(255, 255, 255, 0.3) !important;
-  
-  box-shadow: 
-    0 6px 20px rgba(6, 182, 212, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2),
-    inset 0 2px 4px rgba(255, 255, 255, 0.1);
-  
-  transform: translateY(-1px) scale(1.02);
+  background: #0891B2;
+  border-color: #0891B2 !important;
+  box-shadow: 0 6px 20px rgba(6, 182, 212, 0.4);
+  transform: translateY(-1px);
 }
 
-/* Botões adicionais com glassmorphism */
+/* Botões adicionais - Simplificados */
 .btn-warning {
-  background: rgba(245, 158, 11, 0.7);
-  border-color: rgba(255, 255, 255, 0.3) !important;
+  background: #F59E0B;
+  border-color: #F59E0B !important;
   color: #fff;
-  
-  backdrop-filter: blur(10px) saturate(180%);
-  -webkit-backdrop-filter: blur(10px) saturate(180%);
-  
-  box-shadow: 
-    0 4px 12px rgba(245, 158, 11, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4),
-    inset 0 2px 4px rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
 }
 
 .btn-warning:hover {
-  background: rgba(217, 119, 6, 0.8);
-  border-color: rgba(255, 255, 255, 0.45) !important;
-  
-  backdrop-filter: blur(12px) saturate(200%);
-  -webkit-backdrop-filter: blur(12px) saturate(200%);
-  
-  box-shadow: 
-    0 6px 20px rgba(245, 158, 11, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    inset 0 2px 5px rgba(255, 255, 255, 0.3);
-  
-  transform: translateY(-1px) scale(1.02);
-  color: #fff;
+  background: #D97706;
+  border-color: #D97706 !important;
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.3);
+  transform: translateY(-1px);
 }
 
 .btn-danger {
-  background: rgba(239, 68, 68, 0.7);
-  border-color: rgba(255, 255, 255, 0.3) !important;
+  background: #EF4444;
+  border-color: #EF4444 !important;
   color: #fff;
-  
-  backdrop-filter: blur(10px) saturate(180%);
-  -webkit-backdrop-filter: blur(10px) saturate(180%);
-  
-  box-shadow: 
-    0 4px 12px rgba(239, 68, 68, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4),
-    inset 0 2px 4px rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
 }
 
 .btn-danger:hover {
-  background: rgba(220, 38, 38, 0.8);
-  border-color: rgba(255, 255, 255, 0.45) !important;
-  
-  backdrop-filter: blur(12px) saturate(200%);
-  -webkit-backdrop-filter: blur(12px) saturate(200%);
-  
-  box-shadow: 
-    0 6px 20px rgba(239, 68, 68, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    inset 0 2px 5px rgba(255, 255, 255, 0.3);
-  
-  transform: translateY(-1px) scale(1.02);
-  color: #fff;
+  background: #DC2626;
+  border-color: #DC2626 !important;
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
+  transform: translateY(-1px);
 }
 
 .btn-outline-light {
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--glass-bg);
   color: #fff;
   border-color: rgba(255, 255, 255, 0.4) !important;
-  
-  backdrop-filter: blur(10px) saturate(180%);
-  -webkit-backdrop-filter: blur(10px) saturate(180%);
-  
-  box-shadow: 
-    0 2px 8px rgba(255, 255, 255, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3),
-    inset 0 2px 3px rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
 }
 
 .btn-outline-light:hover {
   background: rgba(255, 255, 255, 0.25);
   color: #fff;
-  border-color: rgba(255, 255, 255, 0.5) !important;
-  
-  backdrop-filter: blur(12px) saturate(200%);
-  -webkit-backdrop-filter: blur(12px) saturate(200%);
-  
-  box-shadow: 
-    0 4px 12px rgba(255, 255, 255, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4),
-    inset 0 2px 4px rgba(255, 255, 255, 0.2);
-  
-  transform: translateY(-1px) scale(1.02);
+  border-color: rgba(255, 255, 255, 0.6) !important;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
 }
 
 .btn-secondary {
-  background: rgba(108, 117, 125, 0.7);
-  border-color: rgba(255, 255, 255, 0.3) !important;
+  background: #6B7280;
+  border-color: #6B7280 !important;
   color: #fff;
-  
-  backdrop-filter: blur(10px) saturate(180%);
-  -webkit-backdrop-filter: blur(10px) saturate(180%);
-  
-  box-shadow: 
-    0 4px 12px rgba(108, 117, 125, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4),
-    inset 0 2px 4px rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(107, 114, 128, 0.2);
 }
 
 .btn-secondary:hover {
-  background: rgba(73, 80, 87, 0.8);
-  border-color: rgba(255, 255, 255, 0.45) !important;
-  
-  backdrop-filter: blur(12px) saturate(200%);
-  -webkit-backdrop-filter: blur(12px) saturate(200%);
-  
-  box-shadow: 
-    0 6px 20px rgba(108, 117, 125, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    inset 0 2px 5px rgba(255, 255, 255, 0.3);
-  
-  transform: translateY(-1px) scale(1.02);
-  color: #fff;
+  background: #4B5563;
+  border-color: #4B5563 !important;
+  box-shadow: 0 6px 20px rgba(107, 114, 128, 0.3);
+  transform: translateY(-1px);
 }
 
 /* Dark mode para botões adicionais */
@@ -1561,4 +1659,129 @@ main::before {
 :root.dark .dropdown-item:active {
   background-color: var(--color-primary) !important;
   color: #fff !important;
+}
+
+/* Form Controls - Liquid Glass Premium */
+.form-control {
+  position: relative;
+  background: var(--glass-bg) !important;
+  border: 1.5px solid var(--glass-border) !important;
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), inset 0 2px 4px rgba(255, 255, 255, 0.3), inset 0 -1px 2px rgba(0, 0, 0, 0.08);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.form-control::placeholder {
+  opacity: 0.7;
+}
+
+.form-control:focus {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2), 0 8px 20px rgba(37, 99, 235, 0.15), inset 0 2px 4px rgba(255, 255, 255, 0.35), inset 0 -1px 2px rgba(0, 0, 0, 0.1) !important;
+  background: rgba(255, 255, 255, 0.62) !important;
+  backdrop-filter: blur(20px) saturate(175%);
+  -webkit-backdrop-filter: blur(20px) saturate(175%);
+}
+
+:root.dark .form-control {
+  background: var(--glass-bg) !important;
+  border-color: var(--glass-border) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 0 2px 4px rgba(96, 165, 250, 0.15), inset 0 -1px 2px rgba(0, 0, 0, 0.2);
+}
+
+:root.dark .form-control:focus {
+  border-color: #60A5FA !important;
+  box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.2), 0 8px 20px rgba(96, 165, 250, 0.2), inset 0 2px 4px rgba(96, 165, 250, 0.2), inset 0 -1px 2px rgba(0, 0, 0, 0.3) !important;
+  background: rgba(30, 41, 59, 0.68) !important;
+  backdrop-filter: blur(20px) saturate(175%);
+  -webkit-backdrop-filter: blur(20px) saturate(175%);
+}
+
+.input-group .form-control {
+  background: var(--glass-bg) !important;
+  border: 1.5px solid var(--glass-border) !important;
+}
+
+:root.dark .input-group .form-control {
+  background: var(--glass-bg) !important;
+  border-color: var(--glass-border) !important;
+}
+
+/* Modal Content - Liquid Glass Premium */
+.modal-content {
+  position: relative;
+  background: var(--glass-bg) !important;
+  border: 1.5px solid var(--glass-border) !important;
+  backdrop-filter: blur(22px) saturate(175%);
+  -webkit-backdrop-filter: blur(22px) saturate(175%);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25), inset 0 2px 6px rgba(255, 255, 255, 0.35), inset 0 -1px 2px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.modal-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.65), rgba(96, 165, 250, 0.3), transparent);
+  z-index: 10;
+}
+
+.modal-content::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--glass-gradient);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.modal-header {
+  position: relative;
+  z-index: 2;
+  border-bottom: 1.5px solid var(--glass-border) !important;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+}
+
+.modal-body {
+  position: relative;
+  z-index: 2;
+}
+
+.modal-footer {
+  position: relative;
+  z-index: 2;
+  border-top: 1.5px solid var(--glass-border) !important;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+}
+
+:root.dark .modal-content {
+  background: var(--glass-bg) !important;
+  border-color: var(--glass-border) !important;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), inset 0 2px 6px rgba(96, 165, 250, 0.2), inset 0 -1px 2px rgba(0, 0, 0, 0.3);
+}
+
+:root.dark .modal-content::before {
+  background: linear-gradient(90deg, transparent, rgba(96, 165, 250, 0.35), rgba(96, 165, 250, 0.15), transparent);
+}
+
+:root.dark .modal-header {
+  background: rgba(30, 41, 59, 0.7);
+  border-color: rgba(96, 165, 250, 0.3) !important;
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+}
+
+:root.dark .modal-footer {
+  background: rgba(30, 41, 59, 0.65);
+  border-color: rgba(96, 165, 250, 0.3) !important;
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
 }
