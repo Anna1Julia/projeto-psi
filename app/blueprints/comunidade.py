@@ -1,7 +1,8 @@
 #Rota responsável por renderizar a página da comunidade e lidar com postagens
 from flask import Blueprint, render_template, request, redirect, url_for, jsonify, flash
 from flask_login import login_required, current_user
-from ..models import db, CommunityPost, Community, CommunityBlock, CommunityPostLike, CommunityPostComment
+from datetime import datetime, timedelta
+from ..models import db, CommunityPost, Community, CommunityBlock, CommunityPostLike, CommunityPostComment, Usuario
 
 comunidade_bp = Blueprint('comunidade', __name__, url_prefix='/comunidade')
 
@@ -100,12 +101,29 @@ def comunidade_users(community_id):
     if request.method == 'POST':
         texto = request.form.get('mensagem')
         if texto:
+            # Verificar se o usuário pode postar
+            can_post, error_msg = current_user.can_post()
+            if not can_post:
+                flash(error_msg, 'danger')
+                return redirect(url_for('comunidade.comunidade_users', community_id=comunidade.id))
+            
             nova_mensagem = CommunityPost(content=texto, author_id=current_user.id, community_id=comunidade.id)
             db.session.add(nova_mensagem)
             db.session.commit()
             return redirect(url_for('comunidade.comunidade_users', community_id=comunidade.id))
 
-    mensagens = CommunityPost.query.filter_by(community_id=comunidade.id).order_by(CommunityPost.created_at.desc()).all()
+    # Filtrar posts: mostrar todos para admin, ocultos apenas para o autor
+    query = CommunityPost.query.filter_by(community_id=comunidade.id)
+    if not current_user.is_admin:
+        # Usuários comuns só veem posts não ocultos ou seus próprios posts ocultos
+        from sqlalchemy import or_
+        query = query.filter(
+            or_(
+                CommunityPost.is_hidden == False,
+                (CommunityPost.is_hidden == True) & (CommunityPost.author_id == current_user.id)
+            )
+        )
+    mensagens = query.order_by(CommunityPost.created_at.desc()).all()
     return render_template('comunidade.html', comunidade=comunidade, mensagens=mensagens)
 
 @comunidade_bp.route('/<int:community_id>/post/<int:post_id>/like', methods=['POST'])
@@ -372,3 +390,130 @@ def delete_comment(comment_id):
         flash(f'Erro ao excluir comentário: {str(e)}', 'danger')
     
     return redirect(url_for('comunidade.comunidade_users', community_id=post.community_id))
+
+@comunidade_bp.route('/<int:community_id>/post/<int:post_id>/hide', methods=['POST'])
+@login_required
+def hide_post(community_id, post_id):
+    """Ocultar post (só admin e o próprio autor veem)"""
+    if not current_user.is_admin:
+        return jsonify({'success': False, 'message': 'Acesso negado'}), 403
+    
+    post = CommunityPost.query.get_or_404(post_id)
+    post.is_hidden = True
+    post.hidden_by = current_user.id
+    post.hidden_at = datetime.utcnow()
+    db.session.commit()
+    
+    return jsonify({'success': True, 'message': 'Post ocultado com sucesso'})
+
+@comunidade_bp.route('/<int:community_id>/post/<int:post_id>/unhide', methods=['POST'])
+@login_required
+def unhide_post(community_id, post_id):
+    """Desocultar post"""
+    if not current_user.is_admin:
+        return jsonify({'success': False, 'message': 'Acesso negado'}), 403
+    
+    post = CommunityPost.query.get_or_404(post_id)
+    post.is_hidden = False
+    post.hidden_by = None
+    post.hidden_at = None
+    db.session.commit()
+    
+    return jsonify({'success': True, 'message': 'Post desocultado com sucesso'})
+
+@comunidade_bp.route('/user/<int:user_id>/ban', methods=['POST'])
+@login_required
+def ban_user(user_id):
+    """Banir usuário permanentemente"""
+    if not current_user.is_admin:
+        return jsonify({'success': False, 'message': 'Acesso negado'}), 403
+    
+    user = Usuario.query.get_or_404(user_id)
+    if user.is_admin:
+        return jsonify({'success': False, 'message': 'Não é possível banir um administrador'}), 400
+    
+    user.is_banned = True
+    db.session.commit()
+    
+    return jsonify({'success': True, 'message': f'Usuário {user.nome} foi banido permanentemente'})
+
+@comunidade_bp.route('/user/<int:user_id>/unban', methods=['POST'])
+@login_required
+def unban_user(user_id):
+    """Desbanir usuário"""
+    if not current_user.is_admin:
+        return jsonify({'success': False, 'message': 'Acesso negado'}), 403
+    
+    user = Usuario.query.get_or_404(user_id)
+    user.is_banned = False
+    db.session.commit()
+    
+    return jsonify({'success': True, 'message': f'Usuário {user.nome} foi desbanido'})
+
+@comunidade_bp.route('/user/<int:user_id>/mute', methods=['POST'])
+@login_required
+def mute_user(user_id):
+    """Aplicar castigo (mute temporário) ao usuário"""
+    if not current_user.is_admin:
+        return jsonify({'success': False, 'message': 'Acesso negado'}), 403
+    
+    user = Usuario.query.get_or_404(user_id)
+    if user.is_admin:
+        return jsonify({'success': False, 'message': 'Não é possível aplicar castigo a um administrador'}), 400
+    
+    data = request.get_json() if request.is_json else request.form
+    days = int(data.get('days', 1))
+    reason = data.get('reason', 'Violação das regras da comunidade')
+    
+    user.is_muted = True
+    user.mute_until = datetime.utcnow() + timedelta(days=days)
+    user.mute_reason = reason
+    db.session.commit()
+    
+    return jsonify({
+        'success': True, 
+        'message': f'Castigo aplicado a {user.nome} até {user.mute_until.strftime("%d/%m/%Y %H:%M")}'
+    })
+
+@comunidade_bp.route('/user/<int:user_id>/unmute', methods=['POST'])
+@login_required
+def unmute_user(user_id):
+    """Remover castigo do usuário"""
+    if not current_user.is_admin:
+        return jsonify({'success': False, 'message': 'Acesso negado'}), 403
+    
+    user = Usuario.query.get_or_404(user_id)
+    user.is_muted = False
+    user.mute_until = None
+    user.mute_reason = None
+    db.session.commit()
+    
+    return jsonify({'success': True, 'message': f'Castigo removido de {user.nome}'})
+
+@comunidade_bp.route('/appeal', methods=['POST'])
+@login_required
+def appeal_mute():
+    """Recurso de castigo (usuário pode apelar)"""
+    data = request.get_json() if request.is_json else request.form
+    appeal_message = data.get('message', '')
+    
+    if not current_user.is_currently_muted():
+        return jsonify({'success': False, 'message': 'Você não está sob castigo'}), 400
+    
+    # Criar notificação para todos os admins sobre o recurso
+    from ..models import Notification
+    admins = Usuario.query.filter_by(is_admin=True).all()
+    for admin in admins:
+        notification = Notification(
+            user_id=admin.id,
+            type='appeal',
+            title='Recurso de Castigo',
+            message=f'O usuário {current_user.nome} está apelando de seu castigo. Motivo do castigo: {current_user.mute_reason or "Não especificado"}. Mensagem do usuário: {appeal_message}',
+            link=url_for('users.profile', user_id=current_user.id),
+            is_read=False
+        )
+        db.session.add(notification)
+    
+    db.session.commit()
+    
+    return jsonify({'success': True, 'message': 'Recurso enviado. Os administradores serão notificados.'})

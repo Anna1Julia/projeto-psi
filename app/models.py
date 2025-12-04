@@ -24,6 +24,10 @@ class Usuario(UserMixin, db.Model):
     role = db.Column('usr_role', db.String(32), default='visitante', nullable=False)
     is_admin = db.Column(db.Boolean, default=False, nullable=False)
     criado_em = db.Column('usr_created_at', db.DateTime, default=datetime.utcnow, nullable=False)
+    is_banned = db.Column('usr_is_banned', db.Boolean, default=False, nullable=False)  # Banimento permanente
+    is_muted = db.Column('usr_is_muted', db.Boolean, default=False, nullable=False)  # Castigo temporário
+    mute_until = db.Column('usr_mute_until', db.DateTime, nullable=True)  # Data de término do castigo
+    mute_reason = db.Column('usr_mute_reason', db.Text)  # Motivo do castigo
 
     seguidores = db.relationship('Follower', foreign_keys='Follower.follower_id', backref='seguidor', lazy='dynamic')
     seguidos = db.relationship('Follower', foreign_keys='Follower.followed_id', backref='seguido', lazy='dynamic')
@@ -36,6 +40,30 @@ class Usuario(UserMixin, db.Model):
 
     def __repr__(self):
         return f"<Usuario {self.email}>"
+    
+    def is_currently_muted(self):
+        """Verifica se o usuário está atualmente sob castigo"""
+        if not self.is_muted:
+            return False
+        if self.mute_until and datetime.utcnow() > self.mute_until:
+            # Castigo expirou, atualizar status
+            self.is_muted = False
+            self.mute_until = None
+            try:
+                db.session.commit()
+            except:
+                pass
+            return False
+        return True
+    
+    def can_post(self):
+        """Verifica se o usuário pode postar (não está banido ou mutado)"""
+        if self.is_banned:
+            return False, "Você está banido permanentemente."
+        if self.is_currently_muted():
+            mute_date = self.mute_until.strftime('%d/%m/%Y %H:%M') if self.mute_until else 'data indefinida'
+            return False, f"Você está sob castigo até {mute_date}."
+        return True, None
 
     def is_administrador(self):
         return self.is_admin
@@ -168,8 +196,12 @@ class CommunityPost(db.Model):
     community_id = db.Column('post_community_id', db.Integer, db.ForeignKey('tb_communities.com_id'), nullable=False)
     content = db.Column('post_content', db.Text, nullable=False)
     created_at = db.Column('post_created_at', db.DateTime, default=datetime.utcnow, nullable=False)
+    is_hidden = db.Column('post_is_hidden', db.Boolean, default=False, nullable=False)  # Post oculto
+    hidden_by = db.Column('post_hidden_by', db.Integer, db.ForeignKey('tb_users.usr_id'), nullable=True)  # Quem ocultou
+    hidden_at = db.Column('post_hidden_at', db.DateTime, nullable=True)  # Quando foi oculto
 
-    usuario = db.relationship('Usuario', backref='community_posts')
+    usuario = db.relationship('Usuario', foreign_keys=[author_id], backref='community_posts')
+    hidden_by_user = db.relationship('Usuario', foreign_keys=[hidden_by], backref='hidden_posts')
     comunidade = db.relationship('Community', back_populates='posts')
 
     # Helpers
@@ -373,6 +405,23 @@ class ContentCategory(db.Model):
 
     content_id = db.Column('cct_content_id', db.Integer, db.ForeignKey('tb_contents.cnt_id'), primary_key=True)
     category_id = db.Column('cct_category_id', db.Integer, db.ForeignKey('tb_categories.cat_id'), primary_key=True)
+
+class Notification(db.Model):
+    __tablename__ = 'tb_notifications'
+
+    id = db.Column('not_id', db.Integer, primary_key=True)
+    user_id = db.Column('not_user_id', db.Integer, db.ForeignKey('tb_users.usr_id'), nullable=False)
+    type = db.Column('not_type', db.String(50), nullable=False)  # 'report', 'message', 'system', etc.
+    title = db.Column('not_title', db.String(255), nullable=False)
+    message = db.Column('not_message', db.Text, nullable=False)
+    link = db.Column('not_link', db.String(500))  # URL relacionada à notificação
+    is_read = db.Column('not_is_read', db.Boolean, default=False, nullable=False)
+    created_at = db.Column('not_created_at', db.DateTime, default=datetime.utcnow, nullable=False)
+
+    user = db.relationship('Usuario', backref='notifications', lazy=True)
+
+    def __repr__(self):
+        return f"<Notification {self.id}: {self.type} for user {self.user_id}>"
 
 class Report(db.Model):
     __tablename__ = 'tb_reports'

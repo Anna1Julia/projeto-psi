@@ -14,9 +14,17 @@
                 <p class="description mb-0">{{ comunidade.description or 'Sem descrição.' }}</p>
             </div>
             <div class="community-header-buttons">
-                <button id="createPostButton" class="btn btn-create-post me-2">
-                    <i class="bi bi-plus-circle me-2"></i>Criar Post
-                </button>
+                {% if current_user.is_authenticated %}
+                    {% if current_user.is_currently_muted() %}
+                    <button type="button" class="btn btn-warning me-2" data-bs-toggle="modal" data-bs-target="#appealModal">
+                        <i class="bi bi-exclamation-triangle me-1"></i>Recurso
+                    </button>
+                    {% else %}
+                    <button id="createPostButton" class="btn btn-create-post me-2">
+                        <i class="bi bi-plus-circle me-2"></i>Criar Post
+                    </button>
+                    {% endif %}
+                {% endif %}
                 <a href="{{ url_for('comunidade.comunidade') }}" class="btn btn-outline-secondary btn-sair">
                     <i class="bi bi-arrow-left me-1"></i>Sair
                 </a>
@@ -29,6 +37,11 @@
         {% if mensagens %}
             {% for msg in mensagens %}
             <div class="post-card" data-post-id="{{ msg.id }}">
+                {% if msg.is_hidden %}
+                <div class="alert alert-danger mb-0 rounded-0" style="border-radius: 0; background: #dc3545; color: white; font-weight: bold; text-align: center; padding: 0.5rem;">
+                    <i class="bi bi-eye-slash me-1"></i>OCULTADO
+                </div>
+                {% endif %}
                 <div class="post-header">
                     <div class="flex-grow-1 post-header-main">
                         <div class="post-content">{{ msg.content }}</div>
@@ -53,6 +66,34 @@
                         <button type="submit" class="comment-btn">Comentar</button>
                     </form>
                     {% if current_user.is_authenticated %}
+                    {% if current_user.is_admin %}
+                    <!-- Botões de moderação (apenas para admins) -->
+                    <div class="btn-group ms-2" role="group">
+                        {% if msg.is_hidden %}
+                        <button class="btn btn-sm btn-outline-success" 
+                                onclick="unhidePost({{ comunidade.id }}, {{ msg.id }})"
+                                title="Desocultar post">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        {% else %}
+                        <button class="btn btn-sm btn-outline-warning" 
+                                onclick="hidePost({{ comunidade.id }}, {{ msg.id }})"
+                                title="Ocultar post">
+                            <i class="bi bi-eye-slash"></i>
+                        </button>
+                        {% endif %}
+                        <button class="btn btn-sm btn-outline-danger" 
+                                onclick="banUser({{ msg.usuario.id }}, '{{ msg.usuario.nome }}')"
+                                title="Banir usuário">
+                            <i class="bi bi-person-x"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-info" 
+                                onclick="showMuteModal({{ msg.usuario.id }}, '{{ msg.usuario.nome }}')"
+                                title="Aplicar castigo">
+                            <i class="bi bi-mic-mute"></i>
+                        </button>
+                    </div>
+                    {% endif %}
                     {% if current_user.id == msg.author_id or current_user.is_admin or current_user.id == comunidade.owner_id %}
                     <button class="delete-btn delete-post-btn"
                         data-community-id="{{ comunidade.id }}"
@@ -207,7 +248,9 @@ document.addEventListener('DOMContentLoaded', () => {
         postTextarea.value = '';
     };
 
-    if (openButton) openButton.addEventListener('click', e => { e.preventDefault(); openModal(); });
+    if (openButton) {
+        openButton.addEventListener('click', e => { e.preventDefault(); openModal(); });
+    }
     cancelBtn.addEventListener('click', closeModal);
     modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && modal.classList.contains('show')) closeModal(); });
@@ -486,6 +529,199 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.delete-comment-btn').forEach(btn => {
         btn.addEventListener('click', handleDeleteComment);
     });
+
+    // === FUNÇÕES DE MODERAÇÃO ===
+    function hidePost(communityId, postId) {
+        if (!confirm('Tem certeza que deseja ocultar este post? Apenas você e o autor poderão vê-lo.')) return;
+        
+        fetch(`/comunidade/${communityId}/post/${postId}/hide`, {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(data.message || 'Erro ao ocultar post.');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Erro de rede ao ocultar post.');
+        });
+    }
+
+    function unhidePost(communityId, postId) {
+        fetch(`/comunidade/${communityId}/post/${postId}/unhide`, {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert(data.message || 'Erro ao desocultar post.');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Erro de rede ao desocultar post.');
+        });
+    }
+
+    function banUser(userId, userName) {
+        if (!confirm(`Tem certeza que deseja BANIR PERMANENTEMENTE o usuário ${userName}? Esta ação não pode ser desfeita facilmente.`)) return;
+        
+        fetch(`/comunidade/user/${userId}/ban`, {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                location.reload();
+            } else {
+                alert(data.message || 'Erro ao banir usuário.');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Erro de rede ao banir usuário.');
+        });
+    }
+
+    function showMuteModal(userId, userName) {
+        document.getElementById('mute_user_id').value = userId;
+        document.getElementById('mute_user_name').textContent = userName;
+        const modal = new bootstrap.Modal(document.getElementById('muteModal'));
+        modal.show();
+    }
+
+    function applyMute() {
+        const userId = document.getElementById('mute_user_id').value;
+        const days = parseInt(document.getElementById('mute_days').value);
+        const reason = document.getElementById('mute_reason').value || 'Violação das regras da comunidade';
+        
+        if (!days || days < 1) {
+            alert('Por favor, informe o número de dias do castigo.');
+            return;
+        }
+        
+        fetch(`/comunidade/user/${userId}/mute`, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ days: days, reason: reason })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                bootstrap.Modal.getInstance(document.getElementById('muteModal')).hide();
+                location.reload();
+            } else {
+                alert(data.message || 'Erro ao aplicar castigo.');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Erro de rede ao aplicar castigo.');
+        });
+    }
+
+    function submitAppeal() {
+        const message = document.getElementById('appeal_message').value;
+        
+        if (!message.trim()) {
+            alert('Por favor, escreva uma mensagem explicando seu recurso.');
+            return;
+        }
+        
+        fetch('/comunidade/appeal', {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message: message })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                bootstrap.Modal.getInstance(document.getElementById('appealModal')).hide();
+            } else {
+                alert(data.message || 'Erro ao enviar recurso.');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Erro de rede ao enviar recurso.');
+        });
+    }
 });
 </script>
+
+<!-- Modal para aplicar castigo -->
+{% if current_user.is_authenticated and current_user.is_admin %}
+<div class="modal fade" id="muteModal" tabindex="-1" aria-labelledby="muteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="muteModalLabel">Aplicar Castigo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="mute_user_id">
+                <p>Usuário: <strong id="mute_user_name"></strong></p>
+                <div class="mb-3">
+                    <label for="mute_days" class="form-label">Duração do Castigo (dias) <span class="text-danger">*</span></label>
+                    <input type="number" class="form-control" id="mute_days" min="1" max="365" value="1" required>
+                </div>
+                <div class="mb-3">
+                    <label for="mute_reason" class="form-label">Motivo do Castigo</label>
+                    <textarea class="form-control" id="mute_reason" rows="3" placeholder="Descreva o motivo do castigo..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-warning" onclick="applyMute()">Aplicar Castigo</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Modal para recurso de castigo -->
+{% if current_user.is_authenticated and current_user.is_currently_muted() %}
+<div class="modal fade" id="appealModal" tabindex="-1" aria-labelledby="appealModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="appealModalLabel">Recurso de Castigo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning">
+                    <strong>Você está sob castigo até:</strong> {{ current_user.mute_until|format_datetime('%d/%m/%Y %H:%M') if current_user.mute_until else 'Data indefinida' }}<br>
+                    <strong>Motivo:</strong> {{ current_user.mute_reason or 'Não especificado' }}
+                </div>
+                <div class="mb-3">
+                    <label for="appeal_message" class="form-label">Mensagem do Recurso <span class="text-danger">*</span></label>
+                    <textarea class="form-control" id="appeal_message" rows="4" placeholder="Explique por que você acredita que o castigo deve ser removido..." required></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="submitAppeal()">Enviar Recurso</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
 {% endblock %}

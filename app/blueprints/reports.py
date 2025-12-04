@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, jsonify
 from flask_login import login_required, current_user
-from app.models import db, Report, Usuario, CommunityPost, Content, CommunityPostComment
+from app.models import db, Report, Usuario, CommunityPost, Content, CommunityPostComment, Notification
 from datetime import datetime
 
 reports_bp = Blueprint('reports', __name__, url_prefix='/reports')
@@ -72,6 +72,43 @@ def create_report():
     )
     
     db.session.add(report)
+    db.session.flush()  # Para obter o ID da denúncia
+    
+    # Criar notificações para todos os administradores
+    admins = Usuario.query.filter_by(is_admin=True).all()
+    for admin in admins:
+        # Criar mensagem descritiva
+        tipo_nome = {
+            'post': 'Post',
+            'content': 'Conteúdo',
+            'user': 'Usuário',
+            'comment': 'Comentário',
+            'community': 'Comunidade'
+        }.get(reported_type, reported_type.title())
+        
+        motivo_nome = {
+            'spam': 'Spam',
+            'inappropriate': 'Conteúdo Inadequado',
+            'harassment': 'Assédio',
+            'copyright': 'Violação de Direitos Autorais',
+            'other': 'Outro'
+        }.get(reason, reason.title())
+        
+        title = f"Nova Denúncia: {tipo_nome}"
+        message = f"O usuário {current_user.nome} denunciou um {tipo_nome.lower()} (ID: {reported_id}). Motivo: {motivo_nome}."
+        if description:
+            message += f" Descrição: {description[:100]}{'...' if len(description) > 100 else ''}"
+        
+        notification = Notification(
+            user_id=admin.id,
+            type='report',
+            title=title,
+            message=message,
+            link=url_for('reports.view_report', report_id=report.id),
+            is_read=False
+        )
+        db.session.add(notification)
+    
     db.session.commit()
     
     if request.is_json:

@@ -107,6 +107,29 @@ def apply_all_migrations(db):
                 db.session.execute(text("ALTER TABLE tb_users ADD COLUMN usr_role VARCHAR(32) DEFAULT 'visitante' NOT NULL"))
                 db.session.commit()
                 print("✅ Coluna usr_role adicionada em tb_users")
+            
+            # Adicionar colunas de moderação em tb_users
+            needs_commit = False
+            if 'usr_is_banned' not in user_columns:
+                db.session.execute(text("ALTER TABLE tb_users ADD COLUMN usr_is_banned INTEGER DEFAULT 0 NOT NULL"))
+                print("✅ Coluna usr_is_banned adicionada em tb_users")
+                needs_commit = True
+            if 'usr_is_muted' not in user_columns:
+                db.session.execute(text("ALTER TABLE tb_users ADD COLUMN usr_is_muted INTEGER DEFAULT 0 NOT NULL"))
+                print("✅ Coluna usr_is_muted adicionada em tb_users")
+                needs_commit = True
+            if 'usr_mute_until' not in user_columns:
+                db.session.execute(text("ALTER TABLE tb_users ADD COLUMN usr_mute_until DATETIME"))
+                print("✅ Coluna usr_mute_until adicionada em tb_users")
+                needs_commit = True
+            if 'usr_mute_reason' not in user_columns:
+                db.session.execute(text("ALTER TABLE tb_users ADD COLUMN usr_mute_reason TEXT"))
+                print("✅ Coluna usr_mute_reason adicionada em tb_users")
+                needs_commit = True
+            
+            # Commit se alguma coluna foi adicionada
+            if needs_commit:
+                db.session.commit()
 
         # Criar tabelas ausentes (SQLite: CREATE TABLE IF NOT EXISTS)
         if 'tb_media' not in tables:
@@ -145,6 +168,64 @@ def apply_all_migrations(db):
             ))
             db.session.commit()
             print('✅ Tabela tb_timeline criada')
+
+        # Adicionar colunas de moderação em tb_community_posts
+        if 'tb_community_posts' in tables:
+            post_columns = [col['name'] for col in inspector.get_columns('tb_community_posts')]
+            needs_commit = False
+            if 'post_is_hidden' not in post_columns:
+                db.session.execute(text("ALTER TABLE tb_community_posts ADD COLUMN post_is_hidden INTEGER DEFAULT 0 NOT NULL"))
+                print("✅ Coluna post_is_hidden adicionada em tb_community_posts")
+                needs_commit = True
+            if 'post_hidden_by' not in post_columns:
+                db.session.execute(text("ALTER TABLE tb_community_posts ADD COLUMN post_hidden_by INTEGER"))
+                print("✅ Coluna post_hidden_by adicionada em tb_community_posts")
+                needs_commit = True
+            if 'post_hidden_at' not in post_columns:
+                db.session.execute(text("ALTER TABLE tb_community_posts ADD COLUMN post_hidden_at DATETIME"))
+                print("✅ Coluna post_hidden_at adicionada em tb_community_posts")
+                needs_commit = True
+            
+            if needs_commit:
+                db.session.commit()
+
+        # Criar tabela tb_notifications se não existir
+        if 'tb_notifications' not in tables:
+            db.session.execute(text(
+                'CREATE TABLE IF NOT EXISTS tb_notifications ('
+                'not_id INTEGER PRIMARY KEY, '
+                'not_user_id INTEGER NOT NULL, '
+                'not_type VARCHAR(50) NOT NULL, '
+                'not_title VARCHAR(255) NOT NULL, '
+                'not_message TEXT NOT NULL, '
+                'not_link VARCHAR(500), '
+                'not_is_read INTEGER DEFAULT 0 NOT NULL, '
+                'not_created_at DATETIME NOT NULL, '
+                'FOREIGN KEY(not_user_id) REFERENCES tb_users(usr_id))'
+            ))
+            db.session.commit()
+            print('✅ Tabela tb_notifications criada')
+
+        # Criar tabela tb_reports se não existir
+        if 'tb_reports' not in tables:
+            db.session.execute(text(
+                'CREATE TABLE IF NOT EXISTS tb_reports ('
+                'rpt_id INTEGER PRIMARY KEY, '
+                'rpt_reporter_id INTEGER NOT NULL, '
+                'rpt_type VARCHAR(50) NOT NULL, '
+                'rpt_reported_id INTEGER NOT NULL, '
+                'rpt_reason VARCHAR(100) NOT NULL, '
+                'rpt_description TEXT, '
+                'rpt_status VARCHAR(20) DEFAULT \'pending\' NOT NULL, '
+                'rpt_reviewed_by INTEGER, '
+                'rpt_reviewed_at DATETIME, '
+                'rpt_admin_notes TEXT, '
+                'rpt_created_at DATETIME NOT NULL, '
+                'FOREIGN KEY(rpt_reporter_id) REFERENCES tb_users(usr_id), '
+                'FOREIGN KEY(rpt_reviewed_by) REFERENCES tb_users(usr_id))'
+            ))
+            db.session.commit()
+            print('✅ Tabela tb_reports criada')
     except Exception as e:
         print(f"❌ Erro ao aplicar migração de views_count: {e}")
         db.session.rollback()
