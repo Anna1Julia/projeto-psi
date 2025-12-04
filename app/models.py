@@ -373,3 +373,24 @@ class ContentCategory(db.Model):
 
     content_id = db.Column('cct_content_id', db.Integer, db.ForeignKey('tb_contents.cnt_id'), primary_key=True)
     category_id = db.Column('cct_category_id', db.Integer, db.ForeignKey('tb_categories.cat_id'), primary_key=True)
+
+class Report(db.Model):
+    __tablename__ = 'tb_reports'
+
+    id = db.Column('rpt_id', db.Integer, primary_key=True)
+    reporter_id = db.Column('rpt_reporter_id', db.Integer, db.ForeignKey('tb_users.usr_id'), nullable=False)
+    reported_type = db.Column('rpt_type', db.String(50), nullable=False)  # 'post', 'content', 'user', 'comment', 'community'
+    reported_id = db.Column('rpt_reported_id', db.Integer, nullable=False)  # ID do item denunciado
+    reason = db.Column('rpt_reason', db.String(100), nullable=False)  # 'spam', 'inappropriate', 'harassment', 'copyright', 'other'
+    description = db.Column('rpt_description', db.Text)  # Descrição detalhada
+    status = db.Column('rpt_status', db.String(20), default='pending', nullable=False)  # 'pending', 'reviewed', 'resolved', 'dismissed'
+    reviewed_by = db.Column('rpt_reviewed_by', db.Integer, db.ForeignKey('tb_users.usr_id'), nullable=True)
+    reviewed_at = db.Column('rpt_reviewed_at', db.DateTime, nullable=True)
+    admin_notes = db.Column('rpt_admin_notes', db.Text)  # Notas do administrador
+    created_at = db.Column('rpt_created_at', db.DateTime, default=datetime.utcnow, nullable=False)
+
+    reporter = db.relationship('Usuario', foreign_keys=[reporter_id], backref='reports_made')
+    reviewer = db.relationship('Usuario', foreign_keys=[reviewed_by], backref='reports_reviewed')
+
+    def __repr__(self):
+        return f"<Report {self.id}: {self.reported_type}:{self.reported_id} by {self.reporter_id}>"

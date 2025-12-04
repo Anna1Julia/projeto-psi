@@ -52,12 +52,19 @@
                         <input type="text" name="text" class="comment-input" placeholder="Adicionar comentário..." required>
                         <button type="submit" class="comment-btn">Comentar</button>
                     </form>
-                    {% if current_user.is_authenticated and (current_user.id == msg.author_id or current_user.is_admin or current_user.id == comunidade.owner_id) %}
+                    {% if current_user.is_authenticated %}
+                    {% if current_user.id == msg.author_id or current_user.is_admin or current_user.id == comunidade.owner_id %}
                     <button class="delete-btn delete-post-btn"
                         data-community-id="{{ comunidade.id }}"
                         data-post-id="{{ msg.id }}"
                         title="Excluir post">
                         <i class="bi bi-trash"></i>
+                    </button>
+                    {% endif %}
+                    <button class="btn btn-sm btn-outline-danger ms-2" 
+                            onclick="openReportModal('post', {{ msg.id }})"
+                            title="Denunciar post">
+                        <i class="bi bi-flag"></i>
                     </button>
                     {% endif %}
                 </div>
@@ -81,14 +88,23 @@
                                 <span class="comment-author">{{ c.user.nome }}</span>
                                 <span class="comment-date">{{ c.created_at|format_datetime('%d/%m/%Y %H:%M') }}</span>
                             </div>
-                            {% if current_user.is_authenticated and (current_user.id == c.user_id or current_user.is_admin or current_user.id == comunidade.owner_id) %}
-                            <button class="delete-btn delete-comment-btn" 
-                                data-comment-id="{{ c.id }}"
-                                data-post-id="{{ msg.id }}" 
-                                title="Excluir comentário">
-                                <i class="bi bi-x"></i>
-                            </button>
-                            {% endif %}
+                            <div class="d-flex gap-2">
+                                {% if current_user.is_authenticated and (current_user.id == c.user_id or current_user.is_admin or current_user.id == comunidade.owner_id) %}
+                                <button class="delete-btn delete-comment-btn" 
+                                    data-comment-id="{{ c.id }}"
+                                    data-post-id="{{ msg.id }}" 
+                                    title="Excluir comentário">
+                                    <i class="bi bi-x"></i>
+                                </button>
+                                {% endif %}
+                                {% if current_user.is_authenticated %}
+                                <button class="btn btn-sm btn-outline-danger" 
+                                        onclick="openReportModal('comment', {{ c.id }})"
+                                        title="Denunciar comentário">
+                                    <i class="bi bi-flag"></i>
+                                </button>
+                                {% endif %}
+                            </div>
                         </div>
                         <div class="comment-text">{{ c.text }}</div>
                     </div>

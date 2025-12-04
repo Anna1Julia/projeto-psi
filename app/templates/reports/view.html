@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Denúncia #{{ report.id }} - MemóriaViva{% endblock %}
+
+{% block content %}
+<div class="page-shell">
+    <div class="page-header">
+        <div class="page-header-main">
+            <h1 class="page-header-title">Denúncia #{{ report.id }}</h1>
+            <p class="page-header-subtitle">Detalhes da denúncia</p>
+        </div>
+        <div class="page-header-actions">
+            <a href="{{ url_for('reports.list_reports') }}" class="btn btn-secondary">Voltar</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Informações da Denúncia</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">Status:</dt>
+                        <dd class="col-sm-8">
+                            <span class="badge bg-{% if report.status == 'pending' %}warning{% elif report.status == 'resolved' %}success{% elif report.status == 'dismissed' %}secondary{% else %}info{% endif %}">
+                                {{ report.status|title }}
+                            </span>
+                        </dd>
+                        
+                        <dt class="col-sm-4">Tipo:</dt>
+                        <dd class="col-sm-8">{{ report.reported_type|title }}</dd>
+                        
+                        <dt class="col-sm-4">ID do Item:</dt>
+                        <dd class="col-sm-8">{{ report.reported_id }}</dd>
+                        
+                        <dt class="col-sm-4">Motivo:</dt>
+                        <dd class="col-sm-8">{{ report.reason|title }}</dd>
+                        
+                        <dt class="col-sm-4">Descrição:</dt>
+                        <dd class="col-sm-8">{{ report.description or 'Nenhuma descrição fornecida' }}</dd>
+                        
+                        <dt class="col-sm-4">Denunciado por:</dt>
+                        <dd class="col-sm-8">{{ report.reporter.nome }} ({{ report.reporter.email }})</dd>
+                        
+                        <dt class="col-sm-4">Data da Denúncia:</dt>
+                        <dd class="col-sm-8">{{ report.created_at|format_datetime('%d/%m/%Y %H:%M') }}</dd>
+                        
+                        {% if report.reviewed_by %}
+                        <dt class="col-sm-4">Revisado por:</dt>
+                        <dd class="col-sm-8">{{ report.reviewer.nome if report.reviewer else 'N/A' }}</dd>
+                        
+                        <dt class="col-sm-4">Data da Revisão:</dt>
+                        <dd class="col-sm-8">{{ report.reviewed_at|format_datetime('%d/%m/%Y %H:%M') if report.reviewed_at else 'N/A' }}</dd>
+                        {% endif %}
+                        
+                        {% if report.admin_notes %}
+                        <dt class="col-sm-4">Notas do Admin:</dt>
+                        <dd class="col-sm-8">{{ report.admin_notes }}</dd>
+                        {% endif %}
+                    </dl>
+                </div>
+            </div>
+
+            {% if reported_item %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Item Denunciado</h5>
+                </div>
+                <div class="card-body">
+                    {% if report.reported_type == 'post' %}
+                        <p><strong>Conteúdo:</strong> {{ reported_item.content }}</p>
+                        <p><strong>Autor:</strong> {{ reported_item.usuario.nome }}</p>
+                        <p><strong>Data:</strong> {{ reported_item.created_at|format_datetime('%d/%m/%Y %H:%M') }}</p>
+                    {% elif report.reported_type == 'content' %}
+                        <p><strong>Título:</strong> {{ reported_item.title }}</p>
+                        <p><strong>Descrição:</strong> {{ reported_item.description or 'N/A' }}</p>
+                        <p><strong>Autor:</strong> {{ reported_item.autor.nome }}</p>
+                    {% elif report.reported_type == 'user' %}
+                        <p><strong>Nome:</strong> {{ reported_item.nome }}</p>
+                        <p><strong>Email:</strong> {{ reported_item.email }}</p>
+                    {% elif report.reported_type == 'comment' %}
+                        <p><strong>Comentário:</strong> {{ reported_item.text }}</p>
+                        <p><strong>Autor:</strong> {{ reported_item.user.nome }}</p>
+                    {% elif report.reported_type == 'community' %}
+                        <p><strong>Nome:</strong> {{ reported_item.name }}</p>
+                        <p><strong>Descrição:</strong> {{ reported_item.description or 'N/A' }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="col-md-4">
+            {% if report.status == 'pending' %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Ações</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('reports.review_report', report_id=report.id) }}" class="mb-3">
+                        <div class="mb-3">
+                            <label for="admin_notes" class="form-label">Notas (opcional)</label>
+                            <textarea name="admin_notes" id="admin_notes" class="form-control" rows="3" placeholder="Adicione notas sobre esta denúncia..."></textarea>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <input type="hidden" name="action" value="resolve">
+                            <button type="submit" class="btn btn-success">Resolver Denúncia</button>
+                        </div>
+                    </form>
+                    <form method="POST" action="{{ url_for('reports.review_report', report_id=report.id) }}">
+                        <div class="mb-3">
+                            <label for="admin_notes_dismiss" class="form-label">Notas (opcional)</label>
+                            <textarea name="admin_notes" id="admin_notes_dismiss" class="form-control" rows="3" placeholder="Adicione notas sobre esta denúncia..."></textarea>
+                        </div>
+                        <div class="d-grid">
+                            <input type="hidden" name="action" value="dismiss">
+                            <button type="submit" class="btn btn-secondary" onclick="return confirm('Descartar esta denúncia?')">Descartar Denúncia</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+

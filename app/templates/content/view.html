@@ -12,21 +12,27 @@
                         <h3 style="color: white;">{{ content.title }}</h3>
 
                         {# ✅ Apenas o dono do conteúdo vê os botões Editar/Excluir #}
-                        {% if current_user.is_authenticated and current_user.id == content.user_id %}
-                            <div class="btn-group" role="group">
-                                <a href="{{ url_for('content.edit_content', content_id=content.id) }}" class="btn btn-primary">
-                                    <i class="fas fa-edit"></i> Editar
-                                </a>
-                                <button type="button" class="btn btn-danger" 
-                                        onclick="if(confirm('Tem certeza que deseja excluir este conteúdo?')) document.getElementById('delete-form-{{ content.id }}').submit();">
-                                    <i class="fas fa-trash-alt"></i> Excluir
-                                </button>
-                                <form id="delete-form-{{ content.id }}" method="POST"
-                                      action="{{ url_for('content.delete_content', content_id=content.id) }}" 
-                                      style="display:none;">
-                                </form>
-                            </div>
-                        {% endif %}
+                        <div class="btn-group" role="group">
+                            {% if current_user.is_authenticated and current_user.id == content.user_id %}
+                            <a href="{{ url_for('content.edit_content', content_id=content.id) }}" class="btn btn-primary">
+                                <i class="fas fa-edit"></i> Editar
+                            </a>
+                            <button type="button" class="btn btn-danger" 
+                                    onclick="if(confirm('Tem certeza que deseja excluir este conteúdo?')) document.getElementById('delete-form-{{ content.id }}').submit();">
+                                <i class="fas fa-trash-alt"></i> Excluir
+                            </button>
+                            <form id="delete-form-{{ content.id }}" method="POST"
+                                  action="{{ url_for('content.delete_content', content_id=content.id) }}" 
+                                  style="display:none;">
+                            </form>
+                            {% endif %}
+                            {% if current_user.is_authenticated %}
+                            <button type="button" class="btn btn-outline-danger" 
+                                    onclick="openReportModal('content', {{ content.id }})">
+                                <i class="bi bi-flag"></i> Denunciar
+                            </button>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
 

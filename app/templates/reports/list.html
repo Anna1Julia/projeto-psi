@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Denúncias - MemóriaViva{% endblock %}
+
+{% block content %}
+<div class="page-shell">
+    <div class="page-header">
+        <div class="page-header-main">
+            <h1 class="page-header-title">Denúncias</h1>
+            <p class="page-header-subtitle">Gerencie todas as denúncias recebidas</p>
+        </div>
+        <div class="page-header-actions">
+            <a href="{{ url_for('dashboard.index') }}" class="btn btn-secondary">Voltar</a>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-4">
+                    <label for="status" class="form-label">Status</label>
+                    <select name="status" id="status" class="form-select">
+                        <option value="all" {% if status_filter == 'all' %}selected{% endif %}>Todos</option>
+                        <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pendentes</option>
+                        <option value="reviewed" {% if status_filter == 'reviewed' %}selected{% endif %}>Revisadas</option>
+                        <option value="resolved" {% if status_filter == 'resolved' %}selected{% endif %}>Resolvidas</option>
+                        <option value="dismissed" {% if status_filter == 'dismissed' %}selected{% endif %}>Descartadas</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="type" class="form-label">Tipo</label>
+                    <select name="type" id="type" class="form-select">
+                        <option value="all" {% if type_filter == 'all' %}selected{% endif %}>Todos</option>
+                        <option value="post" {% if type_filter == 'post' %}selected{% endif %}>Post</option>
+                        <option value="content" {% if type_filter == 'content' %}selected{% endif %}>Conteúdo</option>
+                        <option value="user" {% if type_filter == 'user' %}selected{% endif %}>Usuário</option>
+                        <option value="comment" {% if type_filter == 'comment' %}selected{% endif %}>Comentário</option>
+                        <option value="community" {% if type_filter == 'community' %}selected{% endif %}>Comunidade</option>
+                    </select>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lista de Denúncias -->
+    {% if reports %}
+    <div class="card-grid">
+        {% for report in reports %}
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <span class="badge bg-{% if report.status == 'pending' %}warning{% elif report.status == 'resolved' %}success{% elif report.status == 'dismissed' %}secondary{% else %}info{% endif %}">
+                            {{ report.status|title }}
+                        </span>
+                        <span class="badge bg-primary ms-2">{{ report.reported_type|title }}</span>
+                    </div>
+                    <small class="text-muted">{{ report.created_at|format_datetime('%d/%m/%Y %H:%M') }}</small>
+                </div>
+                
+                <h6 class="card-title">Motivo: {{ report.reason|title }}</h6>
+                
+                {% if report.description %}
+                <p class="card-text"><strong>Descrição:</strong> {{ report.description }}</p>
+                {% endif %}
+                
+                <p class="card-text small">
+                    <strong>Denunciado por:</strong> {{ report.reporter.nome }}<br>
+                    <strong>ID do item:</strong> {{ report.reported_id }}
+                </p>
+                
+                {% if report.reviewed_by %}
+                <p class="card-text small text-muted">
+                    <strong>Revisado por:</strong> {{ report.reviewer.nome if report.reviewer else 'N/A' }}<br>
+                    <strong>Data:</strong> {{ report.reviewed_at|format_datetime('%d/%m/%Y %H:%M') if report.reviewed_at else 'N/A' }}
+                </p>
+                {% endif %}
+                
+                {% if report.admin_notes %}
+                <div class="alert alert-info small mb-2">
+                    <strong>Notas do admin:</strong> {{ report.admin_notes }}
+                </div>
+                {% endif %}
+                
+                <div class="d-flex gap-2 mt-3">
+                    <a href="{{ url_for('reports.view_report', report_id=report.id) }}" class="btn btn-outline-primary btn-sm">Ver Detalhes</a>
+                    {% if report.status == 'pending' %}
+                    <form method="POST" action="{{ url_for('reports.review_report', report_id=report.id) }}" class="d-inline">
+                        <input type="hidden" name="action" value="resolve">
+                        <button type="submit" class="btn btn-success btn-sm">Resolver</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('reports.review_report', report_id=report.id) }}" class="d-inline">
+                        <input type="hidden" name="action" value="dismiss">
+                        <button type="submit" class="btn btn-secondary btn-sm" onclick="return confirm('Descartar esta denúncia?')">Descartar</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card text-center py-5">
+        <i class="bi bi-inbox" style="font-size: 3rem; color: var(--color-text, #6B7280); opacity: 0.5;"></i>
+        <p class="mt-3 mb-0">Nenhuma denúncia encontrada.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+

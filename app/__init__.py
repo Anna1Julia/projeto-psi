@@ -81,6 +81,7 @@ def create_app():
     from .blueprints.chat import chat_bp
     from .blueprints.comunidade import comunidade_bp
     from .blueprints.feedbacks import feedback_bp
+    from .blueprints.reports import reports_bp
     from .dashboard import dashboard_bp
 
 
@@ -90,6 +91,7 @@ def create_app():
     app.register_blueprint(users_bp)
     app.register_blueprint(posts_bp)
     app.register_blueprint(feedback_bp)
+    app.register_blueprint(reports_bp)
     app.register_blueprint(chat_bp)
     app.register_blueprint(content_bp)
     app.register_blueprint(redirects_bp)

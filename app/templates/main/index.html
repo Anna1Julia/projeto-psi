@@ -130,6 +130,13 @@
                                     <button type="button" class="btn btn-warning force-white-title" data-bs-toggle="modal" data-bs-target="#feedbackModal">
                                         <i class="fas fa-comment-dots me-1"></i> Enviar Feedback
                                     </button>
+                                    {% if current_user.is_authenticated %}
+                                    <button type="button" 
+                                            class="btn btn-danger force-white-title" 
+                                            onclick="openReportModalGeneral()">
+                                        <i class="bi bi-flag-fill me-1"></i> Denunciar
+                                    </button>
+                                    {% endif %}
                                 </div>
                             </div>
                         </article>

@@ -121,6 +121,14 @@
                     Editar Perfil
                   </button>
                 </li>
+                {% if current_user.is_admin %}
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <a class="dropdown-item" href="{{ url_for('reports.list_reports') }}">
+                    <i class="bi bi-flag-fill me-2"></i>Denúncias
+                  </a>
+                </li>
+                {% endif %}
                 <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">Sair</a></li>
               </ul>
@@ -290,6 +298,61 @@
     </div>
     {% endif %}
 
+    <!-- Modal de Denúncia (global) -->
+    <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="reportModalLabel">Denunciar</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+          </div>
+          <form id="reportForm">
+            <div class="modal-body">
+              <div id="report_type_group" class="mb-3" style="display: none;">
+                <label for="report_type_select" class="form-label">Tipo de Item <span class="text-danger">*</span></label>
+                <select class="form-select" id="report_type_select" name="reported_type">
+                  <option value="">Selecione o tipo</option>
+                  <option value="post">Post</option>
+                  <option value="content">Conteúdo</option>
+                  <option value="user">Usuário</option>
+                  <option value="comment">Comentário</option>
+                  <option value="community">Comunidade</option>
+                </select>
+              </div>
+              <div id="report_id_group" class="mb-3" style="display: none;">
+                <label for="report_id_input" class="form-label">ID do Item <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" id="report_id_input" name="reported_id" placeholder="Digite o ID do item a ser denunciado">
+                <small class="form-text text-muted">Você pode encontrar o ID na URL da página do item.</small>
+              </div>
+              <input type="hidden" id="report_type" name="reported_type">
+              <input type="hidden" id="report_id" name="reported_id">
+              
+              <div class="mb-3">
+                <label for="report_reason" class="form-label">Motivo da Denúncia <span class="text-danger">*</span></label>
+                <select class="form-select" id="report_reason" name="reason" required>
+                  <option value="">Selecione um motivo</option>
+                  <option value="spam">Spam</option>
+                  <option value="inappropriate">Conteúdo Inadequado</option>
+                  <option value="harassment">Assédio</option>
+                  <option value="copyright">Violação de Direitos Autorais</option>
+                  <option value="other">Outro</option>
+                </select>
+              </div>
+              
+              <div class="mb-3">
+                <label for="report_description" class="form-label">Descrição (opcional)</label>
+                <textarea class="form-control" id="report_description" name="description" rows="4" placeholder="Forneça mais detalhes sobre a denúncia..."></textarea>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn btn-danger">Enviar Denúncia</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
     {% endblock %}
 
     <!-- JS: Bootstrap, AOS, Theme -->
@@ -435,6 +498,116 @@
             }
           }
         }, 500); // Verificar a cada 500ms
+      })();
+    </script>
+
+    <!-- Script para modal de denúncia -->
+    <script>
+      (function() {
+        // Função para abrir modal de denúncia com item específico
+        window.openReportModal = function(type, id) {
+          document.getElementById('report_type').value = type;
+          document.getElementById('report_id').value = id;
+          // Esconder campos de seleção manual
+          document.getElementById('report_type_group').style.display = 'none';
+          document.getElementById('report_id_group').style.display = 'none';
+          document.getElementById('report_type_select').required = false;
+          document.getElementById('report_id_input').required = false;
+          // Limpar valores dos campos de seleção
+          document.getElementById('report_type_select').value = '';
+          document.getElementById('report_id_input').value = '';
+          var modal = new bootstrap.Modal(document.getElementById('reportModal'));
+          modal.show();
+        };
+
+        // Função para abrir modal de denúncia geral (sem item específico)
+        window.openReportModalGeneral = function() {
+          // Mostrar campos de seleção manual
+          document.getElementById('report_type_group').style.display = 'block';
+          document.getElementById('report_id_group').style.display = 'block';
+          document.getElementById('report_type_select').required = true;
+          document.getElementById('report_id_input').required = true;
+          // Limpar valores dos campos hidden
+          document.getElementById('report_type').value = '';
+          document.getElementById('report_id').value = '';
+          var modal = new bootstrap.Modal(document.getElementById('reportModal'));
+          modal.show();
+        };
+
+        // Sincronizar valores dos selects com os campos hidden quando em modo geral
+        var reportTypeSelect = document.getElementById('report_type_select');
+        var reportIdInput = document.getElementById('report_id_input');
+        
+        if (reportTypeSelect) {
+          reportTypeSelect.addEventListener('change', function() {
+            if (this.value) {
+              document.getElementById('report_type').value = this.value;
+            }
+          });
+        }
+        
+        if (reportIdInput) {
+          reportIdInput.addEventListener('input', function() {
+            if (this.value) {
+              document.getElementById('report_id').value = this.value;
+            }
+          });
+        }
+
+        // Handler do formulário de denúncia
+        var reportForm = document.getElementById('reportForm');
+        if (reportForm) {
+          reportForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Obter valores dos campos (hidden ou visíveis)
+            var reportedType = document.getElementById('report_type').value || 
+                              document.getElementById('report_type_select').value;
+            var reportedId = document.getElementById('report_id').value || 
+                            document.getElementById('report_id_input').value;
+            
+            if (!reportedType || !reportedId) {
+              alert('Por favor, preencha o tipo e o ID do item a ser denunciado.');
+              return;
+            }
+            
+            var formData = new FormData(this);
+            var data = {
+              reported_type: reportedType,
+              reported_id: parseInt(reportedId),
+              reason: formData.get('reason'),
+              description: formData.get('description')
+            };
+
+            fetch('{{ url_for("reports.create_report") }}', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                var modal = bootstrap.Modal.getInstance(document.getElementById('reportModal'));
+                modal.hide();
+                alert('Denúncia enviada com sucesso!');
+                reportForm.reset();
+                // Resetar campos visíveis
+                document.getElementById('report_type_group').style.display = 'none';
+                document.getElementById('report_id_group').style.display = 'none';
+                document.getElementById('report_type_select').value = '';
+                document.getElementById('report_id_input').value = '';
+              } else {
+                alert('Erro: ' + (data.message || 'Não foi possível enviar a denúncia'));
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              alert('Erro ao enviar denúncia. Tente novamente.');
+            });
+          });
+        }
       })();
     </script>
 

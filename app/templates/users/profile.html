@@ -235,6 +235,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                               onsubmit="return confirm('Tem certeza que deseja deletar a conta de {{ usuario.nome }}? Esta ação não pode ser desfeita.')">
                                             <button type="submit" class="btn btn-danger w-100">Deletar Conta do Usuário</button>
                                         </form>
+                                    {% else %}
+                                        <button type="button" class="btn btn-outline-danger" 
+                                                onclick="openReportModal('user', {{ usuario.id }})">
+                                            <i class="bi bi-flag"></i> Denunciar Usuário
+                                        </button>
                                     {% endif %}
                                 </div>
                             {% endif %}
