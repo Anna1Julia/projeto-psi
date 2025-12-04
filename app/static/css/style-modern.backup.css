@@ -640,7 +640,35 @@ a:focus-visible,
   outline: none !important;
 }
 
+/* Modern theme toggle button */
+#themeToggle,
+.theme-toggle-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid var(--border-soft) !important;
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
 
+#themeToggle:hover,
+.theme-toggle-btn:hover {
+  background: var(--color-bg) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+#themeToggle:focus-visible,
+.theme-toggle-btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
 
 /* Dropdown toggle com efeito 3D */
 .navbar .dropdown-toggle {
@@ -712,7 +740,59 @@ a:focus-visible,
   transform: translateY(-1px);
 }
 
+/* Modern dropdown menu - Liquid Glass Premium */
+.dropdown-menu {
+  position: absolute;
+  background: var(--glass-bg) !important;
+  border: 1.5px solid var(--glass-border) !important;
+  border-radius: 10px !important;
+  box-shadow: var(--shadow-glass), inset 0 2px 4px rgba(255, 255, 255, 0.35), inset 0 -1px 2px rgba(0, 0, 0, 0.08) !important;
+  padding: 0.5rem 0 !important;
+  backdrop-filter: blur(18px) saturate(165%);
+  -webkit-backdrop-filter: blur(18px) saturate(165%);
+  overflow: visible;
+  z-index: 1050 !important;
+}
 
+.dropdown-menu::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), rgba(96, 165, 250, 0.2), transparent);
+  z-index: 1;
+}
+
+.dropdown-menu > * {
+  position: relative;
+  z-index: 2;
+}
+
+:root.dark .dropdown-menu {
+  background: var(--glass-bg) !important;
+  border-color: var(--glass-border) !important;
+  box-shadow: var(--shadow-glass), inset 0 2px 4px rgba(96, 165, 250, 0.15), inset 0 -1px 2px rgba(0, 0, 0, 0.2) !important;
+}
+
+:root.dark .dropdown-menu::before {
+  background: linear-gradient(90deg, transparent, rgba(96, 165, 250, 0.35), rgba(96, 165, 250, 0.15), transparent);
+}
+
+.dropdown-item {
+  color: var(--color-text) !important;
+  transition: all 0.2s ease;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  padding: 0.5rem 1rem !important;
+}
+
+.dropdown-item:hover {
+  background: var(--color-bg) !important;
+  color: var(--color-primary) !important;
+  transform: none !important;
+}
 
 /* Footer */
 .app-footer {
@@ -1215,33 +1295,40 @@ a:focus-visible,
   transform: translateY(-1px) scale(1.02);
 }
 
+/* Forms */
+.form-control, .form-select {
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(2,6,23,0.12);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+:root.dark .form-control, 
+:root.dark .form-select {
+  border-color: rgba(226,232,240,0.12);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.form-control::placeholder {
+  color: var(--color-muted, rgba(15,23,42,0.6));
+  opacity: 1;
+}
+
+:root.dark .form-control::placeholder {
+  color: var(--color-muted, rgba(226,232,240,0.72)) !important;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 0.25rem rgba(96, 165, 250, 0.25);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
 /* Ensure labels that were intended to be white remain readable in dark mode */
 :root.dark .form-label-white {
   color: var(--color-text) !important;
-}
-
-.form-select {
-  border-radius: var(--radius-sm);
-  background: var(--glass-bg) !important;
-  border: 1.5px solid var(--glass-border) !important;
-  backdrop-filter: blur(16px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.form-select:focus {
-  border-color: var(--color-primary) !important;
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2), 0 8px 20px rgba(37, 99, 235, 0.15) !important;
-}
-
-:root.dark .form-select {
-  background: var(--glass-bg) !important;
-  border-color: var(--glass-border) !important;
-}
-
-:root.dark .form-select:focus {
-  border-color: #60A5FA !important;
-  box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.2), 0 8px 20px rgba(96, 165, 250, 0.2) !important;
 }
 
 /* Lists */
@@ -1537,6 +1624,14 @@ a:focus-visible,
 
 #dropdownBlurOverlay.show {
   opacity: 1;
+}
+
+/* Garante contraste em ambos os temas */
+.modal-content {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-soft);
 }
 
 /* Feedback modal: garantir contraste em dark-mode */
