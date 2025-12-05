@@ -6,7 +6,7 @@
 <div class="container mt-5 mb-4" style="background-color: #f5f7fa; border-radius: 8px; padding: 20px;">
     <div class="row">
         <div class="col-12">
-            <h1 style="color: #111;">Comunidades Bloqueadas</h1>
+            <h1 class="blocked-communities-title">Comunidades Bloqueadas</h1>
             <p style="color: #555;">Aqui estão as comunidades que você bloqueou.</p>
 
             <a href="{{ url_for('comunidade.comunidade') }}" class="btn btn-outline-primary mb-3">
@@ -54,5 +54,17 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .blocked-communities-title {
+        color: #111 !important;
+    }
+    
+    :root.dark .blocked-communities-title {
+        color: #000000 !important;
+    }
+</style>
 {% endblock %}
     

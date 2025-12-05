@@ -1109,14 +1109,35 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 #postsContainer {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    align-items: stretch;
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1.25rem;
     padding: 1rem 0;
     width: 100%;
-    max-width: 820px;
+    max-width: 100%;
     margin: 0 auto;
+}
+
+/* Centralizar cards de posts */
+.posts-container-centered {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+@media (min-width: 576px) {
+    #postsContainer:not(.posts-container-centered) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 992px) {
+    #postsContainer:not(.posts-container-centered) {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    
+    .posts-container-centered {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* Ajustes visuais para .post-card (aplicável a cards já marcados com a classe) */
@@ -1274,8 +1295,8 @@ h1, h2, h3, h4, h5, h6 {
     }
     .grid-cards a { max-width: 100%; }
     #postsContainer {
-        flex-direction: column;
-        gap: 1.25rem;
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+        gap: 1rem;
         padding: 0.5rem;
     }
 }
@@ -1394,6 +1415,152 @@ h1, h2, h3, h4, h5, h6 {
 .community-card .dropdown-menu {
     z-index: 2100;
 }
+
+/* Estilos melhorados para dropdowns de opções */
+.community-options-menu,
+.post-options-menu {
+    min-width: 220px;
+    padding: 0.5rem 0;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.community-options-menu .dropdown-item,
+.post-options-menu .dropdown-item {
+    padding: 0.65rem 1.25rem;
+    margin: 0.15rem 0.5rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+}
+
+.community-options-menu .dropdown-item:hover,
+.post-options-menu .dropdown-item:hover {
+    background: rgba(96, 165, 250, 0.15) !important;
+    transform: translateX(4px);
+    color: var(--color-text) !important;
+}
+
+.community-options-menu .dropdown-item i,
+.post-options-menu .dropdown-item i {
+    width: 20px;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.community-options-menu .dropdown-header {
+    padding: 0.5rem 1.25rem;
+    margin: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--color-muted) !important;
+}
+
+.community-options-menu .dropdown-divider,
+.post-options-menu .dropdown-divider {
+    margin: 0.5rem 0.75rem;
+    opacity: 0.3;
+}
+
+/* Melhorar contraste no dark mode */
+:root.dark .community-options-menu,
+:root.dark .post-options-menu {
+    background: rgba(30, 41, 59, 0.98) !important;
+    border-color: rgba(96, 165, 250, 0.3);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+:root.dark .community-options-menu .dropdown-item,
+:root.dark .post-options-menu .dropdown-item {
+    color: rgba(226, 232, 240, 0.95) !important;
+}
+
+:root.dark .community-options-menu .dropdown-item:hover,
+:root.dark .post-options-menu .dropdown-item:hover {
+    background: rgba(96, 165, 250, 0.25) !important;
+    color: #ffffff !important;
+}
+
+/* Estilos para organização dos botões de post */
+.post-actions {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+    align-items: center;
+    overflow-x: auto;
+}
+
+/* Card enorme na página de visualização de post */
+.post-view-card {
+    max-width: 1600px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.post-actions .input-group {
+    flex-shrink: 0;
+    min-width: 250px;
+}
+
+@media (max-width: 768px) {
+    .post-actions {
+        flex-wrap: wrap;
+    }
+    
+    .post-actions .input-group {
+        min-width: 200px;
+        width: 100%;
+    }
+}
+
+/* Centralizar cards de posts */
+.posts-container-centered {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+@media (min-width: 992px) {
+    .posts-container-centered {
+        grid-template-columns: 1fr;
+    }
+}
+
+.post-actions .input-group {
+    flex-shrink: 0;
+}
+
+.post-actions .comment-form .input-group {
+    display: flex;
+    align-items: stretch;
+}
+
+/* Melhorar apresentação dos comentários */
+.comments-section h6 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.comment-item {
+    background: rgba(248, 249, 250, 0.5);
+    transition: background 0.2s ease;
+}
+
+.comment-item:hover {
+    background: rgba(248, 249, 250, 0.8);
+}
+
+:root.dark .comment-item {
+    background: rgba(40, 51, 70, 0.5);
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+:root.dark .comment-item:hover {
+    background: rgba(40, 51, 70, 0.8);
+}
 :root.dark .post-card h1,
 :root.dark .post-card h2,
 :root.dark .post-card h3,
@@ -1425,6 +1592,14 @@ h1, h2, h3, h4, h5, h6 {
     border: 1px solid rgba(29, 78, 216, 0.12);
     border-left: 4px solid #1d4ed8;
     white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* Estilos melhorados para página de visualização de post */
+.page-shell .post-content {
+    font-size: 1.15rem;
+    padding: 1.5rem 1.75rem;
+    line-height: 1.8;
 }
 
 :root.dark .post-content {

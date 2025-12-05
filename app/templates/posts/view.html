@@ -3,28 +3,350 @@
 {% block title %}Post #{{ post.id }} - MemóriaViva{% endblock %}
 
 {% block content %}
-<div class="container mt-4 mb-4">
-    <div class="row">
-        <div class="col-md-8 mx-auto">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h4 class="mb-0">Post</h4>
-                        <small class="text-muted">{{ post.created_at|format_datetime('%d/%m/%Y %H:%M') }}</small>
-                    </div>
-                    <p>{{ post.content }}</p>
-                    <div class="d-flex gap-2">
-                        {% if current_user.is_authenticated and (current_user.id == post.author_id or current_user.is_administrador()) %}
-                        <a href="{{ url_for('posts.edit_post', post_id=post.id) }}" class="btn btn-outline-primary btn-sm">Editar</a>
-                        <form method="POST" action="{{ url_for('posts.delete_post', post_id=post.id) }}" onsubmit="return confirm('Confirmar exclusão?')">
-                            <button type="submit" class="btn btn-outline-danger btn-sm">Excluir</button>
-                        </form>
-                        {% endif %}
-                        <a href="{{ url_for('posts.list_posts') }}" class="btn btn-secondary btn-sm">Voltar</a>
-                    </div>
+<section class="page-shell" data-aos="fade-up">
+    <div class="container mt-4 mb-4">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <!-- Botão Voltar -->
+                <div class="mb-3">
+                    <a href="{{ url_for('posts.list_posts') }}" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-arrow-left me-1"></i> Voltar para Posts
+                    </a>
                 </div>
+
+                <!-- Card do Post -->
+                <article class="card card-elevated h-100 hover-raise mb-4 post-view-card" data-post-id="{{ post.id }}">
+                    {% if post.is_hidden %}
+                    <div class="alert alert-danger mb-0 rounded-0" style="border-radius: 0; background: #dc3545; color: white; font-weight: bold; text-align: center; padding: 0.5rem;">
+                        <i class="bi bi-eye-slash me-1"></i>OCULTADO
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title mb-2">
+                            <i class="fas fa-comments me-2"></i>Post
+                        </h5>
+                        <div class="post-content mb-3">{{ post.content }}</div>
+                        <div class="post-meta mb-3">
+                            <i class="bi bi-person-circle me-1"></i>
+                            <span>Postado por <strong>{{ post.usuario.nome }}</strong></span>
+                            <span>•</span>
+                            <span>{{ post.created_at|format_datetime('%d/%m/%Y %H:%M') }}</span>
+                        </div>
+
+                        <!-- Botões de ação organizados lado a lado -->
+                        {% if current_user.is_authenticated %}
+                        <div class="post-actions mb-3 d-flex align-items-center gap-2" style="flex-wrap: nowrap; overflow-x: auto;">
+                            <form class="like-form d-inline" data-community-id="{{ post.community_id }}" data-post-id="{{ post.id }}">
+                                <button type="submit" class="btn btn-sm btn-outline-primary like-btn" data-post-id="{{ post.id }}">
+                                    <i class="bi bi-heart me-1"></i>Curtir
+                                </button>
+                            </form>
+                            
+                            <form class="comment-form d-inline" data-community-id="{{ post.community_id }}" data-post-id="{{ post.id }}">
+                                <div class="input-group" style="width: auto; min-width: 250px;">
+                                    <input type="text" name="text" class="form-control form-control-sm comment-input" placeholder="Adicionar comentário..." required style="width: 200px;">
+                                    <button type="submit" class="btn btn-sm btn-primary comment-btn">
+                                        <i class="bi bi-chat-dots me-1"></i>Comentar
+                                    </button>
+                                </div>
+                            </form>
+                            
+                        {% if current_user.id == post.author_id or current_user.is_administrador() %}
+                        <button class="btn btn-sm btn-outline-danger delete-post-btn"
+                            data-post-id="{{ post.id }}"
+                            title="Excluir post">
+                            <i class="bi bi-trash me-1"></i>Apagar
+                        </button>
+                        {% endif %}
+                            
+                            <button type="button" 
+                                    class="btn btn-sm btn-outline-danger"
+                                    onclick="openReportModal('post', {{ post.id }})"
+                                    title="Denunciar post">
+                                <i class="bi bi-flag me-1"></i>Spam
+                            </button>
+                        </div>
+                        {% endif %}
+
+                        <div class="post-stats mb-3">
+                            <span class="me-3">
+                                <i class="bi bi-heart-fill me-1 text-danger"></i>
+                                <span class="like-count" data-post-id="{{ post.id }}">{{ post.likes_count() }}</span> curtidas
+                            </span>
+                            <span>
+                                <i class="bi bi-chat-dots me-1 text-primary"></i>
+                                <span class="comments-count" data-post-id="{{ post.id }}">{{ post.comments_count() }}</span> comentários
+                            </span>
+                        </div>
+
+                    <!-- Seção de Comentários -->
+                    <div class="comments-section comments mt-3" data-post-id="{{ post.id }}">
+                        {% if post.get_comments() %}
+                        <h6 class="mb-3 text-muted">
+                            <i class="bi bi-chat-dots me-1"></i>Comentários ({{ post.comments_count() }})
+                        </h6>
+                        {% for c in post.get_comments() %}
+                        <div class="comment-item mb-3 p-2 border rounded" data-comment-id="{{ c.id }}">
+                            <div class="comment-header d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <span class="comment-author fw-semibold d-block mb-1">
+                                        <i class="bi bi-person-circle me-1"></i>{{ c.user.nome }}
+                                    </span>
+                                    <small class="comment-date text-muted">
+                                        {{ c.created_at|format_datetime('%d/%m/%Y %H:%M') }}
+                                    </small>
+                                </div>
+                                <div class="d-flex gap-1">
+                                    {% if current_user.is_authenticated and (current_user.id == c.user_id or current_user.is_administrador()) %}
+                                    <button class="btn btn-sm btn-outline-danger delete-comment-btn" 
+                                        data-comment-id="{{ c.id }}"
+                                        data-post-id="{{ post.id }}" 
+                                        title="Excluir comentário">
+                                        <i class="bi bi-x"></i>
+                                    </button>
+                                    {% endif %}
+                                    {% if current_user.is_authenticated %}
+                                    <button class="btn btn-sm btn-outline-danger" 
+                                            onclick="openReportModal('comment', {{ c.id }})"
+                                            title="Denunciar comentário">
+                                        <i class="bi bi-flag"></i>
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="comment-text mt-2">{{ c.text }}</div>
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+                    </div>
+                </article>
             </div>
         </div>
     </div>
-</div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const postId = {{ post.id }};
+    const communityId = {{ post.community_id }};
+    
+    // Sistema de Curtir
+    function setupLikeButton() {
+        const likeForm = document.querySelector('.like-form');
+        if (!likeForm) return;
+        
+        likeForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = likeForm.querySelector('button');
+            const countEl = document.querySelector(`.like-count[data-post-id="${postId}"]`);
+            
+            if (!btn || !countEl) return;
+            
+            btn.disabled = true;
+            
+            try {
+                const res = await fetch(`/comunidade/${communityId}/post/${postId}/like`, {
+                    method: 'POST',
+                    headers: { 
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                });
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.likes_count !== undefined) {
+                        countEl.textContent = data.likes_count;
+                    }
+                    
+                    if (data.liked) {
+                        btn.classList.add('liked');
+                        btn.innerHTML = '<i class="bi bi-heart-fill me-1"></i>Curtido';
+                    } else {
+                        btn.classList.remove('liked');
+                        btn.innerHTML = '<i class="bi bi-heart me-1"></i>Curtir';
+                    }
+                }
+            } catch (err) {
+                console.error('Erro ao curtir:', err);
+            } finally {
+                btn.disabled = false;
+            }
+        });
+    }
+    
+    // Sistema de Comentar
+    function setupCommentForm() {
+        const commentForm = document.querySelector('.comment-form');
+        if (!commentForm) return;
+        
+        commentForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const input = commentForm.querySelector('.comment-input');
+            const text = input.value.trim();
+            
+            if (!text) return;
+            
+            const btn = commentForm.querySelector('.comment-btn');
+            if (!btn) return;
+            
+            const originalText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Enviando...';
+            
+            try {
+                const formData = new URLSearchParams();
+                formData.append('text', text);
+                
+                const res = await fetch(`/comunidade/${communityId}/post/${postId}/comment`, {
+                    method: 'POST',
+                    headers: { 
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: formData
+                });
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.success) {
+                        input.value = '';
+                        
+                        const countEl = document.querySelector(`.comments-count[data-post-id="${postId}"]`);
+                        if (countEl) {
+                            countEl.textContent = data.comments_count;
+                        }
+                        
+                        const commentsSection = document.querySelector(`.comments[data-post-id="${postId}"]`);
+                        if (commentsSection && data.comment) {
+                            const createdAt = (function(){
+                                try {
+                                    if (data.comment.created_at_ts) {
+                                        const d = new Date(Number(data.comment.created_at_ts));
+                                        const date = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                                        const time = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                                        return `${date} ${time}`;
+                                    }
+                                    const iso = data.comment.created_at_iso || data.comment.created_at;
+                                    if (typeof iso === 'string' && iso.indexOf('T') !== -1) {
+                                        const d = new Date(iso);
+                                        if (!isNaN(d)) {
+                                            const date = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                                            const time = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                                            return `${date} ${time}`;
+                                        }
+                                    }
+                                    return iso;
+                                } catch (e) { return data.comment.created_at; }
+                            })();
+
+                            function escapeHtml(text) {
+                                const div = document.createElement('div');
+                                div.textContent = text;
+                                return div.innerHTML;
+                            }
+
+                            const commentHtml = `
+                                <div class="comment-item mb-2" data-comment-id="${data.comment.id}">
+                                    <div class="comment-header">
+                                        <div>
+                                            <span class="comment-author fw-semibold">${escapeHtml(data.comment.author)}</span>
+                                            <span class="comment-date">${escapeHtml(createdAt)}</span>
+                                        </div>
+                                        <button class="btn btn-sm btn-outline-danger delete-comment-btn" 
+                                            data-comment-id="${data.comment.id}"
+                                            data-post-id="${postId}" 
+                                            title="Excluir comentário">
+                                            <i class="bi bi-x"></i>
+                                        </button>
+                                    </div>
+                                    <div class="comment-text mt-1">${escapeHtml(data.comment.text)}</div>
+                                </div>
+                            `;
+                            commentsSection.insertAdjacentHTML('afterbegin', commentHtml);
+                            
+                            const newDeleteBtn = commentsSection.querySelector(`.delete-comment-btn[data-comment-id="${data.comment.id}"]`);
+                            if (newDeleteBtn) {
+                                newDeleteBtn.addEventListener('click', handleDeleteComment);
+                            }
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error('Erro ao comentar:', err);
+                alert('Erro de rede ao comentar.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }
+        });
+    }
+    
+    // Sistema de Deletar Comentário
+    function handleDeleteComment(e) {
+        if (!confirm('Tem certeza que deseja excluir este comentário?')) return;
+        
+        const commentId = e.target.closest('.delete-comment-btn').dataset.commentId;
+        const postId = e.target.closest('.delete-comment-btn').dataset.postId;
+        
+        fetch(`/comunidade/comment/${commentId}/delete`, {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                document.querySelector(`.comment-item[data-comment-id="${commentId}"]`).remove();
+                const countEl = document.querySelector(`.comments-count[data-post-id="${postId}"]`);
+                if (countEl) {
+                    countEl.textContent = data.comments_count;
+                }
+            } else {
+                alert(data.message || 'Erro ao excluir comentário.');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Erro de rede ao excluir comentário.');
+        });
+    }
+    
+    document.querySelectorAll('.delete-comment-btn').forEach(btn => {
+        btn.addEventListener('click', handleDeleteComment);
+    });
+    
+    // Sistema de Deletar Post
+    function handleDeletePost(e) {
+        if (!confirm('Tem certeza que deseja excluir este post?')) return;
+        
+        const postId = e.target.closest('.delete-post-btn').dataset.postId;
+        
+        fetch(`/posts/${postId}/delete`, {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(res => {
+            if (res.ok) {
+                window.location.href = '/posts/';
+            } else {
+                alert('Erro ao excluir post.');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Erro de rede ao excluir post.');
+        });
+    }
+    
+    document.querySelectorAll('.delete-post-btn').forEach(btn => {
+        btn.addEventListener('click', handleDeletePost);
+    });
+    
+    setupLikeButton();
+    setupCommentForm();
+});
+</script>
 {% endblock %}

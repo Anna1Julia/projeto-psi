@@ -125,9 +125,9 @@
                     {% endif %}
                 </div>
 
-                <div class="card-body">
+                <div class="card-body ratings-comments-body">
                     {% if current_user.is_authenticated %}
-                        <div class="mb-4 p-3 bg-light rounded">
+                        <div class="mb-4 p-3 ratings-form-container rounded">
                             <h6 class="mb-3">Deixe sua avaliação</h6>
                             <form method="POST" action="{{ url_for('content.rate_content', content_id=content.id) }}">
                                 <div class="mb-3">
@@ -234,6 +234,30 @@
 }
 .rating-item {
     background: #f8f9fa;
+}
+
+/* Escurecer seção de Avaliações e Comentários */
+.ratings-comments-body {
+    background: rgba(248, 249, 250, 0.95) !important;
+}
+
+:root.dark .ratings-comments-body {
+    background: rgba(30, 41, 59, 0.95) !important;
+    color: var(--color-text) !important;
+}
+
+.ratings-form-container {
+    background: rgba(255, 255, 255, 0.9) !important;
+}
+
+:root.dark .ratings-form-container {
+    background: rgba(40, 51, 70, 0.9) !important;
+}
+
+:root.dark .rating-item {
+    background: rgba(40, 51, 70, 0.8) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: var(--color-text) !important;
 }
 </style>
 {% endblock %}
