@@ -116,6 +116,16 @@
     padding: 2.75rem 2.5rem;
     position: relative;
     overflow: hidden;
+    backdrop-filter: blur(18px) saturate(165%);
+    -webkit-backdrop-filter: blur(18px) saturate(165%);
+}
+
+:root.dark .auth-card {
+    background: rgba(30, 41, 59, 1) !important;
+    border-color: rgba(96, 165, 250, 0.5) !important;
+    color: var(--color-text) !important;
+    backdrop-filter: blur(18px) saturate(165%);
+    -webkit-backdrop-filter: blur(18px) saturate(165%);
 }
 
 .auth-title {
@@ -132,6 +142,14 @@
     padding: 0;
 }
 
+:root.dark .auth-title {
+    color: var(--color-text, #E2E8F0) !important;
+}
+
+:root.dark .auth-title span {
+    color: var(--color-text, #E2E8F0) !important;
+}
+
 .auth-title i {
     margin: 0;
     color: var(--color-primary-600);
@@ -146,16 +164,34 @@
 }
 
 .auth-input {
-    background: var(--color-surface);
-    border: 1px solid var(--border-soft);
+    background: var(--color-surface) !important;
+    border: 1px solid var(--border-soft) !important;
     border-radius: 14px;
-    color: var(--color-text);
+    color: var(--color-text) !important;
     padding: 0.85rem 1rem;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+:root.dark .auth-input {
+    background: rgba(30, 41, 59, 1) !important;
+    border-color: rgba(96, 165, 250, 0.5) !important;
+    color: var(--color-text) !important;
+}
+
+:root.dark .auth-input:focus {
+    background: rgba(30, 41, 59, 1) !important;
+    border-color: rgba(96, 165, 250, 0.6) !important;
+    color: var(--color-text) !important;
+}
+
 .auth-input::placeholder {
-    color: var(--color-muted);
+    color: var(--color-muted) !important;
+    opacity: 1 !important;
+}
+
+:root.dark .auth-input::placeholder {
+    color: rgba(226, 232, 240, 1) !important;
+    opacity: 1 !important;
 }
 
 .auth-input:focus {
@@ -185,6 +221,45 @@
 
 .auth-helper {
     color: var(--color-text);
+}
+
+:root.dark .auth-helper {
+    color: var(--color-text) !important;
+}
+
+:root.dark .auth-helper a {
+    color: var(--color-secondary) !important;
+}
+
+:root.dark .auth-helper a:hover {
+    color: var(--color-primary) !important;
+}
+
+/* Garantir que labels nos formulários de autenticação sejam visíveis */
+.auth-card .form-label {
+    color: var(--color-text) !important;
+    font-weight: 600;
+}
+
+:root.dark .auth-card .form-label {
+    color: var(--color-text, #E2E8F0) !important;
+}
+
+/* Garantir que textarea tenha placeholder visível */
+:root.dark .auth-card textarea {
+    background: rgba(30, 41, 59, 1) !important;
+    border-color: rgba(96, 165, 250, 0.5) !important;
+    color: var(--color-text) !important;
+}
+
+:root.dark .auth-card textarea::placeholder {
+    color: rgba(226, 232, 240, 1) !important;
+    opacity: 1 !important;
+}
+
+/* Garantir que todos os textos dentro do auth-card sejam visíveis no dark mode */
+:root.dark .auth-card .invalid-feedback {
+    color: rgba(239, 68, 68, 0.9) !important;
 }
 
 /* Password input wrapper with toggle button */
@@ -232,6 +307,7 @@
 :root.dark .password-toggle-btn:hover {
     color: var(--color-primary-400);
 }
+
 
 @media (max-width: 576px) {
     .auth-card {

@@ -27,10 +27,10 @@
   --color-secondary: #60A5FA;
   --color-accent: #FACC15;
   --shadow-glass: 0 12px 32px rgba(0, 0, 0, 0.5), 0 6px 16px rgba(0, 0, 0, 0.3);
-  --glass-bg: rgba(30, 41, 59, 0.58);
-  --glass-border: rgba(96, 165, 250, 0.35);
+  --glass-bg: rgba(30, 41, 59, 0.88);
+  --glass-border: rgba(96, 165, 250, 0.45);
   --glass-light: rgba(96, 165, 250, 0.2);
-  --glass-gradient: linear-gradient(135deg, rgba(96, 165, 250, 0.2) 0%, rgba(96, 165, 250, 0.08) 50%, rgba(0, 0, 0, 0.15) 100%);
+  --glass-gradient: linear-gradient(135deg, rgba(96, 165, 250, 0.15) 0%, rgba(96, 165, 250, 0.05) 50%, rgba(0, 0, 0, 0.1) 100%);
 }
 
 /* Map variables (fixes legacy compatibility) */
@@ -60,6 +60,44 @@
 :root.dark .card small,
 :root.dark .muted {
   color: var(--color-muted) !important;
+}
+
+/* Garantir que elementos básicos de texto no dark mode herdem cor corretamente */
+:root.dark body {
+  color: var(--color-text);
+}
+
+:root.dark main {
+  color: var(--color-text);
+}
+
+/* Garantir que títulos e textos gerais sejam visíveis no dark mode */
+:root.dark h1,
+:root.dark h2,
+:root.dark h3,
+:root.dark h4,
+:root.dark h5,
+:root.dark h6 {
+  color: var(--color-text) !important;
+}
+
+:root.dark h1 strong,
+:root.dark h2 strong,
+:root.dark h3 strong,
+:root.dark h4 strong,
+:root.dark h5 strong,
+:root.dark h6 strong {
+  color: var(--color-text) !important;
+}
+
+/* Garantir que elementos dentro de containers também sejam visíveis */
+:root.dark .container h1,
+:root.dark .container h2,
+:root.dark .container h3,
+:root.dark .container h4,
+:root.dark .container h5,
+:root.dark .container h6 {
+  color: var(--color-text) !important;
 }
 
 /* GLOBAL */
@@ -827,10 +865,50 @@ a:focus-visible,
   background: var(--glass-bg) !important;
   border-color: var(--glass-border);
   box-shadow: var(--shadow-glass), inset 0 2px 6px rgba(96, 165, 250, 0.2), inset 0 -1px 2px rgba(0, 0, 0, 0.2);
+  color: var(--color-text) !important;
 }
 
 :root.dark .card::before {
   background: linear-gradient(90deg, transparent, rgba(96, 165, 250, 0.35), rgba(96, 165, 250, 0.15), transparent);
+}
+
+/* Garantir que todo texto dentro dos cards seja visível no dark mode */
+:root.dark .card {
+  color: var(--color-text) !important;
+}
+
+:root.dark .card .card-title,
+:root.dark .card h1,
+:root.dark .card h2,
+:root.dark .card h3,
+:root.dark .card h4,
+:root.dark .card h5,
+:root.dark .card h6 {
+  color: var(--color-text) !important;
+}
+
+:root.dark .card .card-text,
+:root.dark .card p,
+:root.dark .card span:not(.badge):not(.text-primary):not(.text-success):not(.text-danger):not(.text-warning):not(.text-info),
+:root.dark .card div:not(.badge) {
+  color: var(--color-text) !important;
+}
+
+:root.dark .card .card-body {
+  color: var(--color-text) !important;
+}
+
+:root.dark .card .text-muted {
+  color: var(--color-muted) !important;
+}
+
+/* Links dentro dos cards devem manter contraste */
+:root.dark .card a:not(.btn) {
+  color: var(--color-secondary) !important;
+}
+
+:root.dark .card a:not(.btn):hover {
+  color: var(--color-primary) !important;
 }
 
 .card .card-header {
@@ -1237,11 +1315,18 @@ a:focus-visible,
 :root.dark .form-select {
   background: var(--glass-bg) !important;
   border-color: var(--glass-border) !important;
+  color: var(--color-text) !important;
 }
 
 :root.dark .form-select:focus {
   border-color: #60A5FA !important;
   box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.2), 0 8px 20px rgba(96, 165, 250, 0.2) !important;
+  color: var(--color-text) !important;
+}
+
+:root.dark .form-select option {
+  background: var(--color-surface);
+  color: var(--color-text);
 }
 
 /* Lists */
@@ -1499,6 +1584,42 @@ a:focus-visible,
   color: #fff;
 }
 
+/* Garantir que o placeholder dentro do card-hero seja visível */
+.card-hero .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.8) !important;
+  opacity: 1 !important;
+}
+
+:root.dark .card-hero .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.9) !important;
+  opacity: 1 !important;
+}
+
+/* Garantir que o input dentro do card-hero tenha fundo visível */
+.card-hero .form-control {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: #fff !important;
+}
+
+:root.dark .card-hero .form-control {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  color: #fff !important;
+}
+
+.card-hero .form-control:focus {
+  background: rgba(255, 255, 255, 0.25) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  color: #fff !important;
+}
+
+:root.dark .card-hero .form-control:focus {
+  background: rgba(255, 255, 255, 0.3) !important;
+  border-color: rgba(255, 255, 255, 0.6) !important;
+  color: #fff !important;
+}
+
 /* Home: ajustes finos */
 .home-quick-actions .card-body {
   padding-bottom: 1rem;
@@ -1623,6 +1744,12 @@ a:focus-visible,
 
 .form-control::placeholder {
   opacity: 0.7;
+  color: rgba(15, 23, 42, 0.6);
+}
+
+:root.dark .form-control::placeholder {
+  opacity: 0.85 !important;
+  color: rgba(226, 232, 240, 0.85) !important;
 }
 
 .form-control:focus {
@@ -1637,14 +1764,22 @@ a:focus-visible,
   background: var(--glass-bg) !important;
   border-color: var(--glass-border) !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 0 2px 4px rgba(96, 165, 250, 0.15), inset 0 -1px 2px rgba(0, 0, 0, 0.2);
+  color: var(--color-text) !important;
 }
 
 :root.dark .form-control:focus {
   border-color: #60A5FA !important;
   box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.2), 0 8px 20px rgba(96, 165, 250, 0.2), inset 0 2px 4px rgba(96, 165, 250, 0.2), inset 0 -1px 2px rgba(0, 0, 0, 0.3) !important;
-  background: rgba(30, 41, 59, 0.68) !important;
+  background: var(--glass-bg) !important;
   backdrop-filter: blur(20px) saturate(175%);
   -webkit-backdrop-filter: blur(20px) saturate(175%);
+  color: var(--color-text) !important;
+}
+
+/* Garantir que labels sejam visíveis no dark mode */
+:root.dark .form-label,
+:root.dark label {
+  color: var(--color-text) !important;
 }
 
 .input-group .form-control {
@@ -1715,6 +1850,7 @@ a:focus-visible,
   background: var(--glass-bg) !important;
   border-color: var(--glass-border) !important;
   box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), inset 0 2px 6px rgba(96, 165, 250, 0.2), inset 0 -1px 2px rgba(0, 0, 0, 0.3);
+  color: var(--color-text) !important;
 }
 
 :root.dark .modal-content::before {
@@ -1722,15 +1858,240 @@ a:focus-visible,
 }
 
 :root.dark .modal-header {
-  background: rgba(30, 41, 59, 0.7);
+  background: rgba(30, 41, 59, 0.85);
   border-color: rgba(96, 165, 250, 0.3) !important;
   backdrop-filter: blur(12px) saturate(140%);
   -webkit-backdrop-filter: blur(12px) saturate(140%);
+  color: var(--color-text) !important;
+}
+
+:root.dark .modal-body {
+  color: var(--color-text) !important;
 }
 
 :root.dark .modal-footer {
-  background: rgba(30, 41, 59, 0.65);
+  background: rgba(30, 41, 59, 0.8);
   border-color: rgba(96, 165, 250, 0.3) !important;
   backdrop-filter: blur(12px) saturate(140%);
   -webkit-backdrop-filter: blur(12px) saturate(140%);
+  color: var(--color-text) !important;
+}
+
+/* Garantir que texto dentro dos modais seja visível */
+:root.dark .modal-title,
+:root.dark .modal h1,
+:root.dark .modal h2,
+:root.dark .modal h3,
+:root.dark .modal h4,
+:root.dark .modal h5,
+:root.dark .modal h6,
+:root.dark .modal p,
+:root.dark .modal label {
+  color: var(--color-text) !important;
+}
+
+/* ===== ESTILOS DE AUTENTICAÇÃO (LOGIN & CADASTRO) ===== */
+.auth-section {
+  padding: 4rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-card {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  width: 100%;
+  padding: 2.75rem 2.5rem;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(18px) saturate(165%);
+  -webkit-backdrop-filter: blur(18px) saturate(165%);
+}
+
+:root.dark .auth-card {
+  background: rgba(30, 41, 59, 1) !important;
+  border-color: rgba(96, 165, 250, 0.5) !important;
+  color: var(--color-text) !important;
+  backdrop-filter: blur(18px) saturate(165%);
+  -webkit-backdrop-filter: blur(18px) saturate(165%);
+}
+
+.auth-title {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.65rem;
+  font-weight: 700;
+  font-size: 1.55rem;
+  color: var(--color-text, #111827);
+  text-transform: none;
+  letter-spacing: 0;
+  margin-bottom: 2.5rem;
+  padding: 0;
+}
+
+:root.dark .auth-title {
+  color: var(--color-text, #E2E8F0) !important;
+}
+
+:root.dark .auth-title span {
+  color: var(--color-text, #E2E8F0) !important;
+}
+
+.auth-title i {
+  margin: 0;
+  color: var(--color-primary-600);
+  font-size: 1.8rem;
+  opacity: 1;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+:root.dark .auth-title i {
+  color: var(--color-primary-500);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.auth-input,
+.form-control.auth-input {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  border-radius: 14px;
+  color: var(--color-text) !important;
+  padding: 0.85rem 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+:root.dark .auth-input,
+:root.dark .form-control.auth-input {
+  background: rgba(30, 41, 59, 1) !important;
+  border-color: rgba(96, 165, 250, 0.5) !important;
+  color: var(--color-text) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+:root.dark .auth-input:focus,
+:root.dark .form-control.auth-input:focus {
+  background: rgba(30, 41, 59, 1) !important;
+  border-color: rgba(96, 165, 250, 0.6) !important;
+  color: var(--color-text) !important;
+}
+
+.auth-input::placeholder,
+.form-control.auth-input::placeholder {
+  color: rgba(0, 0, 0, 0.6) !important;
+  opacity: 1 !important;
+}
+
+:root.dark .auth-input::placeholder,
+:root.dark .form-control.auth-input::placeholder {
+  color: rgba(226, 232, 240, 1) !important;
+  opacity: 1 !important;
+}
+
+.auth-input:focus {
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px rgba(107, 143, 71, 0.15);
+}
+
+.auth-btn {
+  background: linear-gradient(135deg, var(--color-primary-600), var(--color-primary-500));
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 16px;
+  padding: 0.95rem;
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.auth-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+}
+
+.auth-helper {
+  color: var(--color-text);
+}
+
+:root.dark .auth-helper {
+  color: var(--color-text) !important;
+}
+
+:root.dark .auth-helper a {
+  color: var(--color-secondary) !important;
+}
+
+:root.dark .auth-helper a:hover {
+  color: var(--color-primary) !important;
+}
+
+.auth-card .form-label {
+  color: var(--color-text) !important;
+  font-weight: 600;
+}
+
+:root.dark .auth-card .form-label {
+  color: var(--color-text, #E2E8F0) !important;
+}
+
+:root.dark .auth-card textarea {
+  background: rgba(30, 41, 59, 1) !important;
+  border-color: rgba(96, 165, 250, 0.5) !important;
+  color: var(--color-text) !important;
+}
+
+:root.dark .auth-card textarea::placeholder {
+  color: rgba(226, 232, 240, 1) !important;
+  opacity: 1 !important;
+}
+
+:root.dark .auth-card .invalid-feedback {
+  color: rgba(239, 68, 68, 0.9) !important;
+}
+
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrapper .auth-input {
+  padding-right: 3rem;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  color: var(--color-muted);
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: color 0.2s ease;
+}
+
+.password-toggle-btn:hover {
+  color: var(--color-primary);
+}
+
+:root.dark .password-toggle-btn {
+  color: rgba(226, 232, 240, 0.8);
+}
+
+:root.dark .password-toggle-btn:hover {
+  color: var(--color-primary);
 }

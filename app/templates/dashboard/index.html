@@ -351,6 +351,16 @@
     .table-card .table tbody td {
         color: var(--color-text, #0F172A) !important;
     }
+
+    /* Garantir que os gráficos tenham labels visíveis no dark mode */
+    :root.dark .chart-container canvas {
+        color: var(--color-text, #E2E8F0);
+    }
+
+    /* Estilos para os eixos dos gráficos no dark mode */
+    :root.dark canvas {
+        filter: brightness(1);
+    }
 </style>
 {% endblock %}
 
@@ -526,6 +536,21 @@
 
 {% block extra_js %}
 <script>
+    // Função para detectar se está em dark mode
+    function isDarkMode() {
+        return document.documentElement.classList.contains('dark');
+    }
+
+    // Função para obter cor do texto baseada no tema
+    function getTextColor() {
+        return isDarkMode() ? '#E2E8F0' : '#0F172A';
+    }
+
+    // Função para obter cor da grid baseada no tema
+    function getGridColor() {
+        return isDarkMode() ? 'rgba(226, 232, 240, 0.1)' : 'rgba(0, 0, 0, 0.05)';
+    }
+
     // Gráfico de Barras - Novos Itens por Mês
     const ctxBarras = document.getElementById('chartBarras').getContext('2d');
     const chartBarras = new Chart(ctxBarras, {
@@ -549,7 +574,9 @@
                     display: false
                 },
                 tooltip: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    backgroundColor: isDarkMode() ? 'rgba(15, 23, 42, 0.95)' : 'rgba(0, 0, 0, 0.8)',
+                    titleColor: getTextColor(),
+                    bodyColor: getTextColor(),
                     padding: 12,
                     titleFont: {
                         size: 14
@@ -563,13 +590,23 @@
                 y: {
                     beginAtZero: true,
                     ticks: {
-                        stepSize: 1
+                        stepSize: 1,
+                        color: getTextColor(),
+                        font: {
+                            size: 12
+                        }
                     },
                     grid: {
-                        color: 'rgba(0, 0, 0, 0.05)'
+                        color: getGridColor()
                     }
                 },
                 x: {
+                    ticks: {
+                        color: getTextColor(),
+                        font: {
+                            size: 12
+                        }
+                    },
                     grid: {
                         display: false
                     }
@@ -621,13 +658,16 @@
                     position: 'bottom',
                     labels: {
                         padding: 15,
+                        color: getTextColor(),
                         font: {
                             size: 12
                         }
                     }
                 },
                 tooltip: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    backgroundColor: isDarkMode() ? 'rgba(15, 23, 42, 0.95)' : 'rgba(0, 0, 0, 0.8)',
+                    titleColor: getTextColor(),
+                    bodyColor: getTextColor(),
                     padding: 12,
                     callbacks: {
                         label: function(context) {
@@ -642,6 +682,47 @@
                 }
             }
         }
+    });
+
+    // Função para atualizar cores dos gráficos quando o tema mudar
+    function updateChartColors() {
+        const textColor = getTextColor();
+        const gridColor = getGridColor();
+        const tooltipBg = isDarkMode() ? 'rgba(15, 23, 42, 0.95)' : 'rgba(0, 0, 0, 0.8)';
+
+        // Atualizar gráfico de barras
+        if (chartBarras) {
+            chartBarras.options.scales.y.ticks.color = textColor;
+            chartBarras.options.scales.y.grid.color = gridColor;
+            chartBarras.options.scales.x.ticks.color = textColor;
+            chartBarras.options.plugins.tooltip.backgroundColor = tooltipBg;
+            chartBarras.options.plugins.tooltip.titleColor = textColor;
+            chartBarras.options.plugins.tooltip.bodyColor = textColor;
+            chartBarras.update('none');
+        }
+
+        // Atualizar gráfico de pizza
+        if (chartPizza) {
+            chartPizza.options.plugins.legend.labels.color = textColor;
+            chartPizza.options.plugins.tooltip.backgroundColor = tooltipBg;
+            chartPizza.options.plugins.tooltip.titleColor = textColor;
+            chartPizza.options.plugins.tooltip.bodyColor = textColor;
+            chartPizza.update('none');
+        }
+    }
+
+    // Observar mudanças no tema
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.attributeName === 'class') {
+                setTimeout(updateChartColors, 100);
+            }
+        });
+    });
+
+    observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class']
     });
 </script>
 {% endblock %}
