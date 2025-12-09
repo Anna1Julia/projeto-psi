@@ -34,12 +34,25 @@
 #createPostButton {
   background-color: var(--color-primary-600, #0e56b3);
   border: none;
-  color: #fff;
+  color: #fff !important;
   font-weight: 500;
   transition: background 0.2s ease-in-out;
 }
 #createPostButton:hover {
   background-color: var(--color-primary-700, #0b3c91);
+  color: #fff !important;
+}
+:root.dark #createPostButton {
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(56, 189, 248, 0.8) !important;
+}
+:root.dark #createPostButton:hover {
+  background: linear-gradient(135deg, #0ea5e9, #0284c7) !important;
+  color: #ffffff !important;
+}
+:root.dark #createPostButton * {
+  color: #ffffff !important;
 }
 
 /* Fundo suave do modal */
@@ -1267,28 +1280,39 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Estiliza o botão de criação para tom ciano, sem tocar em .btn-primary globalmente */
-.btn-create-post {
+.btn-create-post,
+#createPostButton.btn-create-post {
     background: linear-gradient(135deg, var(--color-ciano-600), var(--color-ciano-500));
     color: #fff !important;
     border: none;
     box-shadow: 0 8px 20px rgba(6,182,212,0.16);
 }
 
-.btn-create-post:hover {
+.btn-create-post:hover,
+#createPostButton.btn-create-post:hover {
     transform: translateY(-2px);
     box-shadow: 0 14px 30px rgba(6,182,212,0.22);
+    color: #fff !important;
 }
 
 /* Dark mode: manter alto contraste para o botão Criar Post */
-:root.dark .btn-create-post {
-    background: linear-gradient(135deg, #38bdf8, #0ea5e9);
-    color: #0b1221 !important;
-    border: 1px solid rgba(56, 189, 248, 0.8);
-    box-shadow: 0 10px 24px rgba(14,165,233,0.35);
+:root.dark .btn-create-post,
+:root.dark #createPostButton.btn-create-post {
+    background: linear-gradient(135deg, #38bdf8, #0ea5e9) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(56, 189, 248, 0.8) !important;
+    box-shadow: 0 10px 24px rgba(14,165,233,0.35) !important;
 }
 
-:root.dark .btn-create-post:hover {
-    box-shadow: 0 14px 32px rgba(14,165,233,0.48);
+:root.dark .btn-create-post:hover,
+:root.dark #createPostButton.btn-create-post:hover {
+    box-shadow: 0 14px 32px rgba(14,165,233,0.48) !important;
+    color: #ffffff !important;
+}
+
+:root.dark .btn-create-post *,
+:root.dark #createPostButton.btn-create-post * {
+    color: #ffffff !important;
 }
 
 /* Curtir / comentar: micro-estilização ciano para destaques na ação */

@@ -222,34 +222,89 @@
     cursor: pointer;
     font-size: 2rem;
     color: var(--color-muted, #9ca3af);
-    transition: transform 0.15s ease, color 0.2s ease, text-shadow 0.2s ease;
+    transition: transform 0.15s ease, color 0.2s ease;
 }
 .rating-input label:hover,
 .rating-input label:hover ~ label {
     color: #fbbf24;
-    text-shadow: 0 4px 16px rgba(251, 191, 36, 0.45);
     transform: translateY(-2px);
 }
 .rating-input input[type="radio"]:checked ~ label {
     color: #f59e0b;
-    text-shadow: 0 6px 18px rgba(245, 158, 11, 0.5);
 }
 :root.dark .rating-input label {
-    color: rgba(226, 232, 240, 0.82);
+    color: #9ca3af;
+}
+:root.dark .rating-input label i {
+    color: inherit;
+    text-shadow: none !important;
+    filter: none !important;
 }
 :root.dark .rating-input label:hover,
 :root.dark .rating-input label:hover ~ label {
     color: #fbbf24;
-    text-shadow: 0 4px 16px rgba(251, 191, 36, 0.45);
     transform: translateY(-2px);
+    text-shadow: none !important;
+    filter: none !important;
+}
+:root.dark .rating-input label:hover i,
+:root.dark .rating-input label:hover ~ label i {
+    color: #fbbf24 !important;
+    text-shadow: none !important;
+    filter: none !important;
 }
 :root.dark .rating-input input[type="radio"]:checked ~ label {
     color: #f59e0b;
-    text-shadow: 0 6px 18px rgba(245, 158, 11, 0.55);
+    text-shadow: none !important;
+    filter: none !important;
+}
+:root.dark .rating-input input[type="radio"]:checked ~ label i {
+    color: #f59e0b !important;
+    text-shadow: none !important;
+    filter: none !important;
 }
 
 .rating-stars i {
     font-size: 1.2rem;
+}
+/* Estrelas no dark mode - amarelas sólidas iguais ao tema claro, sem brilho */
+:root.dark .rating-stars i.fa-star:not(.far),
+:root.dark .rating-stars i.fa-star-half-alt,
+:root.dark .rating-stars .text-warning.fa-star:not(.far),
+:root.dark .rating-stars .text-warning.fa-star-half-alt,
+:root.dark .rating-stars i.text-warning.fa-star:not(.far),
+:root.dark .rating-stars i.text-warning.fa-star-half-alt,
+:root.dark .rating-stars .fas.fa-star,
+:root.dark .rating-stars .fas.fa-star-half-alt {
+    color: #fbbf24 !important;
+    text-shadow: none !important;
+    filter: none !important;
+    box-shadow: none !important;
+}
+:root.dark .rating-stars i.far.fa-star,
+:root.dark .rating-stars .text-warning.far.fa-star,
+:root.dark .rating-stars i.text-warning.far.fa-star {
+    color: #9ca3af !important;
+    text-shadow: none !important;
+    filter: none !important;
+    box-shadow: none !important;
+}
+/* Remover todos os efeitos de brilho de todas as estrelas no dark mode e garantir cor amarela */
+:root.dark .text-warning.fa-star:not(.far),
+:root.dark .text-warning.fa-star-half-alt,
+:root.dark i.text-warning.fa-star:not(.far),
+:root.dark i.text-warning.fa-star-half-alt {
+    color: #fbbf24 !important;
+    text-shadow: none !important;
+    filter: none !important;
+    box-shadow: none !important;
+}
+:root.dark .text-warning.far.fa-star,
+:root.dark i.text-warning.far.fa-star {
+    color: #9ca3af !important;
+    text-shadow: none !important;
+    filter: none !important;
+    box-shadow: none !important;
 }
 .rating-item {
     background: #f8f9fa;

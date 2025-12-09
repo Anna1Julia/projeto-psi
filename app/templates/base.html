@@ -636,6 +636,50 @@
       })();
     </script>
 
+    <!-- Script para textareas adaptáveis ao tamanho do texto -->
+    <script>
+      (function() {
+        function autoResizeTextarea(textarea) {
+          // Reset height to auto to get the correct scrollHeight
+          textarea.style.height = 'auto';
+          // Set height to scrollHeight (content height)
+          textarea.style.height = textarea.scrollHeight + 'px';
+        }
+
+        function setupAutoResize() {
+          // Selecionar todos os textareas
+          const textareas = document.querySelectorAll('textarea.form-control');
+          
+          textareas.forEach(textarea => {
+            // Ajustar altura inicial
+            autoResizeTextarea(textarea);
+            
+            // Ajustar altura ao digitar
+            textarea.addEventListener('input', function() {
+              autoResizeTextarea(this);
+            });
+            
+            // Ajustar altura ao colar conteúdo
+            textarea.addEventListener('paste', function() {
+              setTimeout(() => autoResizeTextarea(this), 10);
+            });
+          });
+        }
+
+        // Executar quando o DOM estiver pronto
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', setupAutoResize);
+        } else {
+          setupAutoResize();
+        }
+
+        // Re-executar quando modais forem abertos (para textareas dentro de modais)
+        document.addEventListener('shown.bs.modal', function() {
+          setupAutoResize();
+        });
+      })();
+    </script>
+
     <!-- Script para carregar notificações -->
     {% if current_user.is_authenticated %}
     <script>

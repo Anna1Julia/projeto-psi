@@ -54,8 +54,8 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start mb-3">
                     <div>
-                        <span class="badge bg-{% if report.status == 'pending' %}warning{% elif report.status == 'resolved' %}success{% elif report.status == 'dismissed' %}secondary{% else %}info{% endif %}">
-                            {{ report.status|title }}
+                        <span class="badge bg-{% if report.status == 'pending' %}warning{% elif report.status == 'resolved' %}success{% elif report.status == 'dismissed' %}secondary{% elif report.status == 'reviewed' %}info{% else %}info{% endif %}">
+                            {% if report.status == 'pending' %}Pendente{% elif report.status == 'resolved' %}Resolvida{% elif report.status == 'dismissed' %}Descartada{% elif report.status == 'reviewed' %}Revisada{% else %}{{ report.status|title }}{% endif %}
                         </span>
                         <span class="badge bg-primary ms-2">{{ report.reported_type|title }}</span>
                     </div>

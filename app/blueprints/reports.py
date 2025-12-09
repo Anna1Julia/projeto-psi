@@ -163,16 +163,24 @@ def review_report(report_id):
         return redirect(url_for('main.index'))
     
     report = Report.query.get_or_404(report_id)
-    action = request.form.get('action')  # 'resolve', 'dismiss'
+    action = request.form.get('action')  # 'resolve', 'dismiss', 'update_status'
     admin_notes = request.form.get('admin_notes', '')
     
-    if action == 'resolve':
+    # Suporte para atualização de status via select
+    if action == 'update_status':
+        new_status = request.form.get('status')
+        if new_status in ['pending', 'reviewed', 'resolved', 'dismissed']:
+            report.status = new_status
+        else:
+            flash('Status inválido.', 'danger')
+            return redirect(url_for('reports.view_report', report_id=report_id))
+    elif action == 'resolve':
         report.status = 'resolved'
     elif action == 'dismiss':
         report.status = 'dismissed'
     else:
         flash('Ação inválida.', 'danger')
-        return redirect(url_for('reports.list_reports'))
+        return redirect(url_for('reports.view_report', report_id=report_id))
     
     report.reviewed_by = current_user.id
     report.reviewed_at = datetime.utcnow()
@@ -182,7 +190,13 @@ def review_report(report_id):
     try:
         reporter = report.reporter
         if reporter:
-            status_label = 'resolvida' if report.status == 'resolved' else 'descartada'
+            status_labels = {
+                'resolved': 'resolvida',
+                'dismissed': 'descartada',
+                'reviewed': 'revisada',
+                'pending': 'marcada como pendente'
+            }
+            status_label = status_labels.get(report.status, report.status)
             tipo_nome = {
                 'post': 'Post',
                 'content': 'Conteúdo',
@@ -210,8 +224,12 @@ def review_report(report_id):
 
     db.session.commit()
     
-    flash(f'Denúncia {action} com sucesso.', 'success')
-    return redirect(url_for('reports.list_reports'))
+    if action == 'update_status':
+        flash('Status atualizado com sucesso.', 'success')
+        return redirect(url_for('reports.view_report', report_id=report_id))
+    else:
+        flash(f'Denúncia {action} com sucesso.', 'success')
+        return redirect(url_for('reports.list_reports'))
 
 @reports_bp.route('/<int:report_id>/view')
 @login_required

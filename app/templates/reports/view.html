@@ -24,8 +24,8 @@
                     <dl class="row">
                         <dt class="col-sm-4">Status:</dt>
                         <dd class="col-sm-8">
-                            <span class="badge bg-{% if report.status == 'pending' %}warning{% elif report.status == 'resolved' %}success{% elif report.status == 'dismissed' %}secondary{% else %}info{% endif %}">
-                                {{ report.status|title }}
+                            <span class="badge bg-{% if report.status == 'pending' %}warning{% elif report.status == 'resolved' %}success{% elif report.status == 'dismissed' %}secondary{% elif report.status == 'reviewed' %}info{% else %}info{% endif %}">
+                                {% if report.status == 'pending' %}Pendente{% elif report.status == 'resolved' %}Resolvida{% elif report.status == 'dismissed' %}Descartada{% elif report.status == 'reviewed' %}Revisada{% else %}{{ report.status|title }}{% endif %}
                             </span>
                         </dd>
                         
@@ -93,35 +93,32 @@
         </div>
 
         <div class="col-md-4">
-            {% if report.status == 'pending' %}
             <div class="card">
                 <div class="card-header">
                     <h5 class="mb-0">Ações</h5>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{{ url_for('reports.review_report', report_id=report.id) }}" class="mb-3">
-                        <div class="mb-3">
-                            <label for="admin_notes" class="form-label">Notas (opcional)</label>
-                            <textarea name="admin_notes" id="admin_notes" class="form-control" rows="3" placeholder="Adicione notas sobre esta denúncia..."></textarea>
-                        </div>
-                        <div class="d-grid gap-2">
-                            <input type="hidden" name="action" value="resolve">
-                            <button type="submit" class="btn btn-success">Resolver Denúncia</button>
-                        </div>
-                    </form>
                     <form method="POST" action="{{ url_for('reports.review_report', report_id=report.id) }}">
                         <div class="mb-3">
-                            <label for="admin_notes_dismiss" class="form-label">Notas (opcional)</label>
-                            <textarea name="admin_notes" id="admin_notes_dismiss" class="form-control" rows="3" placeholder="Adicione notas sobre esta denúncia..."></textarea>
+                            <label for="status_select" class="form-label">Alterar Status</label>
+                            <select name="status" id="status_select" class="form-select" required>
+                                <option value="pending" {% if report.status == 'pending' %}selected{% endif %}>Pendente</option>
+                                <option value="reviewed" {% if report.status == 'reviewed' %}selected{% endif %}>Revisada</option>
+                                <option value="resolved" {% if report.status == 'resolved' %}selected{% endif %}>Resolvida</option>
+                                <option value="dismissed" {% if report.status == 'dismissed' %}selected{% endif %}>Descartada</option>
+                            </select>
                         </div>
-                        <div class="d-grid">
-                            <input type="hidden" name="action" value="dismiss">
-                            <button type="submit" class="btn btn-secondary" onclick="return confirm('Descartar esta denúncia?')">Descartar Denúncia</button>
+                        <div class="mb-3">
+                            <label for="admin_notes" class="form-label">Notas (opcional)</label>
+                            <textarea name="admin_notes" id="admin_notes" class="form-control" rows="3" placeholder="Adicione notas sobre esta denúncia...">{{ report.admin_notes or '' }}</textarea>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <input type="hidden" name="action" value="update_status">
+                            <button type="submit" class="btn btn-primary">Atualizar Status</button>
                         </div>
                     </form>
                 </div>
             </div>
-            {% endif %}
         </div>
     </div>
 </div>

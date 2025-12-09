@@ -204,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     class="form-control"
                     placeholder="O que está em sua mente?"
                     required
-                    style="min-height: 100px; width: 100%; resize: vertical; padding: .9rem; border-radius: .75rem; border: 1px solid rgba(0,0,0,0.1); background-color: var(--color-bg, #f9fafb); font-size: 0.95rem; color: var(--color-text, #111827);"></textarea>
+                    style="min-height: 100px; width: 100%; resize: none; overflow: hidden; padding: .9rem; border-radius: .75rem; border: 1px solid rgba(0,0,0,0.1); background-color: var(--color-bg, #f9fafb); font-size: 0.95rem; color: var(--color-text, #111827); line-height: 1.5;"></textarea>
                 <div style="display: flex; justify-content: space-between; gap: 16px; margin-top: 14px;">
                     <button type="button" id="injectedCancelBtn" class="btn btn-secondary rounded-pill px-4 fw-semibold">
                         Cancelar
@@ -223,11 +223,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const postForm = modal.querySelector('#injectedPostForm');
     const postTextarea = modal.querySelector('#injectedPostContent');
 
+    // Função para auto-resize do textarea
+    function autoResizeTextarea(textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = textarea.scrollHeight + 'px';
+    }
+
+    // Configurar auto-resize para o textarea do modal
+    if (postTextarea) {
+        postTextarea.addEventListener('input', function() {
+            autoResizeTextarea(this);
+        });
+        postTextarea.addEventListener('paste', function() {
+            setTimeout(() => autoResizeTextarea(this), 10);
+        });
+    }
+
     const openModal = () => {
         modal.classList.add('show');
         modal.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
-        setTimeout(() => postTextarea.focus(), 50);
+        setTimeout(() => {
+            postTextarea.focus();
+            autoResizeTextarea(postTextarea);
+        }, 50);
     };
     
     const closeModal = () => {
