@@ -221,14 +221,33 @@
 .rating-input label {
     cursor: pointer;
     font-size: 2rem;
-    color: #ddd;
-    transition: color 0.2s;
+    color: var(--color-muted, #9ca3af);
+    transition: transform 0.15s ease, color 0.2s ease, text-shadow 0.2s ease;
 }
 .rating-input label:hover,
-.rating-input label:hover ~ label,
-.rating-input input[type="radio"]:checked ~ label {
-    color: #ffc107;
+.rating-input label:hover ~ label {
+    color: #fbbf24;
+    text-shadow: 0 4px 16px rgba(251, 191, 36, 0.45);
+    transform: translateY(-2px);
 }
+.rating-input input[type="radio"]:checked ~ label {
+    color: #f59e0b;
+    text-shadow: 0 6px 18px rgba(245, 158, 11, 0.5);
+}
+:root.dark .rating-input label {
+    color: rgba(226, 232, 240, 0.82);
+}
+:root.dark .rating-input label:hover,
+:root.dark .rating-input label:hover ~ label {
+    color: #fbbf24;
+    text-shadow: 0 4px 16px rgba(251, 191, 36, 0.45);
+    transform: translateY(-2px);
+}
+:root.dark .rating-input input[type="radio"]:checked ~ label {
+    color: #f59e0b;
+    text-shadow: 0 6px 18px rgba(245, 158, 11, 0.55);
+}
+
 .rating-stars i {
     font-size: 1.2rem;
 }

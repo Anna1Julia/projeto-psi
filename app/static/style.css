@@ -469,6 +469,52 @@ main {
     transform: translateX(5px);
 }
 
+/* Notificações: garantir legibilidade no dropdown */
+[aria-labelledby="notificationsDropdown"] {
+    background: var(--color-surface) !important;
+    color: var(--color-text) !important;
+    border: 1px solid var(--border-soft);
+}
+
+[aria-labelledby="notificationsDropdown"] .dropdown-item {
+    background: transparent !important;
+    color: var(--color-text) !important;
+    opacity: 1 !important;
+    transform: none;
+    box-shadow: none;
+}
+
+[aria-labelledby="notificationsDropdown"] .dropdown-item:hover {
+    background: rgba(0, 0, 0, 0.04) !important;
+    color: var(--color-text) !important;
+    box-shadow: 0 6px 18px rgba(var(--shadow-rgb, 0,0,0), 0.12);
+    transform: translateY(-1px);
+}
+
+[aria-labelledby="notificationsDropdown"] .dropdown-item .small,
+[aria-labelledby="notificationsDropdown"] .dropdown-item .text-muted {
+    color: rgba(15, 23, 42, 0.68) !important;
+    opacity: 1 !important;
+}
+
+:root.dark [aria-labelledby="notificationsDropdown"] .dropdown-item .small,
+:root.dark [aria-labelledby="notificationsDropdown"] .dropdown-item .text-muted {
+    color: rgba(226, 232, 240, 0.75) !important;
+    opacity: 1 !important;
+}
+
+[aria-labelledby="notificationsDropdown"] .dropdown-item .fw-semibold,
+[aria-labelledby="notificationsDropdown"] .dropdown-item .flex-grow-1 {
+    color: var(--color-text) !important;
+    opacity: 1 !important;
+}
+
+:root.dark [aria-labelledby="notificationsDropdown"] .dropdown-item .fw-semibold,
+:root.dark [aria-labelledby="notificationsDropdown"] .dropdown-item .flex-grow-1 {
+    color: var(--color-text) !important;
+    opacity: 1 !important;
+}
+
 .card {
     /* Use theme surface token for solid surface color in both themes */
     background: var(--color-surface) !important;
