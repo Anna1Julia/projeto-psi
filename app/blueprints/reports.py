@@ -177,7 +177,37 @@ def review_report(report_id):
     report.reviewed_by = current_user.id
     report.reviewed_at = datetime.utcnow()
     report.admin_notes = admin_notes
-    
+
+    # Notificação para o autor da denúncia (usuário comum)
+    try:
+        reporter = report.reporter
+        if reporter:
+            status_label = 'resolvida' if report.status == 'resolved' else 'descartada'
+            tipo_nome = {
+                'post': 'Post',
+                'content': 'Conteúdo',
+                'user': 'Usuário',
+                'comment': 'Comentário',
+                'community': 'Comunidade'
+            }.get(report.reported_type, report.reported_type.title())
+
+            message = f"Sua denúncia sobre {tipo_nome} (ID: {report.reported_id}) foi {status_label}."
+            if admin_notes:
+                message += f" Resposta do administrador: {admin_notes}"
+
+            user_notification = Notification(
+                user_id=reporter.id,
+                type='report_response',
+                title=f"Denúncia {status_label}",
+                message=message,
+                link=url_for('notifications.list_notifications'),
+                is_read=False
+            )
+            db.session.add(user_notification)
+    except Exception:
+        # Não interromper o fluxo de revisão se a notificação falhar
+        pass
+
     db.session.commit()
     
     flash(f'Denúncia {action} com sucesso.', 'success')

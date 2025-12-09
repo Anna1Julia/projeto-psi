@@ -99,8 +99,7 @@
               </button>
             </li>
             {% if current_user.is_authenticated %}
-            <!-- Notificações (apenas para admins) -->
-            {% if current_user.is_admin %}
+            <!-- Notificações -->
             <li class="nav-item dropdown">
               <a class="nav-link position-relative" href="#" id="notificationsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="bi bi-bell-fill" style="font-size: 1.2rem;"></i>
@@ -126,7 +125,6 @@
                 </li>
               </ul>
             </li>
-            {% endif %}
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" data-no-loader="true">
                 {{ current_user.nome }}
@@ -639,7 +637,7 @@
     </script>
 
     <!-- Script para carregar notificações -->
-    {% if current_user.is_authenticated and current_user.is_admin %}
+    {% if current_user.is_authenticated %}
     <script>
       (function() {
         function loadNotifications() {

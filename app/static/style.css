@@ -1124,6 +1124,27 @@ h1, h2, h3, h4, h5, h6 {
     margin: 0 auto;
 }
 
+/* Estado vazio: centraliza o card e ocupa a altura da viewport */
+.posts-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+}
+
+.posts-empty-state .card {
+    max-width: 520px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.posts-empty-state .card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 @media (min-width: 576px) {
     #postsContainer:not(.posts-container-centered) {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1138,6 +1159,30 @@ h1, h2, h3, h4, h5, h6 {
     .posts-container-centered {
         grid-template-columns: 1fr;
     }
+}
+
+/* Container e header da comunidade centralizados */
+.community-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    width: 100%;
+}
+
+.community-header-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    text-align: center;
+}
+
+.community-header-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
 }
 
 /* Ajustes visuais para .post-card (aplicável a cards já marcados com a classe) */
@@ -1186,6 +1231,18 @@ h1, h2, h3, h4, h5, h6 {
 .btn-create-post:hover {
     transform: translateY(-2px);
     box-shadow: 0 14px 30px rgba(6,182,212,0.22);
+}
+
+/* Dark mode: manter alto contraste para o botão Criar Post */
+:root.dark .btn-create-post {
+    background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+    color: #0b1221 !important;
+    border: 1px solid rgba(56, 189, 248, 0.8);
+    box-shadow: 0 10px 24px rgba(14,165,233,0.35);
+}
+
+:root.dark .btn-create-post:hover {
+    box-shadow: 0 14px 32px rgba(14,165,233,0.48);
 }
 
 /* Curtir / comentar: micro-estilização ciano para destaques na ação */
