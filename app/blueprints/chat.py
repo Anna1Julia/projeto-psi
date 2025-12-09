@@ -29,11 +29,13 @@ def get_messages(user_id):
         ((PrivateMessage.sender_id == user_id) & (PrivateMessage.receiver_id == current_user.id))
     ).order_by(PrivateMessage.sent_at).all()
 
+    from ..utils.helpers import format_datetime
+    
     return jsonify([
         {
             'id': m.id,
             'text': m.text,
-            'timestamp': m.sent_at.strftime('%d/%m/%Y %H:%M'),
+            'timestamp': format_datetime(m.sent_at, '%d/%m/%Y %H:%M'),
             'from': 'me' if m.sender_id == current_user.id else 'them'
         } for m in messages
     ])

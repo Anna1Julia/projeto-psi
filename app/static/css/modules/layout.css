@@ -1,0 +1,161 @@
+/* === Layout moderno e reutilizável === */
+
+/* Casca de página padrão usada em quase todas as telas */
+.page-shell {
+  max-width: 1200px;
+  margin: 1.5rem auto 2.5rem auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 992px) {
+  .page-shell {
+    margin-top: 2.5rem;
+  }
+}
+
+/* Cabeçalho de página (título + subtítulo + ações) */
+.page-header {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+  margin-bottom: 1.75rem;
+}
+
+.page-header-main {
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+}
+
+.page-header-title {
+  font-size: clamp(1.6rem, 2.1vw + 1.1rem, 2.2rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+}
+
+.page-header-subtitle {
+  font-size: .95rem;
+  color: var(--color-muted);
+}
+
+.page-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+}
+
+@media (min-width: 768px) {
+  .page-header {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+
+  .page-header-main {
+    max-width: 70%;
+  }
+}
+
+/* Grids de cards reutilizáveis */
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+@media (min-width: 576px) {
+  .card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 992px) {
+  .card-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.card-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .card-grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Grid específica para até 4 atalhos em linha (home) */
+.card-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .card-grid-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1200px) {
+  .card-grid-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Grid */
+.grid-cards {
+  /* Allow grid-cards to work with either CSS Grid (legacy) or Bootstrap column children.
+     Prefer a flexible layout so templates can use Bootstrap `row` + `col-*`. */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: stretch;
+}
+
+/* If a page relies on grid layout, provide an explicit helper class `.grid-cards-grid`.
+   This preserves the original grid behavior for other templates. */
+.grid-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+@media (min-width: 576px) { .grid-cards-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 992px) { .grid-cards-grid { grid-template-columns: repeat(3, 1fr); } }
+
+/* Garantir que os cards no card-grid-2 tenham a mesma altura */
+.card-grid-2 > article {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-grid-2 > article .card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 1.5rem;
+}
+
+.card-grid-2 > article .card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.card-grid-2 > article .card-text {
+  font-size: 0.95rem;
+  color: var(--color-muted);
+  margin-bottom: 1rem;
+  flex-grow: 1;
+}
+
+/* Garantir espaçamento consistente nos botões da seção Comunidade */
+.card-grid-2 > article .d-grid {
+  gap: 0.5rem;
+}
+

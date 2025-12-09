@@ -150,6 +150,10 @@ def comment_post(community_id, post_id):
     comment = CommunityPostComment(user_id=current_user.id, post_id=post.id, text=text)
     db.session.add(comment)
     db.session.commit()
+    
+    # Importar o helper de formatação de data
+    from ..utils.helpers import format_datetime
+    
     return jsonify({
         'success': True,
         'comments_count': CommunityPostComment.query.filter_by(post_id=post.id).count(),
@@ -157,7 +161,7 @@ def comment_post(community_id, post_id):
             'id': comment.id,
             'author': current_user.nome,
             'text': comment.text,
-            'created_at': comment.created_at.strftime('%d/%m/%Y %H:%M'),
+            'created_at': format_datetime(comment.created_at, '%d/%m/%Y %H:%M'),
             'created_at_iso': comment.created_at.isoformat(),
             'created_at_ts': int(comment.created_at.timestamp() * 1000)
         }
@@ -470,9 +474,11 @@ def mute_user(user_id):
     user.mute_reason = reason
     db.session.commit()
     
+    from ..utils.helpers import format_datetime
+    
     return jsonify({
         'success': True, 
-        'message': f'Castigo aplicado a {user.nome} até {user.mute_until.strftime("%d/%m/%Y %H:%M")}'
+        'message': f'Castigo aplicado a {user.nome} até {format_datetime(user.mute_until, "%d/%m/%Y %H:%M")}'
     })
 
 @comunidade_bp.route('/user/<int:user_id>/unmute', methods=['POST'])

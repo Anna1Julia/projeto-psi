@@ -1,0 +1,117 @@
+/* Comunidade / Posts */
+#postsContainer {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.25rem;
+  padding: 1rem 0;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+#postsContainer.posts-container-centered {
+  grid-template-columns: repeat(auto-fit, minmax(320px, 900px));
+  justify-content: center;
+  max-width: 1280px;
+}
+
+@media (min-width: 992px) {
+  #postsContainer.posts-container-centered {
+    grid-template-columns: repeat(auto-fit, minmax(360px, 960px));
+  }
+}
+
+.posts-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
+
+.posts-empty-state .card {
+  max-width: 520px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.posts-empty-state .card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Ações do post centralizadas */
+.post-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.4rem;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+.post-actions > * {
+  min-width: 0;
+}
+
+.post-actions .input-group {
+  width: 100%;
+  min-width: 190px;
+  max-width: 420px;
+  height: 32px;
+  flex: 1 1 260px;
+}
+
+.post-actions .form-control {
+  min-width: 140px;
+  height: 32px;
+  padding: 0.3rem 0.6rem;
+  border-radius: 10px 0 0 10px;
+  flex: 1 1 auto;
+}
+
+.post-actions .input-group .btn {
+  height: 32px;
+  padding: 0.3rem 0.7rem;
+  border-radius: 0 10px 10px 0;
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.post-actions .btn {
+  height: 32px;
+  padding: 0.3rem 0.7rem;
+  border-radius: 10px;
+  line-height: 1.15;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.community-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  width: 100%;
+}
+
+.community-header-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+
+.community-header-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+

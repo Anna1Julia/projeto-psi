@@ -1,0 +1,117 @@
+/* Hover effects */
+.hover-raise {
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.hover-raise:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Spinner */
+#globalLoader {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(2px);
+  background: rgba(15,23,42,0.06);
+  z-index: 2000;
+}
+
+#globalLoader .spinner-border {
+  width: 3rem;
+  height: 3rem;
+  color: var(--color-primary);
+}
+
+#globalLoader.show { display: flex; }
+
+/* Badges */
+.badge-filtered {
+  background: var(--color-accent);
+  color: #1F2937;
+}
+
+/* Jumbotron */
+.jumbotron {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+/* Estrelas no dark mode - amarelas sólidas iguais ao tema claro, sem brilho */
+/* Remover todos os efeitos visuais */
+:root.dark .text-warning.fa-star,
+:root.dark .text-warning.fa-star-half-alt,
+:root.dark .text-warning.far.fa-star,
+:root.dark .rating-stars .text-warning,
+:root.dark .rating-stars i.text-warning,
+:root.dark i.text-warning.fa-star,
+:root.dark i.text-warning.fa-star-half-alt,
+:root.dark i.text-warning.far.fa-star,
+:root.dark .rating-stars i.fa-star, 
+:root.dark .rating-stars i.fa-star-half-alt,
+:root.dark .card-header .text-warning.fa-star,
+:root.dark .card-header .text-warning.fa-star-half-alt,
+:root.dark .card-header i.text-warning,
+:root.dark .rating-item .text-warning.fa-star,
+:root.dark .rating-item .text-warning.fa-star-half-alt,
+:root.dark .rating-item i.text-warning {
+    text-shadow: none !important;
+    filter: none !important;
+    box-shadow: none !important;
+    -webkit-text-stroke: 0 !important;
+    -webkit-filter: none !important;
+}
+/* Garantir que estrelas preenchidas sejam amarelas sólidas no dark mode (igual ao tema claro) */
+:root.dark .text-warning.fa-star:not(.far),
+:root.dark .text-warning.fa-star-half-alt,
+:root.dark .rating-stars i.fa-star:not(.far),
+:root.dark .rating-stars i.fa-star-half-alt,
+:root.dark i.text-warning.fa-star:not(.far),
+:root.dark i.text-warning.fa-star-half-alt,
+:root.dark .card-header .text-warning.fa-star:not(.far),
+:root.dark .card-header .text-warning.fa-star-half-alt,
+:root.dark .card-header i.text-warning.fa-star:not(.far),
+:root.dark .card-header i.text-warning.fa-star-half-alt,
+:root.dark .rating-item .text-warning.fa-star:not(.far),
+:root.dark .rating-item .text-warning.fa-star-half-alt,
+:root.dark .rating-item i.text-warning.fa-star:not(.far),
+:root.dark .rating-item i.text-warning.fa-star-half-alt,
+:root.dark .fas.fa-star.text-warning,
+:root.dark .fas.fa-star-half-alt.text-warning,
+:root.dark i.fas.fa-star.text-warning,
+:root.dark i.fas.fa-star-half-alt.text-warning {
+    color: #fbbf24 !important;
+}
+/* Estrelas no rating-input (formulário de avaliação) - garantir cor amarela quando selecionadas */
+:root.dark .rating-input label i.fa-star {
+    color: inherit;
+    text-shadow: none !important;
+    filter: none !important;
+}
+:root.dark .rating-input input[type="radio"]:checked ~ label i.fa-star,
+:root.dark .rating-input input[type="radio"]:checked ~ label i {
+    color: #f59e0b !important;
+    text-shadow: none !important;
+    filter: none !important;
+}
+:root.dark .rating-input label:hover i.fa-star,
+:root.dark .rating-input label:hover ~ label i.fa-star,
+:root.dark .rating-input label:hover i,
+:root.dark .rating-input label:hover ~ label i {
+    color: #fbbf24 !important;
+    text-shadow: none !important;
+    filter: none !important;
+}
+/* Estrelas vazias permanecem cinzas */
+:root.dark .text-warning.far.fa-star,
+:root.dark i.text-warning.far.fa-star,
+:root.dark .rating-stars i.far.fa-star,
+:root.dark .far.fa-star.text-warning,
+:root.dark i.far.fa-star.text-warning {
+    color: #9ca3af !important;
+}
+

@@ -14,7 +14,7 @@
                     <form method="POST">
                         <div class="mb-3">
                             <label for="conteudo" class="form-label">Conteúdo</label>
-                            <textarea class="form-control" id="conteudo" name="conteudo" rows="6" required>{{ post.content }}</textarea>
+                            <textarea class="form-control auto-resize" id="conteudo" name="conteudo" rows="6" required>{{ post.content }}</textarea>
                         </div>
                         <div class="d-flex justify-content-between">
                             <a href="{{ url_for('posts.view_post', post_id=post.id) }}" class="btn btn-secondary">Cancelar</a>

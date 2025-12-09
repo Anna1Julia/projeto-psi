@@ -37,7 +37,7 @@
 
         <div class="mb-3">
             <label for="mensagem" class="form-label-white">Mensagem</label>
-            <textarea class="form-control" id="mensagem" name="mensagem" rows="5" required>{{ request.form.mensagem or '' }}</textarea>
+            <textarea class="form-control auto-resize" id="mensagem" name="mensagem" rows="5" required>{{ request.form.mensagem or '' }}</textarea>
         </div>
 
         <button type="submit" class="btn btn-primary mb-4">Enviar Feedback</button>

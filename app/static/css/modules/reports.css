@@ -1,0 +1,64 @@
+/* ==== Página de Denúncias ==== */
+.reports-page .card {
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-soft);
+}
+
+.reports-filter-card {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.report-card .badge {
+  color: #fff;
+}
+
+.report-card .card-title,
+.report-card .card-text,
+.report-card .card-body,
+.report-card small {
+  color: var(--color-text) !important;
+}
+
+.report-admin-note {
+  background: rgba(14, 165, 233, 0.12) !important;
+  color: var(--color-text) !important;
+  border: 1px solid rgba(14, 165, 233, 0.35);
+  border-radius: var(--radius-md);
+}
+
+.report-empty-card .report-empty-icon {
+  font-size: 3rem;
+  color: var(--color-muted, #6B7280);
+  opacity: 0.8;
+}
+
+/* Dark mode refinamentos para denúncias */
+:root.dark .reports-page .card {
+  background: rgba(30, 41, 59, 0.92) !important;
+  color: var(--color-text) !important;
+  border: 1px solid rgba(96, 165, 250, 0.25);
+  box-shadow: 0 14px 40px rgba(0,0,0,0.35);
+}
+
+:root.dark .reports-filter-card {
+  background: rgba(30, 41, 59, 0.9) !important;
+}
+
+:root.dark .report-admin-note {
+  background: rgba(56, 189, 248, 0.16) !important;
+  color: var(--color-text) !important;
+  border-color: rgba(56, 189, 248, 0.5);
+}
+
+:root.dark .report-empty-card {
+  background: rgba(30, 41, 59, 0.9) !important;
+}
+
+:root.dark .report-empty-card .report-empty-icon {
+  color: rgba(226, 232, 240, 0.78);
+  opacity: 1;
+}
+

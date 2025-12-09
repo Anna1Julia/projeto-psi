@@ -1,0 +1,51 @@
+/* Home: cards superiores (Meu Perfil, Conteúdos, Posts, Comunidades)
+   garantem mesma altura e botões perfeitamente alinhados */
+.home-feature-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.home-feature-card .card-body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.home-feature-card .card-title {
+  font-weight: 600;
+  margin-bottom: .5rem;
+}
+
+.home-feature-card .card-text {
+  flex-grow: 1;
+  font-size: .95rem;
+  color: var(--color-muted);
+}
+
+.home-feature-card .btn {
+  margin-top: 1rem;
+  align-self: stretch;
+}
+
+/* Home: ajustes finos - igualar "Ações Rápidas" com "Comunidade" */
+.home-quick-actions .card-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.home-quick-actions .card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.home-quick-actions .d-grid {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0;
+}
+

@@ -1,3 +1,5 @@
+/* Ensure common subtext classes follow the muted token in dark mode
+   so they don't stay forced white by other specific selectors. */
 :root.dark .text-muted,
 :root.dark .comment-date,
 :root.dark .post-meta,
@@ -7,9 +9,46 @@
   color: var(--color-muted) !important;
 }
 
-html, body {
-  height: 100%;
+/* Garantir que elementos básicos de texto no dark mode herdem cor corretamente */
+:root.dark body {
+  color: var(--color-text);
 }
+
+:root.dark main {
+  color: var(--color-text);
+}
+
+/* Garantir que títulos e textos gerais sejam visíveis no dark mode */
+:root.dark h1,
+:root.dark h2,
+:root.dark h3,
+:root.dark h4,
+:root.dark h5,
+:root.dark h6 {
+  color: var(--color-text) !important;
+}
+
+:root.dark h1 strong,
+:root.dark h2 strong,
+:root.dark h3 strong,
+:root.dark h4 strong,
+:root.dark h5 strong,
+:root.dark h6 strong {
+  color: var(--color-text) !important;
+}
+
+/* Garantir que elementos dentro de containers também sejam visíveis */
+:root.dark .container h1,
+:root.dark .container h2,
+:root.dark .container h3,
+:root.dark .container h4,
+:root.dark .container h5,
+:root.dark .container h6 {
+  color: var(--color-text) !important;
+}
+
+/* GLOBAL */
+html, body { height: 100%; }
 
 body {
   background-color: var(--color-bg);
@@ -19,6 +58,7 @@ body {
   position: relative;
 }
 
+/* Wrapper principal: garante footer colado na base da tela */
 #appRoot {
   min-height: 100vh;
   display: flex;
@@ -29,6 +69,10 @@ body::before,
 body::after {
   content: "";
   position: fixed;
+  /* 
+    Usamos um "bleed" além da viewport para que o blur
+    não revele bordas claras nas extremidades da tela.
+  */
   top: -64px;
   left: -64px;
   right: -64px;
@@ -37,7 +81,9 @@ body::after {
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
-  background-color: #020617;
+  /* Cor base escura para preencher áreas transparentes do PNG
+     e evitar halo esbranquiçado quando o blur é aplicado. */
+  background-color: #1a1f2e;
   z-index: -3;
   pointer-events: none;
   transition: opacity 0.6s ease;
@@ -46,11 +92,13 @@ body::after {
 }
 
 body::before {
+  /* Light-mode: usa o fundo claro (background2) */
   background-image: url('/static/img/background2.png');
   opacity: 1;
 }
 
 body::after {
+  /* Dark-mode: usa o fundo noturno (background) */
   background-image: url('/static/img/background.png');
   opacity: 0;
 }
@@ -76,6 +124,7 @@ main {
   box-shadow: none !important;
 }
 
+/* Overlay suavizado — não escurece demais o conteúdo */
 main::before {
   content: "";
   position: fixed;
@@ -83,7 +132,11 @@ main::before {
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(ellipse at center, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.25) 70%);
+  background: radial-gradient(
+      ellipse at center,
+      rgba(0,0,0,0.10) 0%,
+      rgba(0,0,0,0.25) 70%
+  );
   z-index: -2;
   pointer-events: none;
   transition: background 1.8s ease-in-out;
@@ -92,27 +145,20 @@ main::before {
 }
 
 :root.dark main::before {
-  background: radial-gradient(ellipse at center, rgba(0,0,0,0.20) 0%, rgba(0,0,0,0.45) 70%);
+  background: radial-gradient(
+      ellipse at center,
+      rgba(0,0,0,0.20) 0%,
+      rgba(0,0,0,0.45) 70%
+  );
 }
 
+/* Typography */
 .h1, .h2, .h3, h1, h2, h3 {
   font-weight: 700;
   letter-spacing: -0.02em;
 }
 
-.lead {
-  color: rgba(15,23,42,0.8);
-}
-
-:root.dark .lead {
-  color: rgba(226,232,240,0.85);
-}
-
-.container {
-  position: relative;
-  z-index: 1;
-}
-
+/* Remove all unwanted borders and outlines */
 a:focus,
 a:focus-visible,
 .nav-link:focus,
@@ -124,6 +170,7 @@ a:focus-visible,
   border: none !important;
 }
 
+/* Remove Bootstrap active/show indicators */
 .nav-link.show,
 .navbar .nav-link.show,
 .navbar .dropdown-toggle.show,
@@ -133,4 +180,21 @@ a:focus-visible,
   outline: none !important;
   box-shadow: none !important;
   background: transparent !important;
+}
+
+.navbar::after,
+.navbar-collapse::after,
+.navbar-nav::after {
+  display: none !important;
+}
+
+.lead { color: rgba(15,23,42,0.8); }
+:root.dark .lead { color: rgba(226,232,240,0.85); }
+
+/* AOS */
+@media (prefers-reduced-motion: reduce) {
+  [data-aos] {
+    transition: none !important;
+    animation: none !important;
+  }
 }

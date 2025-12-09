@@ -3,7 +3,7 @@ from flask_login import login_required, current_user, logout_user
 import os
 from ..models import (Usuario, db, Rating, CommunityPost, CommunityPostComment, 
                      CommunityPostLike, Community, CommunityBlock, Content, Comment, 
-                     Like, WatchHistory, ContentCategory)
+                     Like, WatchHistory, ContentCategory, Notification, Report)
 
 users_bp = Blueprint('users', __name__, url_prefix='/users')
 
@@ -241,6 +241,16 @@ def delete_user():
         WatchHistory.query.filter_by(user_id=user_id).delete()
         print("✓ Comentários, likes e histórico em conteúdos deletados")
         
+        # 8. Deletar notificações do usuário
+        Notification.query.filter_by(user_id=user_id).delete()
+        print("✓ Notificações deletadas")
+        
+        # 9. Deletar denúncias feitas pelo usuário e limpar referências de revisão
+        Report.query.filter_by(reporter_id=user_id).delete()
+        # Atualizar denúncias revisadas por este usuário para NULL (já que reviewed_by é nullable)
+        Report.query.filter_by(reviewed_by=user_id).update({Report.reviewed_by: None})
+        print("✓ Denúncias deletadas e referências de revisão limpas")
+        
         # Deslogar o usuário antes de deletar
         logout_user()
         
@@ -363,6 +373,16 @@ def delete_other_user(user_id):
         Like.query.filter_by(user_id=user_id).delete()
         WatchHistory.query.filter_by(user_id=user_id).delete()
         print("✓ Comentários, likes e histórico em conteúdos deletados")
+        
+        # 8. Deletar notificações do usuário
+        Notification.query.filter_by(user_id=user_id).delete()
+        print("✓ Notificações deletadas")
+        
+        # 9. Deletar denúncias feitas pelo usuário e limpar referências de revisão
+        Report.query.filter_by(reporter_id=user_id).delete()
+        # Atualizar denúncias revisadas por este usuário para NULL (já que reviewed_by é nullable)
+        Report.query.filter_by(reviewed_by=user_id).update({Report.reviewed_by: None})
+        print("✓ Denúncias deletadas e referências de revisão limpas")
         
         # Deletar o usuário do banco
         db.session.delete(usuario)

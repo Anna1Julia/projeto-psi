@@ -1,0 +1,502 @@
+/* Force remove any navbar border that might exist */
+.navbar,
+.navbar-light,
+.navbar-dark,
+.navbar-expand,
+.navbar-expand-lg,
+.navbar-expand-md,
+.navbar-expand-sm {
+  border: 0 !important;
+  border-bottom: 0 !important;
+  border-top: 0 !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+  box-shadow: none !important;
+  background-image: none !important;
+}
+
+/* Remove navbar border for all responsive sizes */
+@media (min-width: 576px) {
+  .navbar-expand-sm {
+    border: 0 !important;
+    border-bottom: 0 !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .navbar-expand-md {
+    border: 0 !important;
+    border-bottom: 0 !important;
+  }
+}
+
+@media (min-width: 992px) {
+  .navbar-expand-lg {
+    border: 0 !important;
+    border-bottom: 0 !important;
+  }
+}
+
+/* Navbar */
+.navbar {
+  backdrop-filter: saturate(150%) blur(12px);
+  -webkit-backdrop-filter: saturate(150%) blur(12px);
+  border: 0 !important;
+  border-bottom: 0 !important;
+  border-top: 0 !important;
+  box-shadow: none !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+  background-image: none !important;
+}
+
+.navbar:not(.app-navbar)::before,
+.navbar:not(.app-navbar)::after {
+  display: none !important;
+}
+
+.navbar-collapse,
+.navbar-nav {
+  border: 0 !important;
+  border-bottom: 0 !important;
+  border-top: 0 !important;
+  box-shadow: none !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+  background: transparent !important;
+}
+
+.navbar-collapse::before,
+.navbar-collapse::after,
+.navbar-nav::before,
+.navbar-nav::after {
+  display: none !important;
+}
+
+.navbar-container,
+.navbar > .container,
+.navbar > .container-fluid {
+  border: 0 !important;
+  border-bottom: 0 !important;
+  border-top: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Navbar temática (header principal) - Liquid Glass Premium */
+.app-navbar {
+  position: relative;
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(18px) saturate(165%);
+  -webkit-backdrop-filter: blur(18px) saturate(165%);
+  border: 0 !important;
+  border-radius: 0 0 24px 24px;
+  box-shadow: inset 0 2px 6px rgba(255, 255, 255, 0.35), inset 0 -1px 2px rgba(0, 0, 0, 0.08), 0 8px 32px rgba(0, 0, 0, 0.12);
+  color: var(--color-text);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: visible !important;
+  background-image: none !important;
+  padding: 1rem 0 1.5rem 0 !important;
+  margin-bottom: 0 !important;
+  outline: none !important;
+}
+
+.app-navbar::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 20px;
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    rgba(255, 255, 255, 0.15) 50%,
+    rgba(255, 255, 255, 0.25) 80%,
+    transparent 100%);
+  border-radius: 0 0 24px 24px;
+  opacity: 0.5;
+  z-index: 5;
+  pointer-events: none;
+}
+
+:root.dark .app-navbar::after {
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    rgba(96, 165, 250, 0.12) 50%,
+    rgba(96, 165, 250, 0.2) 80%,
+    transparent 100%);
+  opacity: 0.45;
+}
+
+.app-navbar > * {
+  position: relative;
+  z-index: 200;
+  border: none !important;
+  border-bottom: none !important;
+  border-top: none !important;
+  box-shadow: none !important;
+}
+
+.app-navbar + * {
+  border-top: none !important;
+  margin-top: 0 !important;
+}
+
+.app-navbar:hover {
+  background: rgba(255, 255, 255, 0.62);
+  border: 0 !important;
+  box-shadow: inset 0 2px 8px rgba(255, 255, 255, 0.4), inset 0 -1px 2px rgba(0, 0, 0, 0.1), 0 12px 40px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+}
+
+:root.dark .app-navbar {
+  background: var(--glass-bg);
+  border: 0 !important;
+  box-shadow: inset 0 2px 6px rgba(96, 165, 250, 0.2), inset 0 -1px 2px rgba(0, 0, 0, 0.2);
+}
+
+:root.dark .app-navbar:hover {
+  background: rgba(30, 41, 59, 0.72);
+  border: 0 !important;
+  backdrop-filter: blur(22px) saturate(175%);
+  -webkit-backdrop-filter: blur(22px) saturate(175%);
+  box-shadow: inset 0 2px 8px rgba(96, 165, 250, 0.25), inset 0 -1px 2px rgba(0, 0, 0, 0.3), 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+
+.app-navbar .navbar-brand,
+.app-navbar .nav-link,
+.app-navbar .navbar-toggler {
+  color: var(--color-text) !important;
+  position: relative;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:root.dark .app-navbar .navbar-brand,
+:root.dark .app-navbar .nav-link,
+:root.dark .app-navbar .navbar-toggler {
+  color: #E5E7EB !important;
+}
+
+/* Ajusta ícone do menu hambúrguer para ter contraste no light/dark */
+:root:not(.dark) .app-navbar .navbar-toggler-icon {
+  filter: invert(1);
+}
+
+:root.dark .app-navbar .navbar-toggler-icon {
+  filter: none;
+}
+
+/* Theme toggle icons: show sun in light, moon in dark by default (prevents flicker)
+   This ensures the icon matches the `:root.dark` class applied early in the document head. */
+#themeToggle [data-icon="moon"] { display: none; }
+#themeToggle [data-icon="sun"] { display: inline-flex; }
+:root.dark #themeToggle [data-icon="moon"] { display: inline-flex; }
+:root.dark #themeToggle [data-icon="sun"] { display: none; }
+
+/* Theme toggle button: Glassmorphism Refinado */
+#themeToggle,
+.theme-toggle-btn {
+  position: relative;
+  width: 38px !important;
+  height: 38px !important;
+  border-radius: 8px !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  
+  /* Glass effect refinado */
+  background: rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  color: var(--color-text) !important;
+  
+  box-shadow: 
+    0 2px 6px rgba(15, 23, 42, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Light mode: botão glass claro */
+:root:not(.dark) #themeToggle,
+:root:not(.dark) .theme-toggle-btn {
+  background: rgba(255, 255, 255, 0.25) !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  color: #0f172a !important;
+  
+  box-shadow: 
+    0 2px 6px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+:root:not(.dark) #themeToggle:hover,
+:root:not(.dark) .theme-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.35) !important;
+  border-color: rgba(255, 255, 255, 0.45) !important;
+  
+  backdrop-filter: blur(14px) saturate(200%);
+  -webkit-backdrop-filter: blur(14px) saturate(200%);
+  
+  box-shadow: 
+    0 4px 10px rgba(15, 23, 42, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  
+  transform: translateY(-1px);
+}
+
+/* Dark mode: botão glass escuro */
+:root.dark #themeToggle,
+:root.dark .theme-toggle-btn {
+  background: rgba(30, 41, 59, 0.3) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: #e2e8f0 !important;
+  
+  backdrop-filter: blur(12px) saturate(150%);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  
+  box-shadow: 
+    0 2px 6px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+:root.dark #themeToggle:hover,
+:root.dark .theme-toggle-btn:hover {
+  background: rgba(30, 41, 59, 0.4) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  
+  backdrop-filter: blur(14px) saturate(170%);
+  -webkit-backdrop-filter: blur(14px) saturate(170%);
+  
+  box-shadow: 
+    0 4px 10px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  
+  transform: translateY(-1px);
+}
+
+#themeToggle [data-icon],
+.theme-toggle-btn [data-icon] {
+  color: currentColor !important;
+}
+
+/* Profile dropdown button shadow - override Bootstrap */
+.app-navbar #navbarDropdown {
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06) !important;
+}
+
+:root:not(.dark) .app-navbar #navbarDropdown {
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08) !important;
+}
+
+:root.dark .app-navbar #navbarDropdown {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+}
+
+.navbar.navbar-fixed {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+}
+
+/* Container interno do navbar com profundidade adicional */
+.app-navbar .container,
+.app-navbar .container-fluid {
+  position: relative;
+  z-index: 2;
+  padding: 0 1.5rem !important;
+}
+
+/* Melhora o visual dos elementos internos */
+.app-navbar .navbar-nav {
+  gap: 0.25rem;
+  margin: 0.5rem 0 !important;
+}
+
+/* Divide o navbar em dois grupos: nav principal e ações à direita */
+.app-navbar .navbar-nav.me-auto {
+  margin-right: auto !important;
+}
+
+.app-navbar .navbar-nav:not(.me-auto) {
+  flex-shrink: 0;
+  padding-left: 1rem !important;
+  border-left: 1px solid rgba(0, 0, 0, 0.08);
+  margin-left: 1rem !important;
+}
+
+:root.dark .app-navbar .navbar-nav:not(.me-auto) {
+  border-left-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Dropdowns com glassmorphism refinado e iluminação */
+.app-navbar .dropdown-menu {
+  margin-top: 0.5rem;
+  border-radius: var(--radius-md);
+  
+  /* Glass effect refinado */
+  background: rgba(255, 255, 255, 0.35) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  
+  border: 1.5px solid rgba(37, 99, 235, 0.35);
+  
+  box-shadow: 
+    0 16px 48px rgba(15, 23, 42, 0.2),
+    0 4px 12px rgba(15, 23, 42, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 2px 6px rgba(255, 255, 255, 0.3),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.1);
+  
+  transform: translateY(-2px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:root.dark .app-navbar .dropdown-menu {
+  background: rgba(15, 23, 42, 0.45) !important;
+  
+  backdrop-filter: blur(20px) saturate(170%);
+  -webkit-backdrop-filter: blur(20px) saturate(170%);
+  
+  border-color: rgba(96, 165, 250, 0.4);
+  
+  box-shadow: 
+    0 16px 48px rgba(0, 0, 0, 0.5),
+    0 4px 12px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(96, 165, 250, 0.3),
+    inset 0 2px 6px rgba(96, 165, 250, 0.15),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.navbar-brand {
+  font-weight: 700;
+  font-size: 1.3rem;
+  letter-spacing: -0.01em;
+  color: var(--color-primary) !important;
+  transition: color 0.2s ease;
+}
+
+.navbar-brand:hover {
+  color: var(--color-accent) !important;
+}
+
+.navbar .nav-link {
+  position: relative;
+  padding: 0.5rem 0.75rem !important;
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: var(--color-text) !important;
+  transition: all 0.2s ease;
+  border: none !important;
+  border-bottom: none !important;
+  border-top: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background-image: none !important;
+  text-decoration: none !important;
+  text-decoration-line: none !important;
+}
+
+.navbar .nav-link::after,
+.navbar .nav-link::before {
+  display: none !important;
+}
+
+.navbar .nav-link:hover {
+  color: var(--color-primary) !important;
+  border: none !important;
+  border-bottom: none !important;
+  border-top: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background-image: none !important;
+}
+
+.navbar .nav-link.active {
+  border: none !important;
+  border-bottom: none !important;
+  border-top: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background-image: none !important;
+}
+
+.navbar .nav-link[aria-current] {
+  border: none !important;
+  border-bottom: none !important;
+  border-top: none !important;
+  outline: none !important;
+}
+
+/* Dropdown toggle com efeito 3D */
+.navbar .dropdown-toggle {
+  position: relative;
+}
+
+.navbar .dropdown-toggle::after {
+  display: none !important;
+}
+
+.navbar .dropdown-toggle[aria-expanded="true"]::after {
+  display: none !important;
+}
+
+/* User profile dropdown button - Glass effect */
+.app-navbar .navbar-nav:last-child .dropdown-toggle {
+  background: rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  border-radius: 8px !important;
+  padding: 0.4rem 0.8rem !important;
+  color: var(--color-text) !important;
+  box-shadow: 
+    0 2px 6px rgba(15, 23, 42, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:root:not(.dark) .app-navbar .navbar-nav:last-child .dropdown-toggle {
+  background: rgba(255, 255, 255, 0.25) !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  color: #0f172a !important;
+  box-shadow: 
+    0 2px 6px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+:root:not(.dark) .app-navbar .navbar-nav:last-child .dropdown-toggle:hover {
+  background: rgba(255, 255, 255, 0.35) !important;
+  border-color: rgba(255, 255, 255, 0.45) !important;
+  backdrop-filter: blur(14px) saturate(200%);
+  -webkit-backdrop-filter: blur(14px) saturate(200%);
+  box-shadow: 
+    0 4px 10px rgba(15, 23, 42, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transform: translateY(-1px);
+}
+
+:root.dark .app-navbar .navbar-nav:last-child .dropdown-toggle {
+  background: rgba(30, 41, 59, 0.3) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: #e2e8f0 !important;
+  backdrop-filter: blur(12px) saturate(150%);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  box-shadow: 
+    0 2px 6px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+:root.dark .app-navbar .navbar-nav:last-child .dropdown-toggle:hover {
+  background: rgba(30, 41, 59, 0.4) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(14px) saturate(170%);
+  -webkit-backdrop-filter: blur(14px) saturate(170%);
+  box-shadow: 
+    0 4px 10px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+

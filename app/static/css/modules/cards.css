@@ -1,0 +1,182 @@
+/* Cards - Liquid Glass Premium */
+.card {
+  position: relative;
+  border: 1.5px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-glass), inset 0 2px 6px rgba(255, 255, 255, 0.35), inset 0 -1px 2px rgba(0, 0, 0, 0.1);
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(18px) saturate(165%);
+  -webkit-backdrop-filter: blur(18px) saturate(165%);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  outline: none !important;
+}
+
+.card:focus,
+.card:focus-visible,
+.card:focus-within {
+  outline: none !important;
+  border-color: var(--glass-border) !important;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.65), rgba(96, 165, 250, 0.25), transparent);
+  z-index: 1;
+}
+
+.card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--glass-gradient);
+  pointer-events: none;
+  z-index: 0;
+  border-radius: var(--radius-md);
+}
+
+.card > * {
+  position: relative;
+  z-index: 2;
+}
+
+:root.dark .card {
+  background: var(--glass-bg) !important;
+  border-color: var(--glass-border);
+  box-shadow: var(--shadow-glass), inset 0 2px 6px rgba(96, 165, 250, 0.2), inset 0 -1px 2px rgba(0, 0, 0, 0.2);
+  color: var(--color-text) !important;
+}
+
+:root.dark .card::before {
+  background: linear-gradient(90deg, transparent, rgba(96, 165, 250, 0.35), rgba(96, 165, 250, 0.15), transparent);
+}
+
+/* Garantir que todo texto dentro dos cards seja visível no dark mode */
+:root.dark .card {
+  color: var(--color-text) !important;
+}
+
+:root.dark .card .card-title,
+:root.dark .card h1,
+:root.dark .card h2,
+:root.dark .card h3,
+:root.dark .card h4,
+:root.dark .card h5,
+:root.dark .card h6 {
+  color: var(--color-text) !important;
+}
+
+:root.dark .card .card-text,
+:root.dark .card p,
+:root.dark .card span:not(.badge):not(.text-primary):not(.text-success):not(.text-danger):not(.text-warning):not(.text-info),
+:root.dark .card div:not(.badge) {
+  color: var(--color-text) !important;
+}
+
+:root.dark .card .card-body {
+  color: var(--color-text) !important;
+}
+
+:root.dark .card .text-muted {
+  color: var(--color-muted) !important;
+}
+
+/* Links dentro dos cards devem manter contraste */
+:root.dark .card a:not(.btn) {
+  color: var(--color-secondary) !important;
+}
+
+:root.dark .card a:not(.btn):hover {
+  color: var(--color-primary) !important;
+}
+
+.card .card-header {
+  background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+  color: #fff;
+  border: none;
+  border-radius: calc(var(--radius-md) - 1px) calc(var(--radius-md) - 1px) 0 0;
+}
+
+.card:hover {
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.22), inset 0 2px 8px rgba(255, 255, 255, 0.4), inset 0 -1px 2px rgba(0, 0, 0, 0.12);
+  border-color: rgba(255, 255, 255, 0.65) !important;
+  transform: translateY(-6px);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+  outline: none !important;
+}
+
+:root.dark .card:hover {
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 2px 8px rgba(96, 165, 250, 0.25), inset 0 -1px 2px rgba(0, 0, 0, 0.3);
+  border-color: rgba(96, 165, 250, 0.5);
+}
+
+/* Variantes de card consistentes */
+.card-elevated {
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-soft);
+}
+
+.card-elevated:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.card-hero {
+  border-radius: var(--radius-lg);
+  padding: 1.5rem 1.75rem;
+  background: radial-gradient(circle at 0% 0%, rgba(255,255,255,0.06), transparent 55%),
+              linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  color: #fff;
+  box-shadow: var(--shadow-md);
+}
+
+.card-hero h1,
+.card-hero h2,
+.card-hero h3 {
+  color: #fff;
+}
+
+/* Garantir que o placeholder dentro do card-hero seja visível */
+.card-hero .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.8) !important;
+  opacity: 1 !important;
+}
+
+:root.dark .card-hero .form-control::placeholder {
+  color: rgba(255, 255, 255, 0.9) !important;
+  opacity: 1 !important;
+}
+
+/* Garantir que o input dentro do card-hero tenha fundo visível */
+.card-hero .form-control {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: #fff !important;
+}
+
+:root.dark .card-hero .form-control {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  color: #fff !important;
+}
+
+.card-hero .form-control:focus {
+  background: rgba(255, 255, 255, 0.25) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
+  color: #fff !important;
+}
+
+:root.dark .card-hero .form-control:focus {
+  background: rgba(255, 255, 255, 0.3) !important;
+  border-color: rgba(255, 255, 255, 0.6) !important;
+  color: #fff !important;
+}
+

@@ -18,8 +18,9 @@
   --glass-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(96, 165, 250, 0.08) 50%, rgba(0, 0, 0, 0.12) 100%);
 }
 
+/* THEME DARK */
 :root.dark {
-  --color-bg: #0F172A;
+  --color-bg: #1a1f2e;
   --color-text: #E2E8F0;
   --color-surface: #1E293B;
   --color-primary: #3B82F6;
@@ -32,6 +33,7 @@
   --glass-gradient: linear-gradient(135deg, rgba(96, 165, 250, 0.15) 0%, rgba(96, 165, 250, 0.05) 50%, rgba(0, 0, 0, 0.1) 100%);
 }
 
+/* Map variables (fixes legacy compatibility) */
 :root {
   --color-ink: var(--color-text);
   --color-paper: var(--color-surface);
