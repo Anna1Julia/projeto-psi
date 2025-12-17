@@ -189,8 +189,15 @@ def delete_community(community_id):
     comunidade = Community.query.get_or_404(community_id)
     
     # Verificar se o usuário atual é o dono da comunidade
-    if comunidade.owner_id != current_user.id:
-        flash('Acesso negado. Apenas o criador da comunidade pode apagá-la.', 'error')
+    is_owner = comunidade.owner_id == current_user.id
+
+    # Admin geral pode deletar comunidades de usuários comuns (não-admin)
+    owner_user = comunidade.owner
+    is_target_common_user = owner_user is None or not owner_user.is_administrador()
+    can_admin_delete = current_user.is_administrador() and is_target_common_user
+
+    if not (is_owner or can_admin_delete):
+        flash('Acesso negado. Apenas o criador da comunidade ou um administrador podem apagá-la.', 'error')
         return redirect(url_for('comunidade.comunidade'))
     
     community_name = comunidade.name

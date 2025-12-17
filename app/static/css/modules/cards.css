@@ -180,3 +180,17 @@
   color: #fff !important;
 }
 
+
+/* Imagens de cards de conteúdo responsivas e proporcionais */
+.content-card-image {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .content-card-image {
+    aspect-ratio: 3 / 4;
+  }
+}

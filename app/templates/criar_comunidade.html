@@ -3,15 +3,15 @@
 {% block title %}Criar Comunidade - MemóriaViva{% endblock %}
 
 {% block content %}
-<div class="container my-5 mb-4">
-    <div class="row justify-content-center">
-        <div class="col-lg-8 col-xl-7">
+<div class="container my-5 mb-4 d-flex align-items-center justify-content-center" style="min-height: calc(100vh - 160px);">
+    <div class="row justify-content-center w-100">
+        <div class="col-lg-8 col-xl-7 mx-auto">
             <div class="card">
-                <div class="card-header">
+                <div class="card-header text-center">
                     Criar Nova Comunidade
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{{ url_for('comunidade.criar_comunidade') }}">
+                    <form method="POST" action="{{ url_for('comunidade.criar_comunidade') }}" class="mx-auto" style="max-width: 100%;">
                         <div class="mb-3">
                             <label for="nome" class="form-label">Nome da Comunidade</label>
                             <input type="text" id="nome" name="nome" class="form-control" required maxlength="255">
@@ -31,6 +31,5 @@
             </div>
         </div>
     </div>
-    
 </div>
 {% endblock %}

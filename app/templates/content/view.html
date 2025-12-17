@@ -13,7 +13,13 @@
 
                         {# ✅ Apenas o dono do conteúdo vê os botões Editar/Excluir #}
                         <div class="btn-group" role="group">
-                            {% if current_user.is_authenticated and current_user.id == content.user_id %}
+                            {% set can_admin_delete_content = (
+                                current_user.is_authenticated
+                                and current_user.is_administrador()
+                                and not content.autor.is_administrador()
+                            ) %}
+
+                            {% if current_user.is_authenticated and (current_user.id == content.user_id or can_admin_delete_content) %}
                             <a href="{{ url_for('content.edit_content', content_id=content.id) }}" class="btn btn-primary">
                                 <i class="fas fa-edit"></i> Editar
                             </a>
@@ -85,7 +91,9 @@
 
                             {% if content.file_path %}
                                 <div class="mt-4">
-                                    <a href="{{ url_for('content.download_content', content_id=content.id) }}" class="btn btn-success btn-lg">
+                                    <a href="{{ url_for('content.download_content', content_id=content.id) }}"
+                                       class="btn btn-success btn-lg"
+                                       data-no-loader="true">
                                         <i class="fas fa-download"></i> Baixar Arquivo
                                     </a>
                                 </div>

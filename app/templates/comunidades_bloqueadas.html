@@ -3,68 +3,137 @@
 {% block title %}Comunidades Bloqueadas - MemóriaViva{% endblock %}
 
 {% block content %}
-<div class="container mt-5 mb-4" style="background-color: #f5f7fa; border-radius: 8px; padding: 20px;">
-    <div class="row">
-        <div class="col-12">
-            <h1 class="blocked-communities-title">Comunidades Bloqueadas</h1>
-            <p style="color: #555;">Aqui estão as comunidades que você bloqueou.</p>
+<section class="page-shell">
+    <div class="container mt-5 mb-4 blocked-communities-container">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="blocked-communities-title">Comunidades Bloqueadas</h1>
+                <p class="blocked-communities-subtitle">Aqui estão as comunidades que você bloqueou.</p>
 
-            <a href="{{ url_for('comunidade.comunidade') }}" class="btn btn-outline-primary mb-3">
-                <i class="fas fa-arrow-left"></i> Voltar às Comunidades
-            </a>
+                <a href="{{ url_for('comunidade.comunidade') }}" class="btn btn-outline-primary mb-3">
+                    <i class="fas fa-arrow-left"></i> Voltar às Comunidades
+                </a>
 
-            {% if comunidades %}
-                <div class="row">
-                    {% for comunidade in comunidades %}
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="card shadow-sm border" 
-                                 style="background-color: #ffffff; color: #111; border-radius: 10px; border-color: #ddd;">
-                                <div class="card-body">
-                                    <h5 class="card-title" style="color: #111;">
-                                        {{ comunidade.name }}
-                                    </h5>
-                                    <p class="card-text" style="color: #555;">
-                                        {{ comunidade.description or "Sem descrição." }}
-                                    </p>
-                                    <small style="color: #777;">
-                                        Criada em {{ comunidade.created_at|format_datetime('%d/%m/%Y') }}
-                                    </small>
-                                    
-                                    <div class="mt-3">
-                                        <form method="POST" 
-                                              action="{{ url_for('comunidade.unblock_community', community_id=comunidade.id) }}" 
-                                              style="display:inline;">
-                                            <button type="submit" class="btn btn-success btn-sm"
-                                                    onclick="return confirm('Tem certeza que deseja desbloquear esta comunidade?')">
-                                                <i class="fas fa-unlock"></i> Desbloquear
-                                            </button>
-                                        </form>
+                {% if comunidades %}
+                    <div class="row justify-content-center g-3">
+                        {% for comunidade in comunidades %}
+                            <div class="col-sm-10 col-md-8 col-lg-6 col-xl-5 mb-4">
+                                <div class="card blocked-community-card shadow-sm border">
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            {{ comunidade.name }}
+                                        </h5>
+                                        <p class="card-text">
+                                            {{ comunidade.description or "Sem descrição." }}
+                                        </p>
+                                        <small class="blocked-community-meta">
+                                            Criada em {{ comunidade.created_at|format_datetime('%d/%m/%Y') }}
+                                        </small>
+                                        
+                                        <div class="mt-3">
+                                            <form method="POST" 
+                                                  action="{{ url_for('comunidade.unblock_community', community_id=comunidade.id) }}" 
+                                                  style="display:inline;">
+                                                <button type="submit" class="btn btn-success btn-sm"
+                                                        onclick="return confirm('Tem certeza que deseja desbloquear esta comunidade?')">
+                                                    <i class="fas fa-unlock"></i> Desbloquear
+                                                </button>
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <div class="alert alert-info border-0" style="background-color: #e8f4ff; color: #111;">
-                    <i class="fas fa-info-circle"></i>
-                    Você não bloqueou nenhuma comunidade ainda.
-                </div>
-            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="alert blocked-communities-empty border-0">
+                        <i class="fas fa-info-circle"></i>
+                        Você não bloqueou nenhuma comunidade ainda.
+                    </div>
+                {% endif %}
+            </div>
         </div>
     </div>
-</div>
+</section>
 {% endblock %}
 
 {% block extra_css %}
 <style>
-    .blocked-communities-title {
-        color: #111 !important;
-    }
-    
-    :root.dark .blocked-communities-title {
-        color: #000000 !important;
-    }
+  .blocked-communities-container {
+      border-radius: 12px;
+      padding: 24px;
+      background: rgba(248, 250, 252, 0.9);
+  }
+
+  .blocked-communities-title {
+      color: #0f172a;
+      font-weight: 700;
+  }
+
+  .blocked-communities-subtitle {
+      color: #4b5563;
+  }
+
+  .blocked-community-card {
+      background: #ffffff;
+      color: #0f172a;
+      border-radius: 10px;
+      border-color: rgba(148, 163, 184, 0.4);
+  }
+
+  .blocked-community-card .card-title {
+      color: #0f172a;
+  }
+
+  .blocked-community-card .card-text {
+      color: #4b5563;
+  }
+
+  .blocked-community-meta {
+      color: #6b7280;
+  }
+
+  .blocked-communities-empty {
+      background-color: #e5f2ff;
+      color: #0f172a;
+  }
+
+  /* Dark mode */
+  :root.dark .blocked-communities-container {
+      background: rgba(15, 23, 42, 0.85);
+      box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.25);
+  }
+
+  :root.dark .blocked-communities-title {
+      color: #e5e7eb;
+  }
+
+  :root.dark .blocked-communities-subtitle {
+      color: #9ca3af;
+  }
+
+  :root.dark .blocked-community-card {
+      background: rgba(30, 41, 59, 0.95);
+      color: #e5e7eb;
+      border-color: rgba(148, 163, 184, 0.4);
+  }
+
+  :root.dark .blocked-community-card .card-title {
+      color: #e5e7eb;
+  }
+
+  :root.dark .blocked-community-card .card-text {
+      color: #cbd5f5;
+  }
+
+  :root.dark .blocked-community-meta {
+      color: #9ca3af;
+  }
+
+  :root.dark .blocked-communities-empty {
+      background: rgba(30, 64, 175, 0.35);
+      color: #e5e7eb;
+  }
 </style>
 {% endblock %}
     

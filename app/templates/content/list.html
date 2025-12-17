@@ -29,9 +29,9 @@
                                     <a href="{{ content.url }}" target="_blank" class="text-decoration-none">
                                         <div class="obra-thumbnail-container" style="border-radius: 0;">
                                             {% if content.thumbnail %}
-                                                <img src="{{ content.thumbnail }}" class="card-img-top" alt="{{ content.title }}" style="height: 220px; object-fit: cover;">
+                                                <img src="{{ content.thumbnail }}" class="card-img-top content-card-image" alt="{{ content.title }}">
                                             {% else %}
-                                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 220px;">
+                                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center content-card-image">
                                                     <i class="fas fa-book fa-4x text-muted"></i>
                                                 </div>
                                             {% endif %}
@@ -45,9 +45,9 @@
                                 {% else %}
                                     <!-- Apenas thumbnail sem play icon -->
                                     {% if content.thumbnail %}
-                                        <img src="{{ content.thumbnail }}" class="card-img-top" alt="{{ content.title }}" style="height: 220px; object-fit: cover;">
+                                        <img src="{{ content.thumbnail }}" class="card-img-top content-card-image" alt="{{ content.title }}">
                                     {% else %}
-                                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 220px;">
+                                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center content-card-image">
                                             <i class="fas fa-book fa-4x text-muted"></i>
                                         </div>
                                     {% endif %}

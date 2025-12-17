@@ -275,11 +275,20 @@ def rate_content(content_id):
 def delete_content(content_id):
     """Deleta um conteúdo"""
     from ..blueprints.users import can_delete_users
+    from ..models import Usuario
     
     content = Content.query.get_or_404(content_id)
 
-    # Permitir deletar se for o dono do conteúdo OU se for o admin específico
-    if content.user_id != current_user.id and not can_delete_users():
+    # Permitir deletar se for o dono do conteúdo
+    is_owner = content.user_id == current_user.id
+
+    # Admin geral pode deletar conteúdos de usuários comuns (não-admin)
+    owner_user = content.autor or Usuario.query.get(content.user_id)
+    is_target_common_user = owner_user is None or not owner_user.is_administrador()
+    can_admin_delete = current_user.is_administrador() and is_target_common_user
+
+    # Admin específico via email ainda mantém permissão total
+    if not (is_owner or can_admin_delete or can_delete_users()):
         flash("Você não tem permissão para excluir este conteúdo.", "danger")
         return redirect(url_for('content.view_content', content_id=content_id))
 

@@ -3,7 +3,7 @@
 {% block title %}Comunidades - MemóriaViva{% endblock %}
 
 {% block content %}
-<div class="container mt-4 mb-4" data-aos="fade-up">
+<div class="container mt-3 mb-4" data-aos="fade-up">
   <div class="row">
     <div class="col-12">
       <h1 class="h3 mb-4 force-white-title">Comunidades</h1>
@@ -68,21 +68,36 @@
                     </form>
                   </li>
                   {% else %}
+                  {% set is_blocked = current_user.is_community_blocked(comunidade.id) %}
                   <li>
                     <form method="POST"
-                      action="{{ url_for('comunidade.block_community', community_id=comunidade.id) }}"
+                      action="{% if is_blocked %}{{ url_for('comunidade.unblock_community', community_id=comunidade.id) }}{% else %}{{ url_for('comunidade.block_community', community_id=comunidade.id) }}{% endif %}"
                       style="display: inline;">
                       <button type="submit" class="dropdown-item d-flex align-items-center text-warning"
-                        onclick="return confirm('Tem certeza que deseja bloquear esta comunidade?')">
+                        onclick="return confirm('{% if is_blocked %}Tem certeza que deseja DESBLOQUEAR esta comunidade?{% else %}Tem certeza que deseja BLOQUEAR esta comunidade?{% endif %}')">
                         <i class="fas fa-ban me-2"></i>
-                        <span>Bloquear Comunidade</span>
+                        <span>{% if is_blocked %}Desbloquear Comunidade{% else %}Bloquear Comunidade{% endif %}</span>
                       </button>
                     </form>
                   </li>
                   {% endif %}
                   {% if current_user.is_administrador() %}
+                  {% set owner_is_admin = comunidade.owner.is_administrador() %}
                   <li><hr class="dropdown-divider"></li>
                   <li class="dropdown-header text-muted small">Ações de Administrador</li>
+                  {% if not owner_is_admin %}
+                  <li>
+                    <form method="POST"
+                      action="{{ url_for('comunidade.delete_community', community_id=comunidade.id) }}"
+                      style="display: inline;">
+                      <button type="submit" class="dropdown-item d-flex align-items-center text-danger"
+                        onclick="return confirm('Tem certeza que deseja APAGAR esta comunidade? Esta ação é IRREVERSÍVEL e todos os posts serão perdidos!')">
+                        <i class="fas fa-trash me-2"></i>
+                        <span>Apagar Comunidade (Admin)</span>
+                      </button>
+                    </form>
+                  </li>
+                  {% endif %}
                   <li>
                     <form method="POST"
                       action="{{ url_for('comunidade.admin_block_community', community_id=comunidade.id) }}"
