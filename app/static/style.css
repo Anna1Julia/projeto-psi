@@ -1021,16 +1021,19 @@ h1, h2, h3, h4, h5, h6 {
 /* Play icon centralizado na thumbnail de obras */
 .obra-thumbnail-container {
     position: relative;
-    display: inline-block;
+    display: block;
     width: 100%;
     cursor: pointer;
     overflow: hidden;
-    border-radius: 8px;
+    border-radius: 8px 8px 0 0;
+    aspect-ratio: 16 / 9;
+    background: #000;
 }
 
 .obra-thumbnail-container img {
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: cover;
     display: block;
     transition: transform 0.3s ease;
 }
@@ -1044,13 +1047,12 @@ h1, h2, h3, h4, h5, h6 {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.2);
     transition: background 0.3s ease;
-    pointer-events: none;
 }
 
 .obra-thumbnail-container:hover .obra-thumbnail-overlay {
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.4);
 }
 
 .obra-thumbnail-container:hover img {
@@ -1058,26 +1060,31 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .obra-play-icon {
-    width: 80px;
-    height: 80px;
-    background: var(--color-surface);
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.95);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    z-index: 10;
 }
 
 .obra-thumbnail-container:hover .obra-play-icon {
-    background: var(--color-surface);
-    transform: scale(1.15);
+    background: #ff0000;
+    transform: scale(1.1);
 }
 
 .obra-play-icon i {
-    font-size: 36px;
-    color: #dc3545;
-    margin-left: 5px;
+    font-size: 24px;
+    color: #ff0000;
+    margin-left: 4px;
+}
+
+.obra-thumbnail-container:hover .obra-play-icon i {
+    color: #fff;
 }
 
 /* Estilos personalizados para botões de excluir */

@@ -359,7 +359,7 @@
               </div>
               <div id="report_id_group" class="mb-3" style="display: none;">
                 <label for="report_id_input" class="form-label">ID do Item <span class="text-danger">*</span></label>
-                <input type="number" class="form-control" id="report_id_input" name="reported_id" placeholder="Digite o ID do item a ser denunciado">
+                <input type="number" class="form-control" id="report_id_input" name="reported_id" placeholder="Digite o ID do item a ser denunciado" min="1" step="1">
                 <small class="form-text text-muted">Você pode encontrar o ID na URL da página do item.</small>
               </div>
               <input type="hidden" id="report_type" name="reported_type">
@@ -586,8 +586,14 @@
         
         if (reportIdInput) {
           reportIdInput.addEventListener('input', function() {
-            if (this.value) {
-              document.getElementById('report_id').value = this.value;
+            // Aceitar apenas números positivos
+            var value = parseInt(this.value);
+            if (value < 1 || isNaN(value)) {
+              this.value = '';
+              document.getElementById('report_id').value = '';
+            } else {
+              this.value = value;
+              document.getElementById('report_id').value = value;
             }
           });
         }

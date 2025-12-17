@@ -24,33 +24,25 @@
         <section class="card-grid">
             {% for content in contents %}
                 <article class="card card-elevated h-100">
-                                {% if content.url %}
-                                    <!-- Thumbnail com play icon se tiver URL do YouTube -->
+                                {% set youtube_id = extract_youtube_id(content.url) if content.url else None %}
+                                {% if youtube_id %}
+                                    <!-- Vídeo do YouTube com thumbnail e play icon -->
                                     <a href="{{ content.url }}" target="_blank" class="text-decoration-none">
                                         <div class="obra-thumbnail-container" style="border-radius: 0;">
-                                            {% if content.thumbnail %}
-                                                <img src="{{ content.thumbnail }}" class="card-img-top content-card-image" alt="{{ content.title }}">
-                                            {% else %}
-                                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center content-card-image">
-                                                    <i class="fas fa-book fa-4x text-muted"></i>
-                                                </div>
-                                            {% endif %}
+                                            <img src="{{ youtube_thumbnail_url(youtube_id, 'hqdefault') }}" class="card-img-top content-card-image" alt="{{ content.title }}">
                                             <div class="obra-thumbnail-overlay">
-                                                <div class="obra-play-icon">
-                                                    <i class="fas fa-play"></i>
-                                                </div>
+                                        
                                             </div>
                                         </div>
                                     </a>
+                                {% elif content.thumbnail %}
+                                    <!-- Thumbnail personalizada -->
+                                    <img src="{{ content.thumbnail }}" class="card-img-top content-card-image" alt="{{ content.title }}">
                                 {% else %}
-                                    <!-- Apenas thumbnail sem play icon -->
-                                    {% if content.thumbnail %}
-                                        <img src="{{ content.thumbnail }}" class="card-img-top content-card-image" alt="{{ content.title }}">
-                                    {% else %}
-                                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center content-card-image">
-                                            <i class="fas fa-book fa-4x text-muted"></i>
-                                        </div>
-                                    {% endif %}
+                                    <!-- Placeholder sem thumbnail -->
+                                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center content-card-image">
+                                        <i class="fas fa-book fa-4x text-muted"></i>
+                                    </div>
                                 {% endif %}
                                 
                                 <div class="card-body d-flex flex-column">

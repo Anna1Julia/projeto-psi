@@ -51,6 +51,17 @@
   box-shadow: var(--shadow-md);
   color: var(--color-text);
   padding: 0.5rem;
+  z-index: 1050;
+}
+
+/* Dropdown de opções de comunidade - garantir que fique por cima */
+.community-options-menu {
+  z-index: 9999 !important;
+  position: absolute !important;
+}
+
+.community-options-menu.show {
+  z-index: 9999 !important;
 }
 
 .dropdown-item {

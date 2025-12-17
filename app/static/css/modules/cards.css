@@ -155,7 +155,7 @@
   opacity: 1 !important;
 }
 
-/* Garantir que o input dentro do card-hero tenha fundo visível */
+  /* Garantir que o input dentro do card-hero tenha fundo visível */
 .card-hero .form-control {
   background: rgba(255, 255, 255, 0.15) !important;
   border-color: rgba(255, 255, 255, 0.3) !important;

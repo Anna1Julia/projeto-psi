@@ -23,9 +23,8 @@
       <a href="{{ url_for('posts.create_post') }}" class="btn btn-primary btn-create-post">Criar Post</a>
       {% if only_mine %}
       <a href="{{ url_for('posts.list_posts') }}" class="btn btn-outline-light ms-2">Ver todos os posts</a>
-      {% else %}
-      <a href="{{ url_for('posts.meus_posts') }}" class="btn btn-outline-light ms-2">Ver meus posts</a>
       {% endif %}
+      <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary ms-2">Sair</a>
     </div>
     {% endif %}
   </header>

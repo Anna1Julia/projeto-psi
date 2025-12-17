@@ -3,7 +3,7 @@
 {% block title %}Comunidades - MemóriaViva{% endblock %}
 
 {% block content %}
-<div class="container mt-3 mb-4" data-aos="fade-up">
+<div class="container mt-1 mb-4" data-aos="fade-up">
   <div class="row">
     <div class="col-12">
       <h1 class="h3 mb-4 force-white-title">Comunidades</h1>
@@ -17,10 +17,6 @@
         </div>
         <div class="col-md-6 text-md-end">
           <div class="form-check form-switch d-inline-block me-3">
-            <input class="form-check-input" type="checkbox" id="includeFiltered">
-            <label class="form-check-label force-white-subtitle" for="includeFiltered">
-              Incluir conteúdo filtrado
-            </label>
           </div>
           <a href="{{ url_for('comunidade.blocked_communities') }}" class="btn btn-outline-secondary">
             <i class="fas fa-ban"></i> Ver Bloqueadas
@@ -54,7 +50,7 @@
                       <span>Entrar na Comunidade</span>
                     </a>
                   </li>
-                  {% if comunidade.owner_id == current_user.id %}
+                  {% if comunidade.owner_id == current_user.id or current_user.is_administrador() %}
                   <li><hr class="dropdown-divider"></li>
                   <li>
                     <form method="POST"
@@ -67,8 +63,10 @@
                       </button>
                     </form>
                   </li>
-                  {% else %}
+                  {% endif %}
+                  {% if comunidade.owner_id != current_user.id %}
                   {% set is_blocked = current_user.is_community_blocked(comunidade.id) %}
+                  <li><hr class="dropdown-divider"></li>
                   <li>
                     <form method="POST"
                       action="{% if is_blocked %}{{ url_for('comunidade.unblock_community', community_id=comunidade.id) }}{% else %}{{ url_for('comunidade.block_community', community_id=comunidade.id) }}{% endif %}"
@@ -77,46 +75,6 @@
                         onclick="return confirm('{% if is_blocked %}Tem certeza que deseja DESBLOQUEAR esta comunidade?{% else %}Tem certeza que deseja BLOQUEAR esta comunidade?{% endif %}')">
                         <i class="fas fa-ban me-2"></i>
                         <span>{% if is_blocked %}Desbloquear Comunidade{% else %}Bloquear Comunidade{% endif %}</span>
-                      </button>
-                    </form>
-                  </li>
-                  {% endif %}
-                  {% if current_user.is_administrador() %}
-                  {% set owner_is_admin = comunidade.owner.is_administrador() %}
-                  <li><hr class="dropdown-divider"></li>
-                  <li class="dropdown-header text-muted small">Ações de Administrador</li>
-                  {% if not owner_is_admin %}
-                  <li>
-                    <form method="POST"
-                      action="{{ url_for('comunidade.delete_community', community_id=comunidade.id) }}"
-                      style="display: inline;">
-                      <button type="submit" class="dropdown-item d-flex align-items-center text-danger"
-                        onclick="return confirm('Tem certeza que deseja APAGAR esta comunidade? Esta ação é IRREVERSÍVEL e todos os posts serão perdidos!')">
-                        <i class="fas fa-trash me-2"></i>
-                        <span>Apagar Comunidade (Admin)</span>
-                      </button>
-                    </form>
-                  </li>
-                  {% endif %}
-                  <li>
-                    <form method="POST"
-                      action="{{ url_for('comunidade.admin_block_community', community_id=comunidade.id) }}"
-                      style="display: inline;">
-                      <button type="submit" class="dropdown-item d-flex align-items-center text-warning"
-                        onclick="return confirm('Bloquear comunidade globalmente?')">
-                        <i class="fas fa-globe me-2"></i>
-                        <span>Bloquear Globalmente</span>
-                      </button>
-                    </form>
-                  </li>
-                  <li>
-                    <form method="POST"
-                      action="{{ url_for('comunidade.admin_filter_community', community_id=comunidade.id) }}"
-                      style="display: inline;">
-                      <button type="submit" class="dropdown-item d-flex align-items-center text-info"
-                        onclick="return confirm('Marcar como conteúdo filtrado?')">
-                        <i class="fas fa-filter me-2"></i>
-                        <span>Marcar como Filtrado</span>
                       </button>
                     </form>
                   </li>
@@ -148,9 +106,7 @@
               {% else %}
               <span></span>
               {% endif %}
-              <small class="text-muted">
-                <i class="fas fa-users me-1"></i>{{ comunidade.members|length if comunidade.members is defined else (comunidade.member_count or 0) }} membros
-              </small>
+             
             </div>
           </div>
         </article>

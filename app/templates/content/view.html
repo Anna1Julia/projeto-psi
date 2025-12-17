@@ -56,9 +56,6 @@
                                             </div>
                                         {% endif %}
                                         <div class="obra-thumbnail-overlay">
-                                            <div class="obra-play-icon">
-                                                <i class="fas fa-play"></i>
-                                            </div>
                                         </div>
                                     </div>
                                 </a>
@@ -101,9 +98,6 @@
 
                             <div class="text-muted mt-3 d-flex gap-3 align-items-center">
                                 <small>Adicionado em {{ content.created_at|format_datetime('%d/%m/%Y %H:%M') }}</small>
-                                {% if content.views_count is not none %}
-                                    <small><i class="bi bi-eye"></i> {{ content.views_count }} visualizações</small>
-                                {% endif %}
                             </div>
                         </div>
                     </div>

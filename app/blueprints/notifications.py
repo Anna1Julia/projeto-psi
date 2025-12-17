@@ -54,6 +54,15 @@ def mark_all_as_read():
     
     return jsonify({'success': True})
 
+@notifications_bp.route('/delete-all', methods=['POST'])
+@login_required
+def delete_all():
+    """Apaga todas as notificações do usuário"""
+    Notification.query.filter_by(user_id=current_user.id).delete()
+    db.session.commit()
+    
+    return jsonify({'success': True})
+
 @notifications_bp.route('/recent')
 @login_required
 def recent_notifications():

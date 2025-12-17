@@ -97,55 +97,21 @@ def format_datetime(dt, format_str: str = '%d/%m/%Y %H:%M'):
     if not dt:
         return ''
     try:
-        from datetime import datetime, timezone, timedelta
+        from datetime import timezone, timedelta
         
-        # Se for naive (sem tzinfo), assume UTC (como datetime.utcnow() salva no banco)
-        # datetime.utcnow() retorna um datetime naive, então precisamos adicionar timezone UTC
+        # Horário de Brasília é UTC-3
+        brazil_offset = timedelta(hours=-3)
+        
+        # Se for naive (sem tzinfo), assume UTC e subtrai 3 horas
         if dt.tzinfo is None:
-            # Assumir que é UTC (como datetime.utcnow() salva)
-            dt_utc = dt.replace(tzinfo=timezone.utc)
+            brazil_dt = dt + brazil_offset
         else:
-            # Já tem timezone, converter para UTC primeiro para garantir consistência
-            try:
-                dt_utc = dt.astimezone(timezone.utc)
-            except (ValueError, AttributeError):
-                # Se não conseguir converter, assumir que já está em UTC
-                dt_utc = dt
+            # Se já tem timezone, converter para UTC primeiro
+            dt_utc = dt.astimezone(timezone.utc)
+            brazil_dt = dt_utc + brazil_offset
         
-        # Tentar usar zoneinfo (Python 3.9+)
-        try:
-            from zoneinfo import ZoneInfo
-            brazil_tz = ZoneInfo('America/Sao_Paulo')
-            brazil_dt = dt_utc.astimezone(brazil_tz)
-            return brazil_dt.strftime(format_str)
-        except (ImportError, AttributeError, ValueError):
-            # Fallback para pytz se zoneinfo não estiver disponível
-            try:
-                import pytz
-                brazil_tz = pytz.timezone('America/Sao_Paulo')
-                # Se o datetime original for naive, usar pytz para localizar como UTC
-                if dt.tzinfo is None:
-                    dt_utc = pytz.utc.localize(dt)
-                else:
-                    # Se já tem timezone, garantir que está em UTC antes de converter
-                    if hasattr(dt_utc.tzinfo, 'zone') and dt_utc.tzinfo.zone != 'UTC':
-                        dt_utc = dt_utc.astimezone(pytz.utc)
-                    else:
-                        dt_utc = dt
-                brazil_dt = dt_utc.astimezone(brazil_tz)
-                return brazil_dt.strftime(format_str)
-            except (ImportError, AttributeError, ValueError):
-                # Fallback final: converter manualmente para UTC-3 (horário de Brasília)
-                # Horário de Brasília é UTC-3 (sem horário de verão, que foi abolido em 2019)
-                if dt_utc.tzinfo is None:
-                    dt_utc = dt_utc.replace(tzinfo=timezone.utc)
-                # Subtrair 3 horas do UTC para obter horário de Brasília
-                brazil_offset = timedelta(hours=-3)
-                brazil_tz = timezone(brazil_offset)
-                brazil_dt = dt_utc.astimezone(brazil_tz)
-                return brazil_dt.strftime(format_str)
-    except Exception as e:
-        # Em caso de erro, tentar formatar diretamente (sem conversão de timezone)
+        return brazil_dt.strftime(format_str)
+    except Exception:
         try:
             return dt.strftime(format_str)
         except Exception:
